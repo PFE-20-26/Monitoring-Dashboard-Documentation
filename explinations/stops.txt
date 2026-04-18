@@ -79,3 +79,12 @@ Here are the specific "tricks" used in your code to eliminate latency:
 4. **Dynamic String Construction:** It dynamically builds the `WHERE` statement array in JavaScript (`whereParts.push(...)`). This prevents SQL injection parameters while guaranteeing MySQL only evaluates conditions that are strictly necessary, allowing the database to hit its B-Tree Index quickly.
 
 *(Note: There is an even more aggressive query further down in `getDailyStopsSummary` which incorporates a `NOW()` check for currently active machines that haven't stopped yet!)*
+
+
+
+const items = ...: The raw data from MySQL looks ugly (e.g., s.Fin, c.affect_trs). This block loops through the raw list and transforms it into a perfectly clean, formatted JSON object (startTime, impact trs) that your React frontend tables easily understand.
+
+
+
+
+Line 108 (], [...params]);) & Line 129 ([...params, limit, offset]): This is how you pass variables safely into SQL. Every ? in your SQL string gets replaced by a value in params. This rigidly prevents "SQL Injection" hacking.
