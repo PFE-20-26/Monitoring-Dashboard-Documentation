@@ -1,0 +1,81 @@
+if (/^(?:[01]\d|2[0-3]):[0-5]\d$/.test(v)) return `${v}:00`;
+This is a Regular Expression (Regex) test. It specifically checks if the string v is exactly formatted as "HH:mm" (hours and minutes, but no seconds).
+
+(?:[01]\d|2[0-3]) matches hours logically from 00 to 23.
+:[0-5]\d matches minutes from :00 to :59.
+If the string perfectly matches this "HH:mm" shape, the code executes return `${v}:00`;, which sticks :00 onto the end.
+
+
+
+
+
+
+
+Listed directory stops
+Viewed stops.controller.ts:1-42
+Viewed stops.service.ts:1-332
+
+Here is a detailed breakdown of the backend logic, the SQL flow, and the performance checks for your second table.
+
+### 1. Where is the Backend Logic for the 2nd Table?
+When you click a specific day on the 1st table, your frontend fires off a request to the **`GET /stops?from=YYYY-MM-DD&to=YYYY-MM-DD`** endpoint. 
+
+This request is caught in your `stops.controller.ts` by the `findAll` function, which delegates it straight to the **`findAll` method in `stops.service.ts`** (starting at line 79). 
+
+### 2. How the Logic and SQL Flow Works
+Inside `findAll`, the flow is split into 4 calculated steps:
+
+**Step A: Parsing the Request**
+It extracts the `ListStopsQueryDto` you were just looking at. It grabs the `page`, `limit` (max 100 rows per fetch), `from` date, `to` date, etc., and ensures the dates make physical sense (the "from" date isn't after the "to" date).
+
+**Step B: The SQL `COUNT` Query (For Pagination)**
+Before giving you the rows, the dashboard needs to know how many pages exist. It executes a raw SQL query specifically to count the matching records without loading their data:
+```sql
+SELECT COUNT(*) AS total
+FROM stops s
+INNER JOIN causes c ON c.id = s.cause_id
+WHERE s.Jour >= ? AND s.Jour <= ?  -- (Dynamically added based on your filters)
+```
+
+**Step C: The SQL Data Query (To Fetch The Limit)**
+It then runs the actual workhorse query. Note that it uses `LIMIT` and `OFFSET`. If you are on Page 2 and loading 5 rows, the SQL engine skips the first 5 (`OFFSET 5`) and only pulls out the next 5 (`LIMIT 5`).
+```sql
+SELECT
+    s.id,
+    CAST(s.Jour AS CHAR) AS day,
+    s.Debut AS startTime,
+    s.Fin AS stopTime,
+    s.Duree AS durationSeconds,
+    s.equipe,
+    s.cause_id AS causeId,
+    c.name AS causeName,
+    c.affect_trs AS affectTRS
+FROM stops s
+INNER JOIN causes c ON c.id = s.cause_id
+WHERE s.Jour >= ? AND s.Jour <= ?
+ORDER BY s.Jour DESC, s.Debut DESC, s.id DESC
+LIMIT ? OFFSET ?
+```
+
+**Step D: Percentage `%` Calculation in Javascript**
+Once MySQL returns those specific 5 rows, NestJS calculates the `%` share column. It loops over the rows once to sum the `durationSeconds`. Then it maps over the rows again, taking each row's duration, dividing it by the sum, and rounding it out (e.g., `Math.round(...) / 100`) to send to the frontend.
+
+---
+
+### 3. Latency: What causes it and is yours optimized?
+TypeORM (your database connector) is notoriously famous for hidden latency issues. Latency often stems from:
+1. **The N+1 Query Problem:** Automatically querying the `causes` table line-by-line for every single stop, rather than using an `INNER JOIN`.
+2. **Heavy Object Mapping:** TypeORM taking raw SQL rows and spending hundreds of milliseconds trying to instantiate heavy TypeScript Class Objects before returning them.
+3. **Full Table Scans:** Executing a `TIME_TO_SEC` string diffing function over hundreds of thousands of un-indexed rows inside MySQL.
+
+**Is your SQL optimized right now?**
+**YES. It is extremely well optimized.** The developer specifically stripped out TypeORM's default features to squeeze out maximum speed.
+
+Here are the specific "tricks" used in your code to eliminate latency:
+
+1. **Bypassing the ORM entirely (`this.dataSource.query`):** Instead of using TypeORM's `.find()` or QueryBuilder which drags memory, they wrote raw MySQL directly. This drastically cuts down the JS execution time.
+2. **Pre-Computed Duration (`IFNULL(s.Duree, 0)`):** Instead of making the database calculate the difference between `startTime` and `stopTime` inside the SQL statement via `TIMESTAMPDIFF`, your database actually contains a pre-calculated `Duree` column. Simply fetching a static integer rather than computing it on the fly is a massive speed boost.
+3. **Raw `INNER JOIN`:** It explicitly forces MySQL to combine data on an index (`c.id = s.cause_id`) efficiently, preventing the N+1 problem.
+4. **Dynamic String Construction:** It dynamically builds the `WHERE` statement array in JavaScript (`whereParts.push(...)`). This prevents SQL injection parameters while guaranteeing MySQL only evaluates conditions that are strictly necessary, allowing the database to hit its B-Tree Index quickly.
+
+*(Note: There is an even more aggressive query further down in `getDailyStopsSummary` which incorporates a `NOW()` check for currently active machines that haven't stopped yet!)*
