@@ -88,3 +88,41 @@ const items = ...: The raw data from MySQL looks ugly (e.g., s.Fin, c.affect_trs
 
 
 Line 108 (], [...params]);) & Line 129 ([...params, limit, offset]): This is how you pass variables safely into SQL. Every ? in your SQL string gets replaced by a value in params. This rigidly prevents "SQL Injection" hacking.
+
+
+
+
+Voici une explication détaillée et structurée de ce que nous avons accompli. C'est un excellent cas pratique d'optimisation de base de données que vous pourrez intégrer directement dans votre rapport de PFE ou présenter lors de votre soutenance.
+
+Nous avons résolu un problème classique de performance des bases de données appelé "Le piège de la non-SARGabilité et des jointures massives".
+
+Voici les 4 grandes étapes de l'optimisation, du problème initial à la solution finale :
+
+1. Le Problème Initial : La fonction dans le WHERE (Non-SARGable)
+Dans la première version, pour gérer le décalage de l'équipe de nuit (qui commence à 22h et finit à 06h le lendemain), nous avions une fonction SQL "à la volée" : IF(Debut < '06:00:00', DATE_SUB(Jour, INTERVAL 1 DAY), Jour)
+
+Pourquoi c'était lent sur 1 000 000 de lignes ? Quand on applique une fonction sur une colonne dans un WHERE ou un GROUP BY, MySQL ne peut plus utiliser les index. Il est forcé de lire l'intégralité du million de lignes et de calculer ce IF pour chaque ligne avant de pouvoir filtrer. C'est ce qu'on appelle une requête non-SARGable (Search Argument Able).
+
+2. L'Optimisation Base de Données : Colonne Générée et Index Couvrant
+Pour soulager MySQL, nous avons déporté ce calcul lourd au moment de l'insertion plutôt qu'au moment de la lecture.
+
+La Colonne Générée (prod_day) : Nous avons ajouté une colonne virtuelle stockée qui calcule ce décalage de 06h00 automatiquement quand une ligne est insérée.
+L'Index Couvrant (Covering Index) : C'est la vraie "magie". Nous n'avons pas juste indexé la date. Nous avons créé l'index idx_summary_covering (prod_day, equipe, cause_id, Duree).
+L'astuce technique : Comme cet index contient toutes les données nécessaires pour calculer le résumé quotidien (la date, la durée, et la cause), MySQL n'a plus du tout besoin d'aller lire la table physique sur le disque. Il fait toute l'opération directement en lisant l'index dans la mémoire vive (RAM), ce qui est des dizaines de fois plus rapide.
+3. L'Optimisation Code Backend : L'Agrégation en Deux Étapes
+Même avec l'index, la requête mettait encore quelques secondes. Le coupable était le INNER JOIN causes.
+
+Le piège de la jointure : Pour calculer l'impact TRS, MySQL joignait la table causes pour chaque arrêt. Sur 30 jours, cela représente environ 165 000 arrêts. Faire 165 000 jointures est lourd.
+
+La solution (Sous-requête) : J'ai réécrit la requête SQL pour inverser l'ordre des opérations :
+
+Pré-agrégation : On groupe d'abord les arrêts par prod_day et cause_id en sommant les durées. Cela réduit nos 165 000 lignes de départ en un tout petit tableau d'environ 600 lignes (30 jours × 20 causes).
+La jointure finale : On joint la table causes uniquement sur ces 600 lignes pour récupérer le drapeau affect_trs. On est passé d'une complexité $O(N)$ (où N est le nombre total d'arrêts) à une complexité $O(Jours \times Causes)$.
+4. L'Optimisation Frontend : La Fenêtre Coulissante
+Dans React (StopsClient.tsx), au chargement initial, les dates fromDate et toDate étaient vides. Cela envoyait une requête au backend lui demandant de calculer le résumé depuis la création de l'usine (soit 1 million de lignes d'un coup !).
+
+La solution : J'ai initialisé les états React avec des dates par défaut (J-30 à Aujourd'hui). Ainsi, dès le premier chargement, le backend ne fouille que dans une "fenêtre" de 30 jours, rendant le tout instantané.
+
+Comment le présenter à votre jury de PFE : "Pour garantir la scalabilité de l'application face à des volumes industriels (stress-testé à 1 million de lignes), j'ai abandonné les calculs à la volée au profit de colonnes générées et d'index couvrants. J'ai également optimisé l'arbre d'exécution SQL en forçant l'agrégation des données avant la jointure, réduisant la complexité algorithmique du rapport quotidien."
+
+1:25 AM

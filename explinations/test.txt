@@ -1,0 +1,241 @@
+
+
+ind de perfermances. pour optimiser une BASE DE données. et les diff metrics 
+
+
+pl sql programme (2 versions ) pour tester la perfermances de BD . BD feha 1 mlayoun/6 mois ( 166 par mois --  1500 par j) then kol mara n5ou partie menha w ntesti aleha requetes ( 2j then 3 then 5 then 7 then 10 then 15 ..........) l temps sera calculeé ml cpu
+
+
+
+
+
+Query Response Time..                         tu la realise avec explain analyze pour detecter 
+Temps d'exécution d'une requête SQL
+
+
+Latence
+Délai entre envoi de requête et premier octet reçu
+
+
+Slow Query Rate
+% de requêtes dépassant le seuil configuré 
+
+Execution Time P95/P99
+Temps de réponse des 5%/1% de requêtes les plus lentes
+
+Buffer Pool Hit Ratio
+% de données lues depuis la RAM (InnoDB)
+Buffer Pool Usage
+% d'utilisation du buffer pool InnoDB
+Buffer Pool Dirty Pages
+Pages modifiées en mémoire pas encore écrites sur disque
+Query Cache Hit
+ Ratio
+% de requêtes servies depuis le cache (MySQL < 8.0)
+Memory Usage Total
+RAM totale consommée par mysqld
+Key Buffer Hit Ratio
+Ratio de cache pour index MyISAM (Key_reads / Key_read_requests)
+
+Disk Read IOPS
+Opérations de lecture par seconde sur disque
+Disk Write IOPS
+Opérations d'écriture par seconde sur disque
+% du temps CPU en attente du disque
+Innodb_data_read
+Octets lus depuis les fichiers de données InnoDB
+
+Innodb_data_written
+Octets écrits dans les fichiers de données InnoDB
+Innodb_log_writes
+Nombre d'écritures physiques dans le redo log
+Tablespace Usage
+Espace disque occupé par les données, index et logs
+
+Innodb_os_log_fsyncs
+Nombre de fsync sur le redo log 
+
+Threads_connected
+Nombre de connexions ouvertes actives
+Max_used_connections
+Pic maximal de connexions depuis démarrage
+Connection Pool Usage
+% du pool de connexions utilisé
+Connection Errors
+Connexions refusées (Aborted_connects, Connection_errors_max)
+Threads_running
+Connexions actuellement en train d'exécuter une requête
+Wait_timeout / interactif
+Durée avant fermeture d'une connexion inactive
+Transactions Per Second
+Débit transactionnel (Com_commit / seconde)
+baseline
+Commit Rate
+Nombre de commits par seconde
+baseline
+Rollback Rate
+Nombre de rollbacks par seconde (erreurs/conflits)
+Lock Wait Time
+Durée moyenne d'attente sur un verrou (row lock)
+Deadlock Rate
+Nombre de deadlocks (Innodb_deadlocks)
+Lock Wait Timeouts
+Transactions annulées après dépassement de innodb_lock_wait_timeout
+Active Transactions
+Nombre de transactions ouvertes (INNODB_TRX)
+Long-running Transactions
+Transactions ouvertes depuis > X secondes
+Query Throughput (QPS)
+Total de requêtes par seconde (SELECT + DML)
+Com_select
+Nombre de SELECT exécutés
+Com_insert
+Nombre d'INSERT exécutés
+Com_update
+Nombre d'UPDATE exécutés
+Com_delete
+Nombre de DELETE exécutés
+Full Table Scans
+Requêtes sans index (Select_full_join, Select_scan)
+Index Hit Rate
+% de requêtes utilisant un index
+Long Running Queries
+Requêtes actives depuis longtemps (PROCESSLIST)
+Tmp Tables on Disk
+Tables temporaires créées sur disque (Created_tmp_disk_tables)
+Sort Merge Passes
+Tris nécessitant des passes multiples (sort_merge_passes)
+Replication Lag (secondes)
+Délai entre primaire et réplica (Seconds_Behind_Master)
+Slave_IO_Running
+Thread I/O du réplica actif (YES/NO)
+Slave_SQL_Running
+Thread SQL du réplica actif (YES/NO)
+Binlog Size
+Taille des binary logs générés
+Read/Write Split Ratio
+% des lectures dirigées vers réplicas vs primaire
+Uptime
+Durée de fonctionnement depuis dernier redémarrage
+Crash Recovery Events
+Nombre de redémarrages inopinés / crashes
+Error Log Rate
+Erreurs critiques dans le log MySQL
+Open_files
+Nombre de fichiers ouverts vs open_files_limit
+Table_open_cache_hits
+Efficacité du cache des descripteurs de tables
+
+
+
+
+
+
+
+
+
+so for my project ( the one in pfe project that claude have ) idk if u have access . nevertheless i want to create 2 sql queries 1 optimized and one thats not optimized at all . so the functioning is as follows : i have the first table that displays in each row a day and total number of stops ( dont mind this table content for now ) when i click on a day the 2nd table opens up that displays in detail each stop of that day . the columns in that table are start and stop time , durée , cause , affect TRS and % . so for the start and stop time , pretty clear they define start aand stop time  of larret  , durée est la durée de larret . cause est le nom du cause choisi pour ce arret . notez que dans la table sql on a la forme suivante de : CREATE TABLE `stops` (
+  `id` bigint unsigned NOT NULL AUTO_INCREMENT,
+  `Jour` date NOT NULL,
+  `Debut` time NOT NULL,
+  `Fin` time DEFAULT NULL,
+  `Duree` int unsigned GENERATED ALWAYS AS ((case when (`Fin` is null) then NULL when (`Fin` >= `Debut`) then (time_to_sec(`Fin`) - time_to_sec(`Debut`)) else ((time_to_sec(`Fin`) + 86400) - time_to_sec(`Debut`)) end)) STORED,
+  `cause_id` int unsigned NOT NULL,
+  `equipe` tinyint unsigned GENERATED ALWAYS AS ((case when ((`Debut` >= '06:00:00') and (`Debut` < '14:00:00')) then 1 when ((`Debut` >= '14:00:00') and (`Debut` < '22:00:00')) then 2 else 3 end)) STORED,
+  `prod_day` date GENERATED ALWAYS AS (if((`Debut` < '06:00:00'),(`Jour` - interval 1 day),`Jour`)) STORED,
+  PRIMARY KEY (`id`),
+  KEY `idx_stops_day_start_time` (`Jour`,`Debut`),
+  KEY `idx_stops_day_equipe_start_time` (`Jour`,`equipe`,`Debut`),
+  KEY `idx_stops_cause_id` (`cause_id`),
+  KEY `idx_stops_stop_time` (`Fin`),
+  KEY `idx_stops_Duree` (`Duree`),
+  KEY `idx_stops_equipe_jour_duree` (`equipe`,`Jour`,`Duree`),
+  KEY `idx_stops_jour_cause_equipe` (`Jour`,`cause_id`,`equipe`,`Duree`),
+  KEY `idx_prod_day` (`prod_day`),
+  CONSTRAINT `fk_stops_cause_id` FOREIGN KEY (`cause_id`) REFERENCES `causes` (`id`) ON DELETE RESTRICT ON UPDATE CASCADE
+) ENGINE=InnoDB AUTO_INCREMENT=2191842 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci . dou la cause dans la table est cause ID but in the backend of my dashboard server it realise a query to attach each stop to its cause name and afficher la cause name . also each cause can either affect TRS or not so itseither 0 or 1  and the % is calculated based on stops for that shift . its % of that stop par apport au total duree des stops de ce shift dans ce jour la .  async findAll(query: ListStopsQueryDto) {
+        const page = Number(query.page) || 1;
+        const limit = Number(query.limit) || 5;
+        const from = query.from?.trim();
+        const to = query.to?.trim();
+        const equipe = query.equipe;
+        const causeId = query.causeId;
+
+        if (from && to && from > to) {
+            throw new BadRequestException('"from" must be <= "to"');
+        }
+
+        const whereParts: string[] = [];
+        const params: any[] = [];
+        
+        if (causeId !== undefined) { whereParts.push('s.cause_id = ?'); params.push(causeId); }
+        if (equipe !== undefined) { whereParts.push('s.equipe   = ?'); params.push(equipe); }
+        
+        if (from) { whereParts.push('s.prod_day >= ?'); params.push(from); }
+        if (to) { whereParts.push('s.prod_day <= ?'); params.push(to); }
+
+        const whereClause = whereParts.length ? `WHERE ${whereParts.join(' AND ')}` : '';
+        const offset = (page - 1) * limit;
+
+        // Optimized query using the new prod_day column and window functions
+        const rows = await this.dataSource.query(`
+            SELECT
+                sub.id,
+                sub.day,
+                sub.startTime,
+                sub.stopTime,
+                sub.durationSeconds,
+                sub.equipe,
+                sub.causeId,
+                sub.causeName,
+                sub.affectTRS,
+                sub.pct,
+                sub.total
+            FROM (
+                SELECT
+                    s.id,
+                    CAST(s.prod_day AS CHAR)      AS day,
+                    s.Debut                       AS startTime,
+                    s.Fin                         AS stopTime,
+                    s.Duree                       AS durationSeconds,
+                    s.equipe,
+                    s.cause_id                    AS causeId,
+                    c.name                        AS causeName,
+                    c.affect_trs                  AS affectTRS,
+                    COUNT(*) OVER()               AS total,
+                    CASE
+                        WHEN SUM(s.Duree) OVER() > 0 AND s.Duree IS NOT NULL
+                        THEN ROUND(s.Duree * 100.0 / SUM(s.Duree) OVER(), 2)
+                        ELSE NULL
+                    END AS pct
+                FROM stops s FORCE INDEX (idx_prod_day)
+                INNER JOIN causes c ON c.id = s.cause_id
+                ${whereClause}
+                ORDER BY s.prod_day DESC, s.Debut DESC, s.id DESC
+            ) sub
+            LIMIT ? OFFSET ?
+        `, [...params, limit, offset]);
+
+        const total = rows.length > 0 ? Number((rows as any[])[0].total) : 0;
+
+        const items = (rows as any[]).map((r) => ({
+            id: String(r.id),
+            day: String(r.day),
+            startTime: r.startTime,
+            stopTime: r.stopTime ?? null,
+            durationSeconds: r.durationSeconds !== null ? Number(r.durationSeconds) : null,
+            equipe: Number(r.equipe),
+            causeId: Number(r.causeId),
+            causeName: r.causeName || 'Unnamed',
+            'impact trs': (r.affectTRS === 1 || r.affectTRS === true || r.affectTRS === '1') ? 1 : 0,
+            '%': r.pct !== null ? Number(r.pct) : null,
+        }));
+
+        return { items, total, page, limit };
+    } . this is the get all in its current state . i dont care whether its optimized or no i want to create a query with 0 optimisation .thus create me a query with 0 optimisation .mention les indices de perfermences indisponsible dans cette query que je dois les optimiser . aussi si des collumns doit etre deleted from my table ( the structure that i gave u can be altered so that it becomes less optimized . also i want to test le plan dexecution du query afin de voir les different etapes traité et le temps ecoulé dans chaque etape   . and i want to test it in MySQL workbench . my professor recommended using pl sql  et creer un programme qui traite le query dans un intervals de jour ( 2 puis 5 puis 9 .....)  afin de voir le temps ecoulé du query avec chaque itération ( vu que avec chaque itération la table augmente de tailles ( more rows )) 
+
+
+
+
+
+
