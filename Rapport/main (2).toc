@@ -1,6 +1,13 @@
 \contentsline {chapter}{Acknowledgments}{v}{chapter*.3}%
 \contentsline {section}{General Introduction}{1}{section*.4}%
 \contentsline {chapter}{\numberline {1}Preliminary analysis}{2}{chapter.1}%
-\contentsline {section}{\numberline {1.1}Presentation of the enterprises}{2}{section.1.1}%
-\contentsline {subsection}{\numberline {1.1.1}TESCA}{2}{subsection.1.1.1}%
-\contentsline {subsection}{\numberline {1.1.2}TS2I}{3}{subsection.1.1.2}%
+\contentsline {section}{\numberline {1}\fontsize {15}{18}\selectfont Presentation of the enterprises}{2}{section.1.1}%
+\contentsline {subsection}{\numberline {1.1}TS2I}{2}{subsection.1.1.1}%
+\contentsline {subsection}{\numberline {1.2}TESCA}{3}{subsection.1.1.2}%
+\contentsline {subsubsection}{\numberline {1.2.1}Presentation of the company}{3}{subsubsection.1.1.2.1}%
+\contentsline {subsubsection}{\numberline {1.2.2}Technical file}{5}{subsubsection.1.1.2.2}%
+\contentsline {subsubsection}{\numberline {1.2.3}Organizational chart}{5}{subsubsection.1.1.2.3}%
+\contentsline {section}{\numberline {2}\fontsize {15}{18}\selectfont Case study}{6}{section.1.2}%
+\contentsline {subsection}{\numberline {2.1}Description of the existing system}{6}{subsection.1.2.1}%
+\contentsline {subsection}{\numberline {2.2}Criticism of the existing system}{6}{subsection.1.2.2}%
+\contentsline {section}{\numberline {3}\fontsize {15}{18}\selectfont Modeling languages: SysMl}{6}{section.1.3}%

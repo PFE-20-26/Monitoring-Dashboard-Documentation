@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.29 (TeX Live 2026) (preloaded format=pdflatex 2026.5.3)  4 MAY 2026 02:22
+This is pdfTeX, Version 3.141592653-2.6-1.40.29 (TeX Live 2026) (preloaded format=pdflatex 2026.5.3)  10 MAY 2026 19:42
 entering extended mode
  restricted \write18 enabled.
  file:line:error style messages enabled.
@@ -538,30 +538,54 @@ Package tocloft Info: The document has chapter divisions on input line 51.
 \cfttabnumwidth=\skip108
 ) (c:/texlive/2026/texmf-dist/tex/latex/setspace/setspace.sty
 Package: setspace 2022/12/04 v6.7b set line spacing
+) (c:/texlive/2026/texmf-dist/tex/latex/natbib/natbib.sty
+Package: natbib 2010/09/13 8.31b (PWD, AO)
+\bibhang=\skip109
+\bibsep=\skip110
+LaTeX Info: Redefining \cite on input line 694.
+\c@NAT@ctr=\count339
+) (c:/texlive/2026/texmf-dist/tex/latex/caption/caption.sty
+Package: caption 2023/08/05 v3.6o Customizing captions (AR)
+ (c:/texlive/2026/texmf-dist/tex/latex/caption/caption3.sty
+Package: caption3 2023/07/31 v2.4d caption3 kernel (AR)
+\caption@tempdima=\dimen296
+\captionmargin=\dimen297
+\caption@leftmargin=\dimen298
+\caption@rightmargin=\dimen299
+\caption@width=\dimen300
+\caption@indent=\dimen301
+\caption@parindent=\dimen302
+\caption@hangindent=\dimen303
+Package caption Info: Standard document class detected.
+)
+\c@caption@flags=\count340
+\c@continuedfloat=\count341
+Package caption Info: float package is loaded.
+Package caption Info: hyperref package is loaded.
 ) (c:/texlive/2026/texmf-dist/tex/latex/l3backend/l3backend-pdftex.def
 File: l3backend-pdftex.def 2026-02-18 L3 backend support: PDF output (pdfTeX)
-\l__color_backend_stack_int=\count339
+\l__color_backend_stack_int=\count342
 ) (./main (2).aux)
 \openout1 = `"main (2).aux"'.
 
-LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 51.
-LaTeX Font Info:    ... okay on input line 51.
-LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 51.
-LaTeX Font Info:    ... okay on input line 51.
-LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 51.
-LaTeX Font Info:    ... okay on input line 51.
-LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 51.
-LaTeX Font Info:    ... okay on input line 51.
-LaTeX Font Info:    Checking defaults for TS1/cmr/m/n on input line 51.
-LaTeX Font Info:    ... okay on input line 51.
-LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 51.
-LaTeX Font Info:    ... okay on input line 51.
-LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 51.
-LaTeX Font Info:    ... okay on input line 51.
-LaTeX Font Info:    Checking defaults for PD1/pdf/m/n on input line 51.
-LaTeX Font Info:    ... okay on input line 51.
-LaTeX Font Info:    Checking defaults for PU/pdf/m/n on input line 51.
-LaTeX Font Info:    ... okay on input line 51.
+LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 74.
+LaTeX Font Info:    ... okay on input line 74.
+LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 74.
+LaTeX Font Info:    ... okay on input line 74.
+LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 74.
+LaTeX Font Info:    ... okay on input line 74.
+LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 74.
+LaTeX Font Info:    ... okay on input line 74.
+LaTeX Font Info:    Checking defaults for TS1/cmr/m/n on input line 74.
+LaTeX Font Info:    ... okay on input line 74.
+LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 74.
+LaTeX Font Info:    ... okay on input line 74.
+LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 74.
+LaTeX Font Info:    ... okay on input line 74.
+LaTeX Font Info:    Checking defaults for PD1/pdf/m/n on input line 74.
+LaTeX Font Info:    ... okay on input line 74.
+LaTeX Font Info:    Checking defaults for PU/pdf/m/n on input line 74.
+LaTeX Font Info:    ... okay on input line 74.
 
 *geometry* driver: auto-detecting
 *geometry* detected driver: pdftex
@@ -599,16 +623,16 @@ LaTeX Font Info:    ... okay on input line 51.
 
 (c:/texlive/2026/texmf-dist/tex/context/base/mkii/supp-pdf.mkii
 [Loading MPS to PDF converter (version 2006.09.02).]
-\scratchcounter=\count340
-\scratchdimen=\dimen296
+\scratchcounter=\count343
+\scratchdimen=\dimen304
 \scratchbox=\box75
-\nofMPsegments=\count341
-\nofMParguments=\count342
+\nofMPsegments=\count344
+\nofMParguments=\count345
 \everyMPshowfont=\toks44
-\MPscratchCnt=\count343
-\MPscratchDim=\dimen297
-\MPnumerator=\count344
-\makeMPintoPDFobject=\count345
+\MPscratchCnt=\count346
+\MPscratchDim=\dimen305
+\MPnumerator=\count347
+\makeMPintoPDFobject=\count348
 \everyMPtoPDFconversion=\toks45
 ) (c:/texlive/2026/texmf-dist/tex/latex/epstopdf-pkg/epstopdf-base.sty
 Package: epstopdf-base 2020-01-24 v2.11 Base part for package epstopdf
@@ -616,13 +640,15 @@ Package epstopdf-base Info: Redefining graphics rule for `.eps' on input line 48
  (c:/texlive/2026/texmf-dist/tex/latex/latexconfig/epstopdf-sys.cfg
 File: epstopdf-sys.cfg 2010/07/13 v1.3 Configuration of (r)epstopdf for TeX Live
 ))
-Package hyperref Info: Link coloring OFF on input line 51.
+Package hyperref Info: Link coloring OFF on input line 74.
  (./main (2).out) (./main (2).out)
 \@outlinefile=\write4
 \openout4 = `"main (2).out"'.
 
+Package caption Info: Begin \AtBeginDocument code.
+Package caption Info: End \AtBeginDocument code.
  (./titlepage (3).tex
-<images/ISET.jpg, id=31, 631.35875pt x 631.35875pt>
+<images/ISET.jpg, id=59, 631.35875pt x 631.35875pt>
 File: images/ISET.jpg Graphic file (type jpg)
 <use images/ISET.jpg>
 Package pdftex.def Info: images/ISET.jpg  used on input line 7.
@@ -635,19 +661,19 @@ LaTeX Font Info:    Trying to load font information for U+msb on input line 78.
  (c:/texlive/2026/texmf-dist/tex/latex/amsfonts/umsb.fd
 File: umsb.fd 2013/01/14 v3.01 AMS symbols B
 )
-<images/tesca.png, id=32, 338.26375pt x 81.30376pt>
-File: images/tesca.png Graphic file (type png)
-<use images/tesca.png>
-Package pdftex.def Info: images/tesca.png  used on input line 81.
-(pdftex.def)             Requested size: 85.35826pt x 20.51569pt.
-<images/TS2I.png, id=34, 602.25pt x 314.17375pt>
+<images/TS2I.png, id=60, 602.25pt x 314.17375pt>
 File: images/TS2I.png Graphic file (type png)
 <use images/TS2I.png>
-Package pdftex.def Info: images/TS2I.png  used on input line 92.
+Package pdftex.def Info: images/TS2I.png  used on input line 81.
 (pdftex.def)             Requested size: 85.35826pt x 44.52573pt.
+<images/tesca.png, id=62, 338.26375pt x 81.30376pt>
+File: images/tesca.png Graphic file (type png)
+<use images/tesca.png>
+Package pdftex.def Info: images/tesca.png  used on input line 92.
+(pdftex.def)             Requested size: 85.35826pt x 20.51569pt.
  [1
 
-{c:/texlive/2026/texmf-var/fonts/map/pdftex/updmap/pdftex.map}{c:/texlive/2026/texmf-dist/fonts/enc/dvips/cm-super/cm-super-ts1.enc} <./images/ISET.jpg> <./images/tesca.png> <./images/TS2I.png>]) [1
+{c:/texlive/2026/texmf-var/fonts/map/pdftex/updmap/pdftex.map}{c:/texlive/2026/texmf-dist/fonts/enc/dvips/cm-super/cm-super-ts1.enc} <./images/ISET.jpg> <./images/TS2I.png> <./images/tesca.png>]) [1
 
 
 
@@ -660,7 +686,12 @@ Package pdftex.def Info: images/TS2I.png  used on input line 92.
 ] (./Acknowledgement.tex) [5
 
 
-] (./main (2).toc)
+] (./main (2).toc
+
+LaTeX Font Warning: Font shape `OT1/cmr/m/n' in size <15> not available
+(Font)              size <14.4> substituted on input line 4.
+
+)
 \tf@toc=\write5
 \openout5 = `"main (2).toc"'.
 
@@ -682,51 +713,78 @@ Package pdftex.def Info: images/TS2I.png  used on input line 92.
 ] (./Generalintroduction.tex
 
 Package hyperref Warning: The anchor of a bookmark and its parent's must not
-(hyperref)                be the same. Added a new anchor on input line 1.
+(hyperref)                be the same. Added a new anchor on input line 12.
 
 )
 pdfTeX warning (ext4): destination with the same identifier (name{page.1}) has been already used, duplicate ignored
 <to be read again> 
                    \relax 
-l.86 \clearpage
-                [1
+l.111 \clearpage
+                 [1
 
 ] (./Chapter1.tex
 Chapter 1.
-<images/partners.png, id=95, 474.573pt x 166.221pt>
-File: images/partners.png Graphic file (type png)
-<use images/partners.png>
-Package pdftex.def Info: images/partners.png  used on input line 24.
-(pdftex.def)             Requested size: 386.95897pt x 135.5361pt.
+
+LaTeX Font Warning: Font shape `OT1/cmr/bx/n' in size <15> not available
+(Font)              size <14.4> substituted on input line 11.
+
+
+LaTeX Font Warning: Font shape `OT1/cmr/bx/n' in size <13> not available
+(Font)              size <12> substituted on input line 14.
+
 [2
 
 
+]
+<images/partners.png, id=147, 474.573pt x 166.221pt>
+File: images/partners.png Graphic file (type png)
+<use images/partners.png>
+Package pdftex.def Info: images/partners.png  used on input line 73.
+(pdftex.def)             Requested size: 386.95897pt x 135.5361pt.
+ [3 <./images/partners.png>] [4]
+<images/organigramme.png, id=159, 711.25725pt x 311.36325pt>
+File: images/organigramme.png Graphic file (type png)
+<use images/organigramme.png>
+Package pdftex.def Info: images/organigramme.png  used on input line 162.
+(pdftex.def)             Requested size: 459.51054pt x 201.15794pt.
+ [5 <./images/organigramme.png>]) (./main (2).bbl [6]
+Underfull \hbox (badness 5022) in paragraph at lines 27--28
+[]\OT1/cmr/m/n/12 Automotive In-dus-try Ac-tion Group (AIAG), ``IATF 16949:2016 | Au-to-mo-tive
+ []
 
-pdfTeX warning (ext4): destination with the same identifier (name{figure.1.1}) has been already used, duplicate ignored
-<argument> ...shipout:D \box_use:N \l_shipout_box 
-                                                  \__shipout_drop_firstpage_...
-l.41 
-      <./images/partners.png>] [3]) [4] (./main (2).aux)
+
+Underfull \hbox (badness 1776) in paragraph at lines 33--34
+[]\OT1/cmr/m/n/12 Tesca Group, ``Tesca Group | Au-to-mo-tive In-te-rior Man-u-fac-turer,'' []$https : / / www .
+ []
+
+) [7
+
+] (./main (2).aux)
  ***********
 LaTeX2e <2025-11-01>
 L3 programming layer <2026-03-20>
  ***********
+
+
+LaTeX Font Warning: Size substitutions with differences
+(Font)              up to 1.0pt have occurred.
+
 Package rerunfilecheck Info: File `"main (2)".out' has not changed.
-(rerunfilecheck)             Checksum: FD0BA7CFE3A43982BE836C377EEA9E49;807.
+(rerunfilecheck)             Checksum: 912A34B371509D0FEF21672E6C0E46F5;2112.
  ) 
 Here is how much of TeX's memory you used:
- 22367 strings out of 467349
- 407389 string characters out of 5419863
- 816075 words of memory out of 5000000
- 51044 multiletter control sequences out of 15000+600000
- 638144 words of font info for 78 fonts, out of 8000000 for 9000
+ 24088 strings out of 467349
+ 438450 string characters out of 5419863
+ 844951 words of memory out of 5000000
+ 52731 multiletter control sequences out of 15000+600000
+ 640189 words of font info for 87 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
- 84i,11n,104p,1664b,572s stack positions out of 10000i,1000n,20000p,200000b,200000s
-<c:/texlive/2026/texmf-dist/fonts/type1/public/amsfonts/cm/cmbx10.pfb><c:/texlive/2026/texmf-dist/fonts/type1/public/amsfonts/cm/cmbx12.pfb><c:/texlive/2026/texmf-dist/fonts/type1/public/amsfonts/cm/cmbxti10.pfb><c:/texlive/2026/texmf-dist/fonts/type1/public/amsfonts/cm/cmr10.pfb><c:/texlive/2026/texmf-dist/fonts/type1/public/amsfonts/cm/cmr12.pfb><c:/texlive/2026/texmf-dist/fonts/type1/public/amsfonts/cm/cmr8.pfb><c:/texlive/2026/texmf-dist/fonts/type1/public/amsfonts/cm/cmti12.pfb><c:/texlive/2026/texmf-dist/fonts/type1/public/cm-super/sfrm1095.pfb><c:/texlive/2026/texmf-dist/fonts/type1/public/cm-super/sfrm1200.pfb>
-Output written on "main (2).pdf" (13 pages, 366878 bytes).
+ 84i,11n,104p,882b,570s stack positions out of 10000i,1000n,20000p,200000b,200000s
+<c:/texlive/2026/texmf-dist/fonts/type1/public/amsfonts/cm/cmbx10.pfb><c:/texlive/2026/texmf-dist/fonts/type1/public/amsfonts/cm/cmbx12.pfb><c:/texlive/2026/texmf-dist/fonts/type1/public/amsfonts/cm/cmbxti10.pfb><c:/texlive/2026/texmf-dist/fonts/type1/public/amsfonts/cm/cmr10.pfb><c:/texlive/2026/texmf-dist/fonts/type1/public/amsfonts/cm/cmr12.pfb><c:/texlive/2026/texmf-dist/fonts/type1/public/amsfonts/cm/cmti10.pfb><c:/texlive/2026/texmf-dist/fonts/type1/public/amsfonts/cm/cmti12.pfb><c:/texlive/2026/texmf-dist/fonts/type1/public/cm-super/sfrm1095.pfb><c:/texlive/2026/texmf-dist/fonts/type1/public/cm-super/sfrm1200.pfb>
+Output written on "main (2).pdf" (16 pages, 524061 bytes).
 PDF statistics:
- 160 PDF objects out of 1000 (max. 8388607)
- 118 compressed objects within 2 object streams
- 22 named destinations out of 1000 (max. 500000)
- 81 words of extra memory for PDF output out of 10000 (max. 10000000)
+ 240 PDF objects out of 1000 (max. 8388607)
+ 193 compressed objects within 2 object streams
+ 40 named destinations out of 1000 (max. 500000)
+ 142 words of extra memory for PDF output out of 10000 (max. 10000000)
 

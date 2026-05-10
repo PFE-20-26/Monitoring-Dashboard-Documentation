@@ -1,10 +1,105 @@
+% ============================================================
+%  General Introduction — with bibliography citations
+%
+%  Required in your main .tex preamble:
+%    \usepackage[numbers,sort&compress]{natbib}   % or just \usepackage{cite}
+%    ...
+%  And at the end of your document (or chapter):
+%    \bibliographystyle{IEEEtran}                 % or plain / unsrt / alpha
+%    \bibliography{references}
+% ============================================================
+
 \addcontentsline{toc}{section}{General Introduction}
 
 \section*{General Introduction}
 
-% Empty paragraphs for content
-\par\vspace{0.5cm}
+\hspace*{\parindent}
+In today's competitive industrial landscape, production efficiency
+is no longer a luxury, it is a necessity. For manufacturing firms, production efficiency is essential because their production process
+faces numerous challenges, and they must be ready at all times to optimize production output,
+reduce wastage, and mitigate any disturbances that may arise within the production floor. One of
+the critical indicators of the effectiveness of production processes is the Overall Equipment
+Effectiveness (OEE), known in French as the \textit{Taux de Rendement
+Synthétique} (TRS), stands out as one of the most comprehensive
+metrics, capturing the combined impact of availability, performance,
+and quality losses in the production process.
+\cite{mrpeasy_oee}.
 
-\par\vspace{0.5cm}
+\par\vspace{0.3cm}
 
-\par
+The automotive industry, governed by rigorous quality standards such
+as IATF~16949 \cite{aiag_iatf16949}, is particularly
+demanding in this regard. Tunisia has established itself over the
+decades as a competitive industrial hub for automotive suppliers,
+attracting major international players thanks to its geographic
+proximity to Europe, its cost-efficient production and skilled
+workforce \cite{fipa_tunisia_automotive}. Among these companies is TESCA~Group, an
+international manufacturer specializing in vehicle interior components,
+with several production sites operating across Tunisia
+\cite{tesca_official}.
+
+\par\vspace{0.3cm}
+
+
+TESCA Group has always prioritized continuous 
+improvement. Better visibility into production
+matters—detecting stoppages quickly, 
+understanding what causes them, and responding 
+fast directly impact competitiveness. To achieve 
+this, they developed a production monitoring 
+application that automates data collection 
+and OEE calculation.
+
+\par\vspace{0.3cm}
+
+
+But operational use revealed real problems
+with the Node-RED setup. The dashboard can't 
+be customized, visualizations are limited, and 
+it doesn't scale. Integration is restricted. 
+The company also has no mechanical or electrical 
+documentation, which means maintenance teams 
+can't diagnose equipment problems or plan 
+maintenance work properly. These gaps stop 
+the system from supporting TESCA Group's 
+improvement goals.
+
+\par\vspace{0.3cm}
+
+Our Final Year Project tackled these issues 
+in three ways. We built a modern dashboard 
+to replace the old interface—one that's easier 
+to use and lets teams customize what they see. 
+We rewrote the backend from scratch on a proper 
+server, which means better performance and 
+reliability. We also put together complete 
+documentation for the mechanical and electrical 
+systems so maintenance crews can actually fix 
+things without guessing. The result is a 
+monitoring system that gives TESCA Group 
+real visibility into what's happening on 
+the floor, helps them spot problems faster, 
+and makes their continuous improvement work 
+actually possible.
+
+\par\vspace{0.3cm}
+
+This report summarizes all the work 
+completed during this Final Year Project.It documents five key areas of 
+development: first, preliminary analysis 
+presenting the two hosting organizations 
+and covering the project context and the 
+limitations of the existing Node-RED 
+implementation. Second, the development 
+of a modern, dedicated frontend dashboard 
+with professional data visualization and 
+customizable layouts. Third, the backend 
+architecture migration and automation 
+programming, and HMI logic development. 
+Fourth, the database optimization to 
+improve system performance, reliability, 
+and scalability. And finally, the creation 
+of comprehensive maintenance plans and 
+technical documentation for mechanical 
+and electrical systems to support long-term 
+operations.

@@ -16,8 +16,11 @@
 \usepackage{amssymb}
 \usepackage{titlesec}
 \usepackage{tocloft}
-\usepackage{setspace}   
+\usepackage{setspace}
 \usepackage{float}
+\usepackage[numbers,sort&compress]{natbib}
+\usepackage{caption}
+\usepackage{xcolor}
 
 % ── CUSTOM HEADER/FOOTER SETUP ────────────────────────────────────────────
 % Style for normal pages
@@ -48,7 +51,29 @@
   \end{tikzpicture}%
 }
 
+% ── SECTION NUMBERING ──────────────────────────────────────────────────────
+\renewcommand{\thesection}{\arabic{section}}
+\renewcommand{\thefigure}{\arabic{figure}}
+\renewcommand{\thetable}{\arabic{table}}
+
+% ── CAPTION FORMAT ──────────────────────────────────────────────────────────
+\DeclareCaptionFormat{custom}{{\small\textcolor[HTML]{44536a}{\underline{\textit{#1#2#3}}}}}
+\captionsetup[figure]{format=custom}
+\captionsetup[table]{format=custom}
+
+% ── NUMBERING DEPTH ────────────────────────────────────────────────────────
+\setcounter{secnumdepth}{3}
+\setcounter{tocdepth}{3}
+
+% ── TITLE FORMATTING & SIZES ───────────────────────────────────────────────
+\newcommand{\majorsection}[1]{\section*{\fontsize{15}{18}\selectfont #1}}
+\titleformat{\section}{\normalfont\fontsize{14}{17}\bfseries}{\thesection}{1em}{}
+\titleformat{\subsection}{\normalfont\fontsize{13}{16}\bfseries}{\thesubsection}{1em}{}
+\titleformat{\subsubsection}{\normalfont\fontsize{13}{16}\bfseries}{\thesubsubsection}{1em}{}
+
 \begin{document}
+
+
 
 % === 1. TITLE PAGE ===
 \input{titlepage (3).tex}
@@ -60,7 +85,7 @@
 \pagenumbering{roman}
 \thispagestyle{empty} % Blank page stays empty
 \null\newpage
-
+\onehalfspacing
 % === 3. FRONT MATTER (Lines + Roman numbering bottom right) ===
 \input{Abstract.tex}
 \clearpage
@@ -92,5 +117,8 @@
 
 % === 6. BACK MATTER ===
 % \input{backmatter/webographie}
+
+\bibliographystyle{IEEEtran}
+\bibliography{references}
 
 \end{document}

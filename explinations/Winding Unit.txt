@@ -1,0 +1,90 @@
+In industrial production environments, machine downtime is one of the most critical
+metrics for operational efficiency. Every minute a machine stops represents lost produc
+tion capacity, and understanding the distribution, causes, and duration of these stops is
+essential for maintenance planning and process improvement.
+
+
+Le secteur automobile est le seul secteur industriel à bénéficier d’une certification qualité spé
+cifique, initialement l’ISO/TS 16949, aujourd’hui remplacée par l’IATF 16949. Depuis plus 
+d’un siècle, il joue un rôle central dans l’économie mondiale. 
+À l’échelle régionale, la Tunisie s’est imposée au fil des décennies comme une plateforme 
+industrielle pour le secteur automobile. Grâce à sa proximité géographique avec l’Europe, à la 
+compétitivité de ses coûts de production et à la compétence de sa main-d’œuvre, le pays a su 
+attirer de nombreux investisseurs étrangers, notamment des équipementiers de premier rang. 
+Aujourd’hui, l’industrie automobile tunisienne représente une part importante des exportations 
+industrielles nationales et contribue fortement à la création d’emplois et au développement 
+économique. 
+Plusieurs grands groupes internationaux ont choisi la Tunisie pour implanter leurs unités de 
+production, notamment dans les domaines des textiles techniques, des pièces en plastique, des 
+systèmes d’assise et du câblage automobile. Parmi ces acteurs figure le Groupe TESCA, un 
+équipementier spécialisé dans l’habillage intérieur de voitures. Présent sur plusieurs continents, 
+TESCA dispose de plusieurs sites de production en Tunisie, véritables maillons essentiels dans 
+sa chaîne mondiale d'approvisionnement. 
+Dans une démarche d’amélioration continue, TESCA Group cherche à renforcer le suivi de ses 
+performances de production. En effet, la capacité à détecter rapidement les arrêts, à en analyser 
+les causes est devenue primordiale pour maintenir un haut niveau de compétitivité industrielle. 
+Cependant, la collecte et l’analyse des arrêts étaient jusqu’ici réalisées de manière manuelle, 
+ce qui engendrait plusieurs limitations majeures : des retards dans la remontée des informa
+tions, des risques d’erreurs humaines, une visibilité réduite sur les performances réelles et une 
+difficulté à identifier rapidement les axes d’amélioration. Ce manque d’information précise et 
+en temps réel limitait ainsi la capacité des responsables de production à réagir efficacement 
+face aux dysfonctionnements, compromettant par conséquent les efforts d’optimisation du ren
+dement et de la qualité de la production. 
+Par souci d'amélioration de la performance de production et face aux limites rencontrées avec 
+la collecte manuelle des données, nous avons été amenés à développer, dans le cadre de notre 
+Projet de Fin d'Études, une application dédiée au suivi de l'efficacité des lignes de production. 
+Cette application a pour objectif principal de calculer automatiquement le Taux de Rendement 
+1 
+Synthétique (TRS) en intégrant toutes les données relatives aux arrêts de production, tout en 
+fournissant des indicateurs clairs sur le fonctionnement de la Visite 1. 
+En centralisant et en automatisant la collecte, l'analyse et la visualisation des données critiques, 
+cette solution vise à offrir aux responsables de production une meilleure visibilité en temps réel 
+sur les performances, à faciliter l'identification rapide des pertes et à soutenir les démarches 
+d'amélioration continue mises en place par TESCA Group. 
+
+
+Fodfod is building a full-stack industrial machine monitoring and OEE (Overall Equipment Effectiveness / TRS — Taux de Rendement Synthétique) platform for a manufacturing environment. The system tracks machine stoppages, identifies their causes, and computes TRS metrics in real time. The project has both an operator-facing HMI and analytical dashboards for production managers.
+The stack spans hardware-to-dashboard: a Delta DVP 12SE PLC communicating via Modbus TCP through Node-RED, a NestJS/TypeScript backend, a Next.js frontend dashboard, a MySQL database, a tablet-facing HMI web app (Node.js + HTML), and a physical Delta DOPSoft HMI screen. Fodfod is also writing a formal project report in both French and English (academic abstract format).
+Current state
+
+Backend (NestJS): Actively refining the backend, including the Causes, Stops, Vitesse, and Métrage modules. Recent work includes: replacing TypeORM QueryBuilder with raw SQL in stops.service.ts for performance (using a stored generated column Duree to eliminate recomputation lag); diagnosing and fixing a latency issue triggered by stops counts crossing a threshold; and reviewing/cleaning up the DTO layer (create, update, list query DTOs) with proper use of class-validator, class-transformer, PartialType, and @Transform decorators.
+Utility cleanup: Identified duplication of the toBool utility across multiple DTO files; recommended extracting a single shared utility to src/common/to-bool.ts. Also clarified safe deletion conditions for @Transform decorators dependent on toBool.
+TRS calculation: Confirmed TRS is computed on-demand (not stored), bounded between 0–100%, with Math.max(0, avail - downTRS) to prevent negative values. The formula accounts for available shift time vs. downtime from TRS-impacting causes.
+HMI web app: Simplified architecture — Marche button is a local visual toggle only (no API calls); server.js retains only static file serving and GET /causes; a "Sens" overlay was added for direction selection (Enroulement / Déroulement) with a live header badge.
+Report: Abstract page drafted in both French and English following academic structure (objective → problem/methods → results → conclusions/keywords), at roughly 150 words per section, with non-technical language focused on purpose and value.
+
+On the horizon
+
+Continuing codebase walkthrough: cause.entity.ts and causes.service.ts were offered as next steps after the DTO deep-dive.
+Completing the missing paginated list endpoint for MetrageClient, mirroring the VitesseClient pattern (list DTO, service list() method, GET / controller route).
+Completing the full project report beyond the abstract.
+
+Key learnings & principles
+
+Don't persist derivable values: TRS and similar metrics are recalculated on demand; storing them adds complexity without benefit at current data volumes.
+Keep business logic in the backend: Filtering and query logic belongs in NestJS services, not in database views or stored procedures, for maintainability and version control.
+Raw SQL over ORM when performance matters: Switching from TypeORM QueryBuilder to raw SQL with pre-computed stored columns resolved significant query latency.
+Single responsibility for utilities: Duplicated helpers like toBool should be centralized; duplication across DTOs is a code smell worth fixing proactively.
+PartialType does real work: Even a 3-line UpdateCauseDto using PartialType(CreateCauseDto) replaces substantial boilerplate while preserving all validation decorators.
+Hardware constraint awareness: The Delta DVP 12SE only accepts one Modbus TCP connection at a time (occupied by Node-RED), so the tablet HMI must route through Node-RED via HTTP rather than connecting to the PLC directly.
+
+Approach & patterns
+
+Prefers concise, targeted code changes over full rewrites — drop-in replacements are favored.
+Asks direct diagnostic questions about code necessity and correctness before making changes.
+Works iteratively: shares code, gets explanation or fix, confirms, then moves to the next piece.
+Communicates informally in a mix of French and English; Claude adapts to match the language of the message.
+When learning the codebase, prefers detailed file-by-file walkthroughs over high-level overviews.
+For written deliverables (e.g., the report), starts with a detailed draft then iterates toward simpler, purpose-focused language.
+
+Tools & resources
+
+Backend: NestJS, TypeScript, TypeORM, raw MySQL (MySQL Workbench), class-validator, class-transformer, @nestjs/mapped-types
+Frontend: Next.js, React, TSX components (e.g., StopsClient.tsx, CausesClient.tsx)
+HMI: Node.js + HTML/CSS (tablet web app), Delta DOPSoft (physical HMI screen)
+Automation/PLC: Delta DVP 12SE PLC, ISPSoft (ladder logic), Node-RED (Modbus TCP polling, MySQL insertion), Modbus TCP
+Database: MySQL with generated/stored columns
+Version control: GitHub (repo named "automate" among others)
+
+La fusion de la composante logicielle (software) dans la composante matérielle (hardware) donne naissance généralement aux systèmes embarqués. Selon les exigences, ces systèmes peuvent subir des adaptations matérielle ou logicielle. Il s'agit d'un système autonome qui doit réaliser son travail en tenant compte de plusieurs contraintes: sa taille, le temps d'exécution dont il dispose et l'énergie [1]. Les systèmes embarqués sont très utilisés en aéronautique et dans l'industrie automobile.
+
