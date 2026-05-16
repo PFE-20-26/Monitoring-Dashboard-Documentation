@@ -1,0 +1,212 @@
+\chapter{SQL Optimisation}
+
+\section*{Introduction}
+
+\hspace*{\parindent} This chapter documents the complete optimization journey of our MySQL database that collapsed under its own computational weight from the first symptoms of degradation, through systematic diagnosis, to a confirmed final architecture that achieves sub-second response times at full production scale.
+
+\section{\fontsize{15}{18}\selectfont Context and System Overview}
+
+\subsection{\fontsize{14}{17}\selectfont Context}
+
+\hspace*{\parindent} At the start of this project, the database contained a working implementation. The queries returned correct results. The system appeared functional. However, as the dataset grew during testing toward realistic production volumes, a fundamental problem emerged: what worked at a few thousand rows began to show alarming degradation at tens of thousands, and became completely unusable when approaching the million-row scale that real multi-year industrial deployments would inevitably reach.
+
+\subsection{\fontsize{14}{17}\selectfont System Overview}
+
+
+\subsubsection{\fontsize{13}{16}\selectfont Database Structure}
+
+\hspace*{\parindent} The production database consists of four main tables: stops (machine downtime events), causes (reason categories), vitesse (machine speed tracking), and metrage (distance metrics). This optimization focuses on the stops and causes tables, which form the core of the dashboard queries and represent the primary performance challenge.
+
+The stops table stores one record per machine stop event:
+
+\setcounter{table}{1}
+\begin{table}[H]
+\centering
+\caption{Core stops table structure}
+\label{tab:stops_structure}
+\setlength{\extrarowheight}{4pt}
+\begin{tabular}{@{}p{1.6cm}p{1.8cm}p{3.8cm}p{1.8cm}@{}}
+    \toprule
+    \rowcolor[HTML]{1A5490}
+    \textcolor{white}{\textbf{Column}} & \textcolor{white}{\textbf{Type}} & \textcolor{white}{\textbf{Description}} & \textcolor{white}{\textbf{Constraint}} \\
+    \midrule
+    \rowcolor[HTML]{E8F4F8}
+    \texttt{id} & INT & Unique identifier & PK \\
+    \rowcolor[HTML]{FFFFFF}
+    \texttt{Jour} & DATE & Stop date & NN \\
+    \rowcolor[HTML]{E8F4F8}
+    \texttt{Debut} & TIME & Start time & NN \\
+    \rowcolor[HTML]{FFFFFF}
+    \texttt{Fin} & TIME & End time & NN \\
+    \rowcolor[HTML]{E8F4F8}
+    \texttt{cause} & INT & Cause reference & FK \\
+    \bottomrule
+\end{tabular}
+\end{table}
+
+\subsubsection{\fontsize{13}{16}\selectfont Production Context}
+
+\hspace*{\parindent} The industrial context imposes specific constraints that directly shape every optimization decision:
+
+\begin{itemize}
+
+\item \textbf{Three production teams (\textit{équipes}):} Team 1 works 06:00--14:00, Team 2 works 14:00--22:00, Team 3 works 22:00--06:00.
+
+\item \textbf{Shifted production day:} Stops occurring before 06:00 belong to the \textit{previous} calendar day's Team 3 shift. This introduces a derived \textit{production day} concept that differs from the calendar date.
+
+\item \textbf{Insert-heavy workload:} 2,000--7,000 stop events per day, inserted automatically via machine controllers. Stops are never deleted.
+
+\item \textbf{Dashboard usage:} Up to three supervisors query date-range filtered views throughout each shift. Sub-second response is the target.
+
+\end{itemize}
+
+\subsubsection{\fontsize{13}{16}\selectfont The Key Metric: Percentage of Daily Downtime (PCT)}
+
+\hspace*{\parindent} The primary computed field in every query is the percentage of total downtime that each stop represents within its production day and team:
+
+\begin{equation}
+\text{PCT} = \frac{\text{stop duration (seconds)}}{\text{total team downtime for that production day}} \times 100
+\end{equation}
+
+This metric is deceptively simple to state but computationally expensive at scale. The denominator requires aggregating all stops for the \textit{same team on the same production day} for every single row in the result. How that aggregation is implemented is the central performance challenge of this entire part.
+
+\section{\fontsize{15}{18}\selectfont Query A: The Original Implementation}
+
+\subsection{\fontsize{14}{17}\selectfont Implementation}
+
+\hspace*{\parindent} The original query was written to correctly compute all required fields for the dashboard: stop times, duration, team assignment, cause information, and the PCT metric. The implementation is shown in Listing 2.1.
+
+\begin{minted}[linenos,bgcolor=codebg,fontsize=\small,frame=lines,framesep=8pt,rulecolor=codeframe,framerule=1.5pt]{sql}
+SELECT
+    s.Debut AS startTime,
+    s.Fin AS stopTime,
+    CASE
+        WHEN s.Fin IS NULL THEN NULL
+        WHEN s.Fin >= s.Debut
+            THEN TIME_TO_SEC(s.Fin) - TIME_TO_SEC(s.Debut)
+        ELSE (TIME_TO_SEC(s.Fin) + 86400) -
+            TIME_TO_SEC(s.Debut)
+    END AS duree_secondes,
+    (SELECT c.name FROM causes c
+        WHERE c.id = s.cause_id LIMIT 1) AS cause,
+    (SELECT c.affect_trs FROM causes c
+        WHERE c.id = s.cause_id LIMIT 1) AS affect_trs,
+    ROUND(
+        CASE
+            WHEN s.Fin IS NULL THEN NULL
+            WHEN s.Fin >= s.Debut
+                THEN TIME_TO_SEC(s.Fin) - TIME_TO_SEC(s.Debut)
+            ELSE (TIME_TO_SEC(s.Fin)+86400)-TIME_TO_SEC(s.Debut)
+        END
+    ) * 100.0
+    / NULLIF((
+        SELECT SUM(
+            CASE
+                WHEN sx.Fin IS NULL THEN 0
+                WHEN sx.Fin >= sx.Debut
+                    THEN TIME_TO_SEC(sx.Fin) -
+                        TIME_TO_SEC(sx.Debut)
+                ELSE (TIME_TO_SEC(sx.Fin)+86400)-
+                    TIME_TO_SEC(sx.Debut)
+            END
+        )
+        FROM stops sx
+        WHERE DATE_FORMAT(
+            IF(sx.Debut < '06:00:00',
+                DATE_SUB(sx.Jour, INTERVAL 1 DAY), sx.Jour),
+            '%Y-%m-%d'
+        ) = DATE_FORMAT(
+            IF(s.Debut < '06:00:00',
+                DATE_SUB(s.Jour, INTERVAL 1 DAY), s.Jour),
+            '%Y-%m-%d'
+        ), 0), 2
+    AS pct
+FROM stops s
+WHERE DATE_FORMAT(
+    IF(s.Debut < '06:00:00',
+        DATE_SUB(s.Jour, INTERVAL 1 DAY), s.Jour),
+    '%Y-%m-%d'
+) BETWEEN @from AND @to;
+\end{minted}
+
+\textit{Listing 2.1: Query A --- Original Implementation}
+
+\subsection{\fontsize{14}{17}\selectfont Initial Behavior}
+
+\hspace*{\parindent} At small row counts, Query A functions correctly and returns accurate results. For a development environment or early testing phase, it raises no alarms.
+
+But as the data grows, the pattern in Table 2 reveals something alarming: each time the row count doubles, the execution time does not double — it quadruples. This is the signature of O(n$^2$) complexity.
+
+\begin{table}[H]
+\centering
+\caption{Query A measurements}
+\label{tab:query_a_measurements_3}
+\setlength{\extrarowheight}{4pt}
+\begin{tabular}{@{}p{1.8cm}p{2cm}p{4.5cm}@{}}
+    \toprule
+    \rowcolor[HTML]{1A5490}
+    \textcolor{white}{\textbf{Rows}} & \textcolor{white}{\textbf{Time (s)}} & \textcolor{white}{\textbf{Observation}} \\
+    \midrule
+    \rowcolor[HTML]{E8F4F8}
+    100 & 0.291 & Fast, no concern \\
+    \rowcolor[HTML]{FFFFFF}
+    500 & 7.812 & Slightly slow but tolerable \\
+    \rowcolor[HTML]{E8F4F8}
+    1,000 & 28.347 & First warning sign \\
+    \rowcolor[HTML]{FFFFFF}
+    1,500 & 67.093 & Clearly problematic \\
+    \rowcolor[HTML]{E8F4F8}
+    2,000 & 114.156 & Unusable in production \\
+    \rowcolor[HTML]{FFFFFF}
+    3,000 & 273.987 & \\
+    \rowcolor[HTML]{E8F4F8}
+    5,000 & 701.245 & \\
+    \rowcolor[HTML]{FFFFFF}
+    10,000 & 3,041.678 & \\
+    \rowcolor[HTML]{E8F4F8}
+    14,000 & 5,512.934 & Testing stopped here \\
+    \rowcolor[HTML]{FFFFFF}
+    1,000,000 & $\approx$ 329 days & Projected via $k \cdot n^2$ \\
+    \bottomrule
+\end{tabular}
+\end{table}
+\subsection{\fontsize{14}{17}\selectfont The Root Cause: A Fully Correlated PCT Sub-query}
+
+\hspace*{\parindent} The measured growth follows a quadratic pattern:
+
+\begin{equation}
+T_{\text{Query B}}(n) \approx k \cdot n^2
+\end{equation}
+
+\hspace*{\parindent} where $n$ is the number of rows and $k$ is a constant representing the per-comparison cost. Compounding this, the correlated subquery uses a non-sargable predicate — \texttt{DATE\_FORMAT(IF(...))} wraps the column in a function call, making it impossible for MySQL to use any index even if one existed on \texttt{Debut} or \texttt{Jour}.
+
+\hspace*{\parindent} The fundamental problem with Query B is the PCT denominator computation. For every single row $s$ in the outer query, MySQL fires a full scan of the entire \texttt{stops} table to compute the daily total.
+
+\subsection{\fontsize{14}{17}\selectfont SHOW PROFILE Analysis}
+
+\hspace*{\parindent} To obtain quantitative evidence of where time was being spent, MySQL's SHOW PROFILE was used with a 5-row LIMIT on the outer query. Even with only 5 outer rows processed, the profile captured 93 execution cycles consuming 1,759 ms in total.
+
+\begin{table}[H]
+\centering
+\caption{SHOW PROFILE results for Query B .}
+\label{tab:show_profile_query_b}
+\setlength{\extrarowheight}{4pt}
+\begin{tabular}{@{}p{6.5cm}p{3cm}p{2.5cm}@{}}
+    \toprule
+    \textbf{Phase} & \textbf{Duration (ms)} & \textbf{\% of total} \\
+    \midrule
+    executing (correlated subquery loop) & 1,759.6 & 99.94\% \\
+    freeing items & 0.357 & 0.02\% \\
+    logging slow query & 0.489 & 0.03\% \\
+    closing tables & 0.033 & 0.00\% \\
+    cleaning up & 0.065 & 0.00\% \\
+    Other & 0.101 & 0.01\% \\
+    \midrule
+    \textbf{Total} & \textbf{1,760.6} & \textbf{100\%} \\
+    \bottomrule
+\end{tabular}
+\end{table}
+\hspace*{\parindent} This confirms that almost all time (99.94\%) is spent inside the correlated
+subquery loop, with all other database operations ( table opening, memory allocation, logging, cleanup )account
+for just 1.045ms combined, validating the O(n2) diagnosis and highlighting the denominator computation
+as the dominant bottleneck.

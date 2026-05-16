@@ -21,6 +21,12 @@
 \usepackage[numbers,sort&compress]{natbib}
 \usepackage{caption}
 \usepackage{xcolor}
+\usepackage{booktabs}
+\usepackage{minted}
+
+\definecolor{codebg}{HTML}{E8F4F8}
+\definecolor{codeframe}{HTML}{1A5490}
+\usepackage{colortbl}
 
 % ── CUSTOM HEADER/FOOTER SETUP ────────────────────────────────────────────
 % Style for normal pages
@@ -109,8 +115,8 @@
 \pagenumbering{arabic}
 \input{Generalintroduction.tex}
 \clearpage
-\input{Chapter1.tex}
-% \include{chapters/01-chapter1}
+\include{chapters/Chapter1}
+\include{chapters/Chapter2}
 % \include{chapters/02-chapter2}
 % \include{chapters/03-chapter3}
 % \include{chapters/conclusion}
@@ -118,6 +124,7 @@
 % === 6. BACK MATTER ===
 % \input{backmatter/webographie}
 
+\renewcommand{\bibname}{Netography}
 \bibliographystyle{IEEEtran}
 \bibliography{references}
 

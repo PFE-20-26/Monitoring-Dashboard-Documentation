@@ -11,7 +11,7 @@ context, significance, and scope of the actions undertaken in the next chapters.
 \section{\fontsize{15}{18}\selectfont Presentation of the enterprises}
 %=============================================================
 
-\subsection{TS2I}
+\subsection{\fontsize{14}{17}\selectfont TS2I}
 %-------------------------------------------------------------
 
 \hspace*{\parindent} TS2I is a leading company in the field of specialised machines fabrication, automation, industrial
@@ -57,10 +57,10 @@ automation, industrial maintenance, and pad printing services.
 \end{itemize}
 
 %-------------------------------------------------------------
-\subsection{TESCA}
+\subsection{\fontsize{14}{17}\selectfont TESCA}
 %-------------------------------------------------------------
 
-\subsubsection{Presentation of the company}
+\subsubsection{\fontsize{13}{16}\selectfont Presentation of the company}
 
 \hspace*{\parindent} Tesca Group is a family-run company with a background in textiles that has successfully ventured
 into the automotive industry, specifically automotive seating. Emulating the approach of a French
@@ -129,7 +129,7 @@ Overall, Tesca Group has established itself as a reputable partner to major auto
 driven by a commitment to sustainability, innovation, industrial excellence, and quality. Through its
 diverse range of products and services, the company aims to shape the future[4].
 
-\subsubsection{Technical file}
+\subsubsection{\fontsize{13}{16}\selectfont Technical file}
 
 The following table presents the technical file of TESCA.
 
@@ -153,7 +153,7 @@ The following table presents the technical file of TESCA.
     \end{tabular}
 \end{table}
 
-\subsubsection{Organizational chart}
+\subsubsection{\fontsize{13}{16}\selectfont Organizational chart}
 
 The organizational chart shown in Figure 2 presents the distribution of positions and functions within the Tesca enterprise.
 
@@ -168,9 +168,45 @@ The organizational chart shown in Figure 2 presents the distribution of position
 
 \section{\fontsize{15}{18}\selectfont Case study}
 
-\subsection{Description of the existing system}
+\subsection{\fontsize{14}{17}\selectfont Description of the existing system}
 
-\subsection{Criticism of the existing system}
+\subsubsection{\fontsize{13}{16}\selectfont Overview of the Existing System}
+
+\hspace*{\parindent} The existing production monitoring system was developed in the previous internship project to replace manual paper-based stop recording with automated digital tracking. The system consists of three components working together: a Delta DVP PLC installed on the fabric inspection machine, a Node-RED platform serving as the intermediary that reads PLC data and communicates with the database, and a MySQL database storing all production information.
+
+Before this system existed, operators manually recorded all machine stops, causes, and durations on paper during their shifts. This manual approach made monitoring difficult, introduced frequent errors, and prevented real-time analysis. The new system automates data collection: when the machine stops, the PLC detects it, the operator selects the cause through a tablet interface, and the system automatically calculates the duration when the machine restarts.
+
+The system serves two main user groups. Operators on the production floor use a tablet application that displays real-time machine speed, yardage measurements, lighting controls, and a dropdown menu to select stop causes. This interface updates continuously and provides immediate feedback, making it practical for shop-floor use. Managers access a web interface where they can filter data by date and shift team, view a table of all stops with their causes and durations, see a bar chart showing which causes are most frequent, and view the daily OEE (Overall Equipment Effectiveness) metric that measures productive time versus downtime.
+
+\subsection{\fontsize{14}{17}\selectfont Criticism of the existing system}
+
+\subsubsection{\fontsize{13}{16}\selectfont Limited Data Analysis}
+
+\hspace*{\parindent} The existing system successfully records stops but provides limited analytical capability. The manager interface shows a bar chart of stop causes and a table of stops for the selected period, but it does not show trends over time. A manager viewing one week of data sees aggregated numbers but cannot easily see whether the situation is improving or deteriorating day by day. The interface does not enable comparison between teams or shifts, making it difficult to identify performance patterns.
+
+\subsubsection{\fontsize{13}{16}\selectfont No Real-Time Manager Updates}
+
+\hspace*{\parindent} A significant limitation is that the manager web interface does not automatically update. When a manager opens the dashboard to check production status, they must manually click a filter button to retrieve current data. If new stops occur after they view the data, these are not automatically displayed—the manager sees the situation as it was at their last manual refresh. In production environments, delays in visibility can mean slower response to problems.
+
+\subsubsection{\fontsize{13}{16}\selectfont Limited Performance Metrics}
+
+\hspace*{\parindent} The system primarily reports OEE and stop causes. Modern production monitoring typically tracks additional metrics to provide a complete picture. The system does not show trends in OEE over time, separate availability from performance metrics, or provide any predictive capability to identify potential problems before they occur. A manager cannot easily identify whether equipment health is improving or deteriorating, or whether specific causes show patterns that might indicate underlying issues.
+
+\subsubsection{\fontsize{13}{16}\selectfont Inflexible User Interface and Limited Access}
+
+\hspace*{\parindent} All managers see the same view regardless of their role or needs. The interface is designed for desktop computers and is not optimized for mobile devices, meaning managers cannot check production status from a smartphone while away from their office. There is also no concept of custom dashboards where different users might want different information.
+
+\subsubsection{\fontsize{13}{16}\selectfont Data Quality and Verification}
+
+\hspace*{\parindent} The system relies on operators to manually select stop causes from a dropdown menu. There is potential for human error or inconsistency in cause selection. Once a cause is recorded, there is no verification process or audit trail to show who entered the data or when. If a data discrepancy is discovered later, there is no way to trace back what happened.
+
+\subsubsection{\fontsize{13}{16}\selectfont Lack of Security and Integration}
+
+\hspace*{\parindent} The existing system has no user authentication or access control. Anyone with the IP address can access all production data without logging in. The system also cannot export data to other formats or systems. If a manager needs to perform advanced analysis in Excel or if another department needs production data, it must be manually copied or requested.
+
+\subsubsection{\fontsize{13}{16}\selectfont Scalability Concerns}
+
+\hspace*{\parindent} The Node-RED platform handles all functions in a monolithic design: reading from the PLC, storing in the database, and serving both the operator tablet and manager web interface. As data volume grows or additional machines are added, this architecture may face performance or reliability issues, since any slowdown in one function could impact others.
 
 \section{\fontsize{15}{18}\selectfont Modeling languages: SysMl}
 
