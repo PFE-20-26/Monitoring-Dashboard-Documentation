@@ -188,7 +188,7 @@ T_{\text{Query B}}(n) \approx k \cdot n^2
 
 \begin{table}[H]
 \centering
-\caption{SHOW PROFILE results for Query B .}
+\caption{SHOW PROFILE results for Query B}
 \label{tab:show_profile_query_b}
 \setlength{\extrarowheight}{4pt}
 \begin{tabular}{@{}p{6.5cm}p{3cm}p{2.5cm}@{}}
@@ -1032,6 +1032,7 @@ SELECT 'C_CTE_final' AS query, @total_rows AS total_rows,
 \hspace*{\parindent} The optimization journey from Query A through Query E demonstrates the cumulative impact of algorithmic improvements and schema-level design. The following graph plots execution time against row count on a logarithmic scale, revealing the complexity class of each approach.
 
 \begin{figure}[H]
+\setcounter{figure}{2}
 \centering
 \begin{tikzpicture}
 \begin{loglogaxis}[

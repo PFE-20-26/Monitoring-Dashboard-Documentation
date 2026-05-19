@@ -18,6 +18,8 @@
 \usepackage{amssymb}
 \usepackage{titlesec}
 \usepackage{tocloft}
+\newcommand*{\noaddvspace}{\renewcommand*{\addvspace}[1]{}}                                
+\usepackage{etoolbox}
 \usepackage{setspace}
 \usepackage{float}
 \usepackage[numbers,sort&compress]{natbib}
@@ -82,7 +84,8 @@
 \titleformat{\subsubsection}{\normalfont\fontsize{13}{16}\bfseries}{\thesubsubsection}{1em}{}
 
 \begin{document}
-
+\addtocontents{lof}{\protect\noaddvspace}
+                                                                         \addtocontents{lot}{\protect\noaddvspace}
 
 
 % === 1. TITLE PAGE ===
