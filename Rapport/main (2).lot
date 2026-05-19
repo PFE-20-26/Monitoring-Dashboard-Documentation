@@ -1,6 +1,21 @@
 \addvspace {10\p@ }
 \contentsline {table}{\numberline {1}{\ignorespaces Technical file of TESCA}}{5}{table.caption.6}%
 \addvspace {10\p@ }
-\contentsline {table}{\numberline {2}{\ignorespaces Core stops table structure}}{10}{table.caption.8}%
-\contentsline {table}{\numberline {3}{\ignorespaces Query A measurements}}{12}{table.caption.9}%
-\contentsline {table}{\numberline {4}{\ignorespaces SHOW PROFILE results for Query B .}}{13}{table.caption.10}%
+\addvspace {10\p@ }
+\addvspace {10\p@ }
+\contentsline {table}{\numberline {2}{\ignorespaces Core stops table structure}}{12}{table.caption.8}%
+\contentsline {table}{\numberline {3}{\ignorespaces Query A measurements}}{14}{table.caption.9}%
+\contentsline {table}{\numberline {4}{\ignorespaces SHOW PROFILE results for Query B .}}{15}{table.caption.10}%
+\contentsline {table}{\numberline {5}{\ignorespaces Index configuration summary for all three experimental tables}}{15}{table.caption.11}%
+\contentsline {table}{\numberline {6}{\ignorespaces stopsB1 benchmark results with simple indexes}}{16}{table.caption.12}%
+\contentsline {table}{\numberline {7}{\ignorespaces stopsB2 benchmark results with functional indexes}}{17}{table.caption.13}%
+\contentsline {table}{\numberline {8}{\ignorespaces stopsB3 benchmark results with covering indexes}}{19}{table.caption.14}%
+\contentsline {table}{\numberline {9}{\ignorespaces Index strategy comparison: Query B on stops table}}{20}{table.caption.15}%
+\contentsline {table}{\numberline {10}{\ignorespaces Query C performance compared to Query B3}}{22}{table.caption.16}%
+\contentsline {table}{\numberline {11}{\ignorespaces EXPLAIN ANALYZE profile for Query C at 1M rows}}{23}{table.caption.17}%
+\contentsline {table}{\numberline {12}{\ignorespaces Query D benchmark results on production dataset}}{24}{table.caption.18}%
+\contentsline {table}{\numberline {13}{\ignorespaces Query C vs Query D --- what actually happens at 1M rows}}{25}{table.caption.19}%
+\contentsline {table}{\numberline {14}{\ignorespaces Index inventory and purpose}}{26}{table.caption.20}%
+\contentsline {table}{\numberline {15}{\ignorespaces EXPLAIN ANALYZE profile for Query E at 1M rows}}{28}{table.caption.21}%
+\addvspace {10\p@ }
+\addvspace {10\p@ }

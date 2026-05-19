@@ -1,0 +1,145 @@
+\relax 
+\providecommand\hyper@newdestlabel[2]{}
+\def\@LN@column{1}
+\@writefile{toc}{\contentsline {chapter}{\numberline {4}SQL Optimisation}{11}{chapter.4}\protected@file@percent }
+\@writefile{lof}{\addvspace {10\p@ }}
+\@writefile{lot}{\addvspace {10\p@ }}
+\@writefile{toc}{\contentsline {section}{\numberline {1}\fontsize  {15}{18}\selectfont  Context and System Overview}{11}{section.4.1}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {1.1}\fontsize  {14}{17}\selectfont  Context}{11}{subsection.4.1.1}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {1.2}\fontsize  {14}{17}\selectfont  System Overview}{11}{subsection.4.1.2}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {1.2.1}\fontsize  {13}{16}\selectfont  Database Structure}{11}{subsubsection.4.1.2.1}\protected@file@percent }
+\def\@LN@column{1}
+\@writefile{lot}{\contentsline {table}{\numberline {2}{\ignorespaces Core stops table structure}}{12}{table.caption.8}\protected@file@percent }
+\newlabel{tab:stops_structure}{{2}{12}{Core stops table structure}{table.caption.8}{}}
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {1.2.2}\fontsize  {13}{16}\selectfont  Production Context}{12}{subsubsection.4.1.2.2}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {1.2.3}\fontsize  {13}{16}\selectfont  The Key Metric: Percentage of Daily Downtime (PCT)}{12}{subsubsection.4.1.2.3}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {2}\fontsize  {15}{18}\selectfont  Query A: The Original Implementation}{12}{section.4.2}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {2.1}\fontsize  {14}{17}\selectfont  Implementation}{12}{subsection.4.2.1}\protected@file@percent }
+\def\@LN@column{1}
+\def\@LN@column{1}
+\@writefile{toc}{\contentsline {subsection}{\numberline {2.2}\fontsize  {14}{17}\selectfont  Initial Behavior}{14}{subsection.4.2.2}\protected@file@percent }
+\@writefile{lot}{\contentsline {table}{\numberline {3}{\ignorespaces Query A measurements}}{14}{table.caption.9}\protected@file@percent }
+\newlabel{tab:query_a_measurements_3}{{3}{14}{Query A measurements}{table.caption.9}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {2.3}\fontsize  {14}{17}\selectfont  The Root Cause: A Fully Correlated PCT Sub-query}{14}{subsection.4.2.3}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {2.4}\fontsize  {14}{17}\selectfont  SHOW PROFILE Analysis}{14}{subsection.4.2.4}\protected@file@percent }
+\def\@LN@column{1}
+\@writefile{lot}{\contentsline {table}{\numberline {4}{\ignorespaces SHOW PROFILE results for Query B .}}{15}{table.caption.10}\protected@file@percent }
+\newlabel{tab:show_profile_query_b}{{4}{15}{SHOW PROFILE results for Query B }{table.caption.10}{}}
+\@writefile{toc}{\contentsline {section}{\numberline {3}\fontsize  {15}{18}\selectfont  Query B: Optimized Implementation}{15}{section.4.3}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {3.1}\fontsize  {14}{17}\selectfont  Motivation}{15}{subsection.4.3.1}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {3.2}\fontsize  {14}{17}\selectfont  Experimental Setup}{15}{subsection.4.3.2}\protected@file@percent }
+\@writefile{lot}{\contentsline {table}{\numberline {5}{\ignorespaces Index configuration summary for all three experimental tables}}{15}{table.caption.11}\protected@file@percent }
+\newlabel{tab:index_config_summary}{{5}{15}{Index configuration summary for all three experimental tables}{table.caption.11}{}}
+\def\@LN@column{1}
+\@writefile{toc}{\contentsline {subsection}{\numberline {3.3}\fontsize  {14}{17}\selectfont  Experiment B1: Simple Indexes}{16}{subsection.4.3.3}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {3.3.1}\fontsize  {13}{16}\selectfont  Hypothesis}{16}{subsubsection.4.3.3.1}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {3.3.2}\fontsize  {13}{16}\selectfont  Results}{16}{subsubsection.4.3.3.2}\protected@file@percent }
+\@writefile{lot}{\contentsline {table}{\numberline {6}{\ignorespaces stopsB1 benchmark results with simple indexes}}{16}{table.caption.12}\protected@file@percent }
+\newlabel{tab:stopsb1_results}{{6}{16}{stopsB1 benchmark results with simple indexes}{table.caption.12}{}}
+\def\@LN@column{1}
+\@writefile{toc}{\contentsline {subsection}{\numberline {3.4}\fontsize  {14}{17}\selectfont  Experiment B2: Functional Index}{17}{subsection.4.3.4}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {3.4.1}\fontsize  {13}{16}\selectfont  Hypothesis}{17}{subsubsection.4.3.4.1}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {3.4.2}\fontsize  {13}{16}\selectfont  Results}{17}{subsubsection.4.3.4.2}\protected@file@percent }
+\@writefile{lot}{\contentsline {table}{\numberline {7}{\ignorespaces stopsB2 benchmark results with functional indexes}}{17}{table.caption.13}\protected@file@percent }
+\newlabel{tab:stopsb2_results}{{7}{17}{stopsB2 benchmark results with functional indexes}{table.caption.13}{}}
+\def\@LN@column{1}
+\@writefile{toc}{\contentsline {subsection}{\numberline {3.5}\fontsize  {14}{17}\selectfont  Experiment B3: Covering Index}{18}{subsection.4.3.5}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {3.5.1}\fontsize  {13}{16}\selectfont  Hypothesis}{18}{subsubsection.4.3.5.1}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {3.5.2}\fontsize  {13}{16}\selectfont  Results}{18}{subsubsection.4.3.5.2}\protected@file@percent }
+\def\@LN@column{1}
+\@writefile{lot}{\contentsline {table}{\numberline {8}{\ignorespaces stopsB3 benchmark results with covering indexes}}{19}{table.caption.14}\protected@file@percent }
+\newlabel{tab:stopsb3_results}{{8}{19}{stopsB3 benchmark results with covering indexes}{table.caption.14}{}}
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {3.5.3}\fontsize  {13}{16}\selectfont  EXPLAIN ANALYZE Output}{19}{subsubsection.4.3.5.3}\protected@file@percent }
+\def\@LN@column{1}
+\@writefile{toc}{\contentsline {subsection}{\numberline {3.6}\fontsize  {14}{17}\selectfont  Side by Side Comparison}{20}{subsection.4.3.6}\protected@file@percent }
+\@writefile{lot}{\contentsline {table}{\numberline {9}{\ignorespaces Index strategy comparison: Query B on stops table}}{20}{table.caption.15}\protected@file@percent }
+\newlabel{tab:index_strategy_comparison}{{9}{20}{Index strategy comparison: Query B on stops table}{table.caption.15}{}}
+\def\@LN@column{1}
+\@writefile{toc}{\contentsline {section}{\numberline {4}\fontsize  {15}{18}\selectfont  Query C: Breaking the Quadratic Loop}{21}{section.4.4}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {4.1}\fontsize  {14}{17}\selectfont  The Targeted Fix}{21}{subsection.4.4.1}\protected@file@percent }
+\def\@LN@column{1}
+\@writefile{toc}{\contentsline {subsection}{\numberline {4.2}\fontsize  {14}{17}\selectfont  Results}{22}{subsection.4.4.2}\protected@file@percent }
+\@writefile{lot}{\contentsline {table}{\numberline {10}{\ignorespaces Query C performance compared to Query B3}}{22}{table.caption.16}\protected@file@percent }
+\newlabel{tab:query_c_performance}{{10}{22}{Query C performance compared to Query B3}{table.caption.16}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {4.3}\fontsize  {14}{17}\selectfont  EXPLAIN ANALYZE: Diagnosing the Remaining Bottlenecks}{22}{subsection.4.4.3}\protected@file@percent }
+\def\@LN@column{1}
+\@writefile{lot}{\contentsline {table}{\numberline {11}{\ignorespaces EXPLAIN ANALYZE profile for Query C at 1M rows}}{23}{table.caption.17}\protected@file@percent }
+\newlabel{tab:query_c_explain_analyze}{{11}{23}{EXPLAIN ANALYZE profile for Query C at 1M rows}{table.caption.17}{}}
+\@writefile{toc}{\contentsline {section}{\numberline {5}\fontsize  {15}{18}\selectfont  Query D: The Window Function Hypothesis}{23}{section.4.5}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {5.1}\fontsize  {14}{17}\selectfont  The Reasoning Behind the Attempt}{23}{subsection.4.5.1}\protected@file@percent }
+\def\@LN@column{1}
+\@writefile{toc}{\contentsline {subsection}{\numberline {5.2}\fontsize  {14}{17}\selectfont  Implementation}{24}{subsection.4.5.2}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {5.3}\fontsize  {14}{17}\selectfont  Measured Result}{24}{subsection.4.5.3}\protected@file@percent }
+\@writefile{lot}{\contentsline {table}{\numberline {12}{\ignorespaces Query D benchmark results on production dataset}}{24}{table.caption.18}\protected@file@percent }
+\newlabel{tab:query_d_benchmark}{{12}{24}{Query D benchmark results on production dataset}{table.caption.18}{}}
+\def\@LN@column{1}
+\@writefile{toc}{\contentsline {subsection}{\numberline {5.4}\fontsize  {14}{17}\selectfont  Root Cause: Sort Buffer Spill to Disk}{25}{subsection.4.5.4}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {5.4.1}\fontsize  {13}{16}\selectfont  How MySQL Executes Window Functions}{25}{subsubsection.4.5.4.1}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {5.5}\fontsize  {14}{17}\selectfont  Learnings from Query D}{25}{subsection.4.5.5}\protected@file@percent }
+\@writefile{lot}{\contentsline {table}{\numberline {13}{\ignorespaces Query C vs Query D --- what actually happens at 1M rows}}{25}{table.caption.19}\protected@file@percent }
+\newlabel{tab:query_c_vs_query_d_execution}{{13}{25}{Query C vs Query D --- what actually happens at 1M rows}{table.caption.19}{}}
+\@writefile{toc}{\contentsline {section}{\numberline {6}\fontsize  {15}{18}\selectfont  Query E: Big Data Principles Applied to MySQL}{25}{section.4.6}\protected@file@percent }
+\def\@LN@column{1}
+\@writefile{toc}{\contentsline {subsection}{\numberline {6.1}\fontsize  {14}{17}\selectfont  Schema Redesign}{26}{subsection.4.6.1}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {6.1.1}\fontsize  {13}{16}\selectfont  Stored Generated Columns}{26}{subsubsection.4.6.1.1}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {6.1.2}\fontsize  {13}{16}\selectfont  Why Each Index Exists}{26}{subsubsection.4.6.1.2}\protected@file@percent }
+\@writefile{lot}{\contentsline {table}{\numberline {14}{\ignorespaces Index inventory and purpose}}{26}{table.caption.20}\protected@file@percent }
+\newlabel{tab:index_inventory_purpose}{{14}{26}{Index inventory and purpose}{table.caption.20}{}}
+\def\@LN@column{1}
+\@writefile{toc}{\contentsline {subsection}{\numberline {6.2}\fontsize  {14}{17}\selectfont  The Optimized Query}{27}{subsection.4.6.2}\protected@file@percent }
+\def\@LN@column{1}
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {6.2.1}\fontsize  {13}{16}\selectfont  Results}{28}{subsubsection.4.6.2.1}\protected@file@percent }
+\@writefile{lot}{\contentsline {table}{\numberline {15}{\ignorespaces EXPLAIN ANALYZE profile for Query E at 1M rows}}{28}{table.caption.21}\protected@file@percent }
+\newlabel{tab:query_e_explain_analyze}{{15}{28}{EXPLAIN ANALYZE profile for Query E at 1M rows}{table.caption.21}{}}
+\def\@LN@column{1}
+\@writefile{toc}{\contentsline {section}{\numberline {7}\fontsize  {15}{18}\selectfont  Performance Visualization}{29}{section.4.7}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {7.1}\fontsize  {14}{17}\selectfont  Query Execution Time Comparison}{29}{subsection.4.7.1}\protected@file@percent }
+\@writefile{lof}{\contentsline {figure}{\numberline {1}{\ignorespaces Query performance across row counts (logarithmic scale)}}{29}{figure.caption.22}\protected@file@percent }
+\newlabel{fig:query_performance_comparison}{{1}{29}{Query performance across row counts (logarithmic scale)}{figure.caption.22}{}}
+\def\@LN@column{1}
+\@setckpt{chapters/Chapter4}{
+\setcounter{page}{31}
+\setcounter{equation}{2}
+\setcounter{enumi}{0}
+\setcounter{enumii}{0}
+\setcounter{enumiii}{0}
+\setcounter{enumiv}{0}
+\setcounter{footnote}{0}
+\setcounter{mpfootnote}{0}
+\setcounter{part}{0}
+\setcounter{chapter}{4}
+\setcounter{section}{7}
+\setcounter{subsection}{1}
+\setcounter{subsubsection}{0}
+\setcounter{paragraph}{0}
+\setcounter{subparagraph}{0}
+\setcounter{figure}{1}
+\setcounter{table}{15}
+\setcounter{section@level}{0}
+\setcounter{Item}{0}
+\setcounter{Hfootnote}{0}
+\setcounter{bookmark@seq@number}{68}
+\setcounter{float@type}{16}
+\setcounter{parentequation}{0}
+\setcounter{lofdepth}{1}
+\setcounter{lotdepth}{1}
+\setcounter{NAT@ctr}{0}
+\setcounter{caption@flags}{2}
+\setcounter{continuedfloat}{0}
+\setcounter{FancyVerbLine}{39}
+\setcounter{linenumber}{1}
+\setcounter{LN@truepage}{40}
+\setcounter{FancyVerbWriteLine}{0}
+\setcounter{FancyVerbBufferLine}{60}
+\setcounter{FV@TrueTabGroupLevel}{0}
+\setcounter{FV@TrueTabCounter}{0}
+\setcounter{FV@HighlightLinesStart}{0}
+\setcounter{FV@HighlightLinesStop}{0}
+\setcounter{FancyVerbLineBreakLast}{0}
+\setcounter{FV@BreakBufferDepth}{0}
+\setcounter{minted@FancyVerbLineTemp}{0}
+\setcounter{listing}{0}
+\setcounter{tcbbreakpart}{1}
+\setcounter{tcblayer}{0}
+\setcounter{tcolorbox@number}{7}
+}

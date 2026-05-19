@@ -1,0 +1,23 @@
+\begin{MintedVerbatim}[commandchars=\\\{\}]
+\PYG{c+c1}{\PYGZhy{}\PYGZhy{} Benchmark harness}
+\PYG{k}{SET}\PYG{+w}{ }\PYG{o}{@}\PYG{n}{total\PYGZus{}rows}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{p}{(}\PYG{k}{SELECT}\PYG{+w}{ }\PYG{k}{COUNT}\PYG{p}{(}\PYG{o}{*}\PYG{p}{)}\PYG{+w}{ }\PYG{k}{FROM}\PYG{+w}{ }\PYG{n}{stops}\PYG{p}{);}
+\PYG{k}{SET}\PYG{+w}{ }\PYG{o}{@}\PYG{n}{t}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{n}{NOW}\PYG{p}{(}\PYG{l+m+mi}{6}\PYG{p}{);}
+
+\PYG{k}{SELECT}\PYG{+w}{ }\PYG{k}{COUNT}\PYG{p}{(}\PYG{o}{*}\PYG{p}{)}\PYG{+w}{ }\PYG{k}{INTO}\PYG{+w}{ }\PYG{o}{@}\PYG{k}{row\PYGZus{}count}
+\PYG{k}{FROM}\PYG{+w}{ }\PYG{p}{(}
+\PYG{+w}{    }\PYG{k}{SELECT}
+\PYG{+w}{        }\PYG{n}{s}\PYG{p}{.}\PYG{n}{Debut}\PYG{p}{,}\PYG{+w}{ }\PYG{n}{s}\PYG{p}{.}\PYG{n}{Fin}\PYG{p}{,}\PYG{+w}{ }\PYG{n}{s}\PYG{p}{.}\PYG{n}{Duree}\PYG{p}{,}\PYG{+w}{ }\PYG{n}{s}\PYG{p}{.}\PYG{n}{prod\PYGZus{}day}\PYG{p}{,}\PYG{+w}{ }\PYG{n}{s}\PYG{p}{.}\PYG{n}{equipe}\PYG{p}{,}
+\PYG{+w}{        }\PYG{k}{c}\PYG{p}{.}\PYG{n}{name}\PYG{p}{,}\PYG{+w}{ }\PYG{k}{c}\PYG{p}{.}\PYG{n}{affect\PYGZus{}trs}\PYG{p}{,}
+\PYG{+w}{        }\PYG{n}{ROUND}\PYG{p}{(}
+\PYG{+w}{            }\PYG{n}{s}\PYG{p}{.}\PYG{n}{Duree}\PYG{+w}{ }\PYG{o}{*}\PYG{+w}{ }\PYG{l+m+mi}{100}\PYG{p}{.}\PYG{l+m+mi}{0}\PYG{+w}{ }\PYG{o}{/}\PYG{+w}{ }\PYG{k}{NULLIF}\PYG{p}{(}
+\PYG{+w}{                }\PYG{k}{SUM}\PYG{p}{(}\PYG{n}{s}\PYG{p}{.}\PYG{n}{Duree}\PYG{p}{)}\PYG{+w}{ }\PYG{n}{OVER}\PYG{+w}{ }\PYG{p}{(}\PYG{n}{PARTITION}\PYG{+w}{ }\PYG{k}{BY}\PYG{+w}{ }\PYG{n}{s}\PYG{p}{.}\PYG{n}{prod\PYGZus{}day}\PYG{p}{,}\PYG{+w}{ }\PYG{n}{s}\PYG{p}{.}\PYG{n}{equipe}\PYG{p}{),}
+\PYG{+w}{            }\PYG{l+m+mi}{0}\PYG{p}{),}\PYG{+w}{ }\PYG{l+m+mi}{2}
+\PYG{+w}{        }\PYG{p}{)}\PYG{+w}{ }\PYG{k}{AS}\PYG{+w}{ }\PYG{n}{pct}
+\PYG{+w}{    }\PYG{k}{FROM}\PYG{+w}{ }\PYG{n}{stops}\PYG{+w}{ }\PYG{n}{s}\PYG{+w}{  }\PYG{k}{FORCE}\PYG{+w}{ }\PYG{k}{INDEX}\PYG{+w}{ }\PYG{p}{(}\PYG{n}{idx\PYGZus{}covering}\PYG{p}{)}
+\PYG{+w}{    }\PYG{k}{JOIN}\PYG{+w}{ }\PYG{n}{causes}\PYG{+w}{ }\PYG{k}{c}\PYG{+w}{ }\PYG{k}{ON}\PYG{+w}{ }\PYG{k}{c}\PYG{p}{.}\PYG{n}{id}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{n}{s}\PYG{p}{.}\PYG{n}{cause\PYGZus{}id}
+\PYG{p}{)}\PYG{+w}{ }\PYG{k}{AS}\PYG{+w}{ }\PYG{n}{q}\PYG{p}{;}
+
+\PYG{k}{SET}\PYG{+w}{ }\PYG{o}{@}\PYG{n}{elapsed}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{n}{TIMESTAMPDIFF}\PYG{p}{(}\PYG{n}{MICROSECOND}\PYG{p}{,}\PYG{+w}{ }\PYG{o}{@}\PYG{n}{t}\PYG{p}{,}\PYG{+w}{ }\PYG{n}{NOW}\PYG{p}{(}\PYG{l+m+mi}{6}\PYG{p}{))}\PYG{+w}{ }\PYG{o}{/}\PYG{+w}{ }\PYG{l+m+mi}{1000}\PYG{p}{.}\PYG{l+m+mi}{0}\PYG{p}{;}
+\PYG{k}{INSERT}\PYG{+w}{ }\PYG{k}{INTO}\PYG{+w}{ }\PYG{n}{perf\PYGZus{}results}\PYG{+w}{ }\PYG{p}{(}\PYG{k}{version}\PYG{p}{,}\PYG{+w}{ }\PYG{n}{total\PYGZus{}rows}\PYG{p}{,}\PYG{+w}{ }\PYG{n}{elapsed\PYGZus{}ms}\PYG{p}{,}\PYG{+w}{ }\PYG{k}{row\PYGZus{}count}\PYG{p}{)}
+\PYG{k}{VALUES}\PYG{+w}{ }\PYG{p}{(}\PYG{l+s+s1}{\PYGZsq{}D\PYGZus{}WINDOW\PYGZus{}final\PYGZsq{}}\PYG{p}{,}\PYG{+w}{ }\PYG{o}{@}\PYG{n}{total\PYGZus{}rows}\PYG{p}{,}\PYG{+w}{ }\PYG{o}{@}\PYG{n}{elapsed}\PYG{p}{,}\PYG{+w}{ }\PYG{o}{@}\PYG{k}{row\PYGZus{}count}\PYG{p}{);}
+\end{MintedVerbatim}

@@ -7,6 +7,8 @@
 \usepackage{ulem}
 \usepackage{enumitem}
 \usepackage{tikz}
+\usepackage{pgfplots}
+\pgfplotsset{compat=1.18}
 \usepackage{fancyhdr}
 \usepackage{array}
 \usepackage{tabularx}
@@ -23,6 +25,8 @@
 \usepackage{xcolor}
 \usepackage{booktabs}
 \usepackage{minted}
+\usepackage{tcolorbox}
+\tcbuselibrary{skins}
 
 \definecolor{codebg}{HTML}{E8F4F8}
 \definecolor{codeframe}{HTML}{1A5490}
@@ -117,8 +121,8 @@
 \clearpage
 \include{chapters/Chapter1}
 \include{chapters/Chapter2}
-% \include{chapters/02-chapter2}
-% \include{chapters/03-chapter3}
+\include{chapters/Chapter3}
+\include{chapters/Chapter4}
 % \include{chapters/conclusion}
 
 % === 6. BACK MATTER ===
@@ -127,5 +131,97 @@
 \renewcommand{\bibname}{Netography}
 \bibliographystyle{IEEEtran}
 \bibliography{references}
+
+\appendix
+
+\chapter{EXPLAIN ANALYZE Traces}
+
+\section{Query B on stopsB1 (LIMIT 50)}
+\label{app:explain-b1}
+
+\begin{minted}[linenos,bgcolor=codebg,fontsize=\small,frame=lines,framesep=8pt,rulecolor=codeframe,framerule=1.5pt]{text}
+-> Limit: 50 row(s)  (cost=805 rows=50)
+   (actual time=0.299..0.37 rows=50 loops=1)
+   -> Table scan on s  (cost=805 rows=8000)
+      (actual time=0.283..0.337 rows=8000 loops=1)
+      -> Select #2 (subquery in projection; dependent)
+          -> Limit: 1 row(s)  (cost=0.35 rows=1)
+             (actual time=0.0297..0.0299 rows=1 loops=50)
+             -> Single-row index lookup on c using PRIMARY
+                (id=s.cause_id)
+                (actual time=0.00726..0.00734 rows=1 loops=50)
+      -> Select #3 (subquery in projection; dependent)
+          -> Limit: 1 row(s)  (cost=0.35 rows=1)
+             (actual time=0.0287..0.0287 rows=1 loops=50)
+             -> Single-row index lookup on c using PRIMARY
+                (id=s.cause_id)
+                (actual time=0.00688..0.00688 rows=1 loops=50)
+      -> Select #4 (subquery in projection; dependent)
+          -> Aggregate: sum(CASE WHEN sx.Fin IS NULL ...)
+             (actual time=18.2..18.2 rows=1 loops=98)
+             -> Filter: (date_format(if((sx.Debut < '06:00:00'),
+                          (sx.Jour - interval 1 day),sx.Jour),
+                          '%Y-%m-%d')
+                        = date_format(...))
+                (cost=805 rows=8000)
+                (actual time=0.373..18.1 rows=66 loops=98)
+             -> Table scan on sx  (cost=805 rows=8000)
+                (actual time=0.322..5.33 rows=8000 loops=98)
+\end{minted}
+
+\chapter{Optimized Table Schema with Stored Generated Columns}
+\label{app:optimized_schema_b}
+
+\section{Complete Schema Definition}
+
+\begin{minted}[linenos,bgcolor=codebg,fontsize=\small,frame=lines,framesep=8pt,rulecolor=codeframe,framerule=1.5pt]{sql}
+CREATE TABLE stops (
+    id          INT UNSIGNED NOT NULL AUTO_INCREMENT,
+    Jour        DATE NOT NULL,
+    Debut       TIME NOT NULL,
+    Fin         TIME,
+    cause_id    INT UNSIGNED NOT NULL,
+
+    -- Stored generated columns: computed ONCE at INSERT.
+    -- stored on disk, never recomputed at query time.
+
+    Duree INT GENERATED ALWAYS AS (
+        CASE
+            WHEN Fin IS NULL THEN NULL
+            WHEN Fin >= Debut THEN TIME_TO_SEC(Fin) - TIME_TO_SEC(Debut)
+            ELSE (TIME_TO_SEC(Fin) + 86400) - TIME_TO_SEC(Debut)
+        END
+    ) STORED,
+
+    prod_day DATE GENERATED ALWAYS AS (
+        IF(Debut < '06:00:00', DATE_SUB(Jour, INTERVAL 1 DAY), Jour)
+    ) STORED,
+
+    equipe TINYINT GENERATED ALWAYS AS (
+        CASE
+            WHEN Debut >= '06:00:00' AND Debut < '14:00:00' THEN 1
+            WHEN Debut >= '14:00:00' AND Debut < '22:00:00' THEN 2
+            ELSE 3
+        END
+    ) STORED,
+
+    -- Pre-sorted clustered primary key:
+    -- InnoDB physically stores rows in this order on disk.
+    -- GROUP BY prod_day, equipe finds data already sorted — zero sort cost.
+    PRIMARY KEY (prod_day, equipe, id),
+
+    -- Required by MySQL for AUTO_INCREMENT when not the first PK column.
+    INDEX idx_id (id),
+
+    -- Covering index: contains every column the query needs.
+    -- MySQL answers the query entirely from this index.
+    INDEX idx_covering (prod_day, equipe, cause_id, Duree),
+
+    -- Simple index for the JOIN on causes.
+    INDEX idx_cause_id (cause_id),
+
+    FOREIGN KEY (cause_id) REFERENCES causes (id)
+);
+\end{minted}
 
 \end{document}

@@ -1,0 +1,29 @@
+\begin{MintedVerbatim}[commandchars=\\\{\}]
+\PYGZhy{}\PYGZgt{} Limit: 50 row(s)  (cost=805 rows=50)
+   (actual time=0.299..0.37 rows=50 loops=1)
+   \PYGZhy{}\PYGZgt{} Table scan on s  (cost=805 rows=8000)
+      (actual time=0.283..0.337 rows=8000 loops=1)
+      \PYGZhy{}\PYGZgt{} Select \PYGZsh{}2 (subquery in projection; dependent)
+          \PYGZhy{}\PYGZgt{} Limit: 1 row(s)  (cost=0.35 rows=1)
+             (actual time=0.0297..0.0299 rows=1 loops=50)
+             \PYGZhy{}\PYGZgt{} Single\PYGZhy{}row index lookup on c using PRIMARY
+                (id=s.cause\PYGZus{}id)
+                (actual time=0.00726..0.00734 rows=1 loops=50)
+      \PYGZhy{}\PYGZgt{} Select \PYGZsh{}3 (subquery in projection; dependent)
+          \PYGZhy{}\PYGZgt{} Limit: 1 row(s)  (cost=0.35 rows=1)
+             (actual time=0.0287..0.0287 rows=1 loops=50)
+             \PYGZhy{}\PYGZgt{} Single\PYGZhy{}row index lookup on c using PRIMARY
+                (id=s.cause\PYGZus{}id)
+                (actual time=0.00688..0.00688 rows=1 loops=50)
+      \PYGZhy{}\PYGZgt{} Select \PYGZsh{}4 (subquery in projection; dependent)
+          \PYGZhy{}\PYGZgt{} Aggregate: sum(CASE WHEN sx.Fin IS NULL ...)
+             (actual time=18.2..18.2 rows=1 loops=98)
+             \PYGZhy{}\PYGZgt{} Filter: (date\PYGZus{}format(if((sx.Debut \PYGZlt{} \PYGZsq{}06:00:00\PYGZsq{}),
+                          (sx.Jour \PYGZhy{} interval 1 day),sx.Jour),
+                          \PYGZsq{}\PYGZpc{}Y\PYGZhy{}\PYGZpc{}m\PYGZhy{}\PYGZpc{}d\PYGZsq{})
+                        = date\PYGZus{}format(...))
+                (cost=805 rows=8000)
+                (actual time=0.373..18.1 rows=66 loops=98)
+             \PYGZhy{}\PYGZgt{} Table scan on sx  (cost=805 rows=8000)
+                (actual time=0.322..5.33 rows=8000 loops=98)
+\end{MintedVerbatim}

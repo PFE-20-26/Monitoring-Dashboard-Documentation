@@ -1,0 +1,17 @@
+\begin{MintedVerbatim}[commandchars=\\\{\}]
+\PYGZhy{}\PYGZgt{} Limit: 50 row(s) (cost=805 rows=50)
+   (actual time=0.118..0.228 rows=50 loops=1)
+\PYGZhy{}\PYGZgt{} Table scan on s (cost=805 rows=8000)
+   (actual time=0.117..0.206 rows=50 loops=1)
+
+\PYGZhy{}\PYGZgt{} Select \PYGZsh{}4 (subquery in projection; dependent)
+\PYGZhy{}\PYGZgt{} Aggregate: sum(CASE WHEN sx.Fin IS NULL ...)
+   (actual time=23.4..23.4 rows=1 loops=98)
+\PYGZhy{}\PYGZgt{} Filter: (date\PYGZus{}format(if((sx.Debut \PYGZlt{} \PYGZsq{}06:00:00\PYGZsq{}),
+     (sx.Jour \PYGZhy{} interval 1 day),sx.Jour),\PYGZsq{}\PYGZpc{}Y\PYGZhy{}\PYGZpc{}m\PYGZhy{}\PYGZpc{}d\PYGZsq{})
+     = date\PYGZus{}format(...))
+   (cost=1605 rows=8000)
+   (actual time=0.41..23.3 rows=66 loops=98)
+\PYGZhy{}\PYGZgt{} Table scan on sx (cost=1605 rows=8000)
+   (actual time=0.348..7.35 rows=8000 loops=98)
+\end{MintedVerbatim}

@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.29 (TeX Live 2026) (preloaded format=pdflatex 2026.5.3)  16 MAY 2026 13:40
+This is pdfTeX, Version 3.141592653-2.6-1.40.29 (TeX Live 2026) (preloaded format=pdflatex 2026.5.3)  19 MAY 2026 15:50
 entering extended mode
  \write18 enabled.
  %&-line parsing enabled.
@@ -370,6 +370,46 @@ File: pgfmodulematrix.code.tex 2025-08-29 v3.1.11a (3.1.11a)
 \tikz@expandcount=\count322
  (c:/texlive/2026/texmf-dist/tex/generic/pgf/frontendlayer/tikz/libraries/tikzlibrarytopaths.code.tex
 File: tikzlibrarytopaths.code.tex 2025-08-29 v3.1.11a (3.1.11a)
+))) (c:/texlive/2026/texmf-dist/tex/latex/pgfplots/pgfplots.sty (c:/texlive/2026/texmf-dist/tex/generic/pgfplots/pgfplots.revision.tex)
+Package: pgfplots 2025/08/14 v1.18.2 Data Visualization (1.18.2)
+ (c:/texlive/2026/texmf-dist/tex/generic/pgfplots/pgfplots.code.tex (c:/texlive/2026/texmf-dist/tex/generic/pgfplots/pgfplotscore.code.tex
+\t@pgfplots@toka=\toks33
+\t@pgfplots@tokb=\toks34
+\t@pgfplots@tokc=\toks35
+\pgfplots@tmpa=\dimen275
+\c@pgfplots@coordindex=\count323
+\c@pgfplots@scanlineindex=\count324
+ (c:/texlive/2026/texmf-dist/tex/generic/pgfplots/sys/pgfplotssysgeneric.code.tex)) (c:/texlive/2026/texmf-dist/tex/generic/pgfplots/libs/pgfplotslibrary.code.tex) (c:/texlive/2026/texmf-dist/tex/generic/pgfplots/oldpgfcompatib/pgfplotsoldpgfsupp_loader.code.tex (c:/texlive/2026/texmf-dist/tex/generic/pgf/libraries/pgflibraryfpu.code.tex) (c:/texlive/2026/texmf-dist/tex/generic/pgfplots/oldpgfcompatib/pgfplotsoldpgfsupp_pgfutil-common-lists.tex)) (c:/texlive/2026/texmf-dist/tex/generic/pgfplots/util/pgfplotsutil.code.tex (c:/texlive/2026/texmf-dist/tex/generic/pgfplots/liststructure/pgfplotsliststructure.code.tex) (c:/texlive/2026/texmf-dist/tex/generic/pgfplots/liststructure/pgfplotsliststructureext.code.tex) (c:/texlive/2026/texmf-dist/tex/generic/pgfplots/liststructure/pgfplotsarray.code.tex
+\c@pgfplotsarray@tmp=\count325
+) (c:/texlive/2026/texmf-dist/tex/generic/pgfplots/liststructure/pgfplotsmatrix.code.tex) (c:/texlive/2026/texmf-dist/tex/generic/pgfplots/numtable/pgfplotstableshared.code.tex
+\c@pgfplotstable@counta=\count326
+\t@pgfplotstable@a=\toks36
+) (c:/texlive/2026/texmf-dist/tex/generic/pgfplots/liststructure/pgfplotsdeque.code.tex) (c:/texlive/2026/texmf-dist/tex/generic/pgfplots/util/pgfplotsbinary.code.tex (c:/texlive/2026/texmf-dist/tex/generic/pgfplots/util/pgfplotsbinary.data.code.tex)) (c:/texlive/2026/texmf-dist/tex/generic/pgfplots/util/pgfplotsutil.verb.code.tex) (c:/texlive/2026/texmf-dist/tex/generic/pgfplots/libs/pgflibrarypgfplots.surfshading.code.tex
+\c@pgfplotslibrarysurf@no=\count327
+ (c:/texlive/2026/texmf-dist/tex/generic/pgfplots/sys/pgflibrarypgfplots.surfshading.pgfsys-pdftex.def))) (c:/texlive/2026/texmf-dist/tex/generic/pgfplots/util/pgfplotscolormap.code.tex (c:/texlive/2026/texmf-dist/tex/generic/pgfplots/util/pgfplotscolor.code.tex)) (c:/texlive/2026/texmf-dist/tex/generic/pgfplots/pgfplotsstackedplots.code.tex) (c:/texlive/2026/texmf-dist/tex/generic/pgfplots/pgfplotsplothandlers.code.tex (c:/texlive/2026/texmf-dist/tex/generic/pgfplots/pgfplotsmeshplothandler.code.tex (c:/texlive/2026/texmf-dist/tex/generic/pgfplots/pgfplotsmeshplotimage.code.tex))) (c:/texlive/2026/texmf-dist/tex/generic/pgfplots/pgfplots.scaling.code.tex) (c:/texlive/2026/texmf-dist/tex/generic/pgfplots/pgfplotscoordprocessing.code.tex) (c:/texlive/2026/texmf-dist/tex/generic/pgfplots/pgfplots.errorbars.code.tex) (c:/texlive/2026/texmf-dist/tex/generic/pgfplots/pgfplots.markers.code.tex) (c:/texlive/2026/texmf-dist/tex/generic/pgfplots/pgfplotsticks.code.tex) (c:/texlive/2026/texmf-dist/tex/generic/pgfplots/pgfplots.paths.code.tex)
+(c:/texlive/2026/texmf-dist/tex/generic/pgf/frontendlayer/tikz/libraries/tikzlibrarydecorations.code.tex (c:/texlive/2026/texmf-dist/tex/generic/pgf/modules/pgfmoduledecorations.code.tex
+\pgfdecoratedcompleteddistance=\dimen276
+\pgfdecoratedremainingdistance=\dimen277
+\pgfdecoratedinputsegmentcompleteddistance=\dimen278
+\pgfdecoratedinputsegmentremainingdistance=\dimen279
+\pgf@decorate@distancetomove=\dimen280
+\pgf@decorate@repeatstate=\count328
+\pgfdecorationsegmentamplitude=\dimen281
+\pgfdecorationsegmentlength=\dimen282
+)
+\tikz@lib@dec@box=\box68
+) (c:/texlive/2026/texmf-dist/tex/generic/pgf/frontendlayer/tikz/libraries/tikzlibrarydecorations.pathmorphing.code.tex (c:/texlive/2026/texmf-dist/tex/generic/pgf/libraries/decorations/pgflibrarydecorations.pathmorphing.code.tex)) (c:/texlive/2026/texmf-dist/tex/generic/pgf/frontendlayer/tikz/libraries/tikzlibrarydecorations.pathreplacing.code.tex (c:/texlive/2026/texmf-dist/tex/generic/pgf/libraries/decorations/pgflibrarydecorations.pathreplacing.code.tex)) (c:/texlive/2026/texmf-dist/tex/generic/pgfplots/libs/tikzlibrarypgfplots.contourlua.code.tex)
+\pgfplots@numplots=\count329
+\pgfplots@xmin@reg=\dimen283
+\pgfplots@xmax@reg=\dimen284
+\pgfplots@ymin@reg=\dimen285
+\pgfplots@ymax@reg=\dimen286
+\pgfplots@zmin@reg=\dimen287
+\pgfplots@zmax@reg=\dimen288
+) (c:/texlive/2026/texmf-dist/tex/generic/pgf/frontendlayer/tikz/libraries/tikzlibraryplotmarks.code.tex
+File: tikzlibraryplotmarks.code.tex 2025-08-29 v3.1.11a (3.1.11a)
+ (c:/texlive/2026/texmf-dist/tex/generic/pgf/libraries/pgflibraryplotmarks.code.tex
+File: pgflibraryplotmarks.code.tex 2025-08-29 v3.1.11a (3.1.11a)
 ))) (c:/texlive/2026/texmf-dist/tex/latex/fancyhdr/fancyhdr.sty
 Package: fancyhdr 2025/02/07 v5.2 Extensive control of page headers and footers
 \f@nch@headwidth=\skip54
@@ -386,32 +426,32 @@ Package: fancyhdr 2025/02/07 v5.2 Extensive control of page headers and footers
 \f@nch@widthL=\skip65
 \f@nch@widthC=\skip66
 \f@nch@widthR=\skip67
-\@temptokenb=\toks33
+\@temptokenb=\toks37
 ) (c:/texlive/2026/texmf-dist/tex/latex/tools/array.sty
 Package: array 2025/09/25 v2.6n Tabular extension package (FMi)
-\col@sep=\dimen275
-\ar@mcellbox=\box68
-\extrarowheight=\dimen276
-\NC@list=\toks34
+\col@sep=\dimen289
+\ar@mcellbox=\box69
+\extrarowheight=\dimen290
+\NC@list=\toks38
 \extratabsurround=\skip68
 \backup@length=\skip69
-\ar@cellbox=\box69
+\ar@cellbox=\box70
 ) (c:/texlive/2026/texmf-dist/tex/latex/tools/tabularx.sty
 Package: tabularx 2023/12/11 v2.12a `tabularx' package (DPC)
-\TX@col@width=\dimen277
-\TX@old@table=\dimen278
-\TX@old@col=\dimen279
-\TX@target=\dimen280
-\TX@delta=\dimen281
-\TX@cols=\count323
-\TX@ftn=\toks35
+\TX@col@width=\dimen291
+\TX@old@table=\dimen292
+\TX@old@col=\dimen293
+\TX@target=\dimen294
+\TX@delta=\dimen295
+\TX@cols=\count330
+\TX@ftn=\toks39
 ) (c:/texlive/2026/texmf-dist/tex/latex/float/float.sty
 Package: float 2001/11/08 v1.3d Float enhancements (AL)
-\c@float@type=\count324
-\float@exts=\toks36
-\float@box=\box70
-\@float@everytoks=\toks37
-\@floatcapt=\box71
+\c@float@type=\count331
+\float@exts=\toks40
+\float@box=\box71
+\@float@everytoks=\toks41
+\@floatcapt=\box72
 ) (c:/texlive/2026/texmf-dist/tex/latex/amsmath/amsmath.sty
 Package: amsmath 2025/07/09 v2.17z AMS math features
 \@mathmargin=\skip70
@@ -421,59 +461,59 @@ For additional information on amsmath, use the `?' option.
 Package: amstext 2024/11/17 v2.01 AMS text
  (c:/texlive/2026/texmf-dist/tex/latex/amsmath/amsgen.sty
 File: amsgen.sty 1999/11/30 v2.0 generic functions
-\@emptytoks=\toks38
-\ex@=\dimen282
+\@emptytoks=\toks42
+\ex@=\dimen296
 )) (c:/texlive/2026/texmf-dist/tex/latex/amsmath/amsbsy.sty
 Package: amsbsy 1999/11/29 v1.2d Bold Symbols
-\pmbraise@=\dimen283
+\pmbraise@=\dimen297
 ) (c:/texlive/2026/texmf-dist/tex/latex/amsmath/amsopn.sty
 Package: amsopn 2022/04/08 v2.04 operator names
 )
-\inf@bad=\count325
+\inf@bad=\count332
 LaTeX Info: Redefining \frac on input line 233.
-\uproot@=\count326
-\leftroot@=\count327
+\uproot@=\count333
+\leftroot@=\count334
 LaTeX Info: Redefining \overline on input line 398.
 LaTeX Info: Redefining \colon on input line 409.
-\classnum@=\count328
-\DOTSCASE@=\count329
+\classnum@=\count335
+\DOTSCASE@=\count336
 LaTeX Info: Redefining \ldots on input line 495.
 LaTeX Info: Redefining \dots on input line 498.
 LaTeX Info: Redefining \cdots on input line 619.
-\Mathstrutbox@=\box72
-\strutbox@=\box73
+\Mathstrutbox@=\box73
+\strutbox@=\box74
 LaTeX Info: Redefining \big on input line 721.
 LaTeX Info: Redefining \Big on input line 722.
 LaTeX Info: Redefining \bigg on input line 723.
 LaTeX Info: Redefining \Bigg on input line 724.
-\big@size=\dimen284
+\big@size=\dimen298
 LaTeX Font Info:    Redeclaring font encoding OML on input line 742.
 LaTeX Font Info:    Redeclaring font encoding OMS on input line 743.
-\macc@depth=\count330
+\macc@depth=\count337
 LaTeX Info: Redefining \bmod on input line 904.
 LaTeX Info: Redefining \pmod on input line 909.
 LaTeX Info: Redefining \smash on input line 939.
 LaTeX Info: Redefining \relbar on input line 969.
 LaTeX Info: Redefining \Relbar on input line 970.
-\c@MaxMatrixCols=\count331
+\c@MaxMatrixCols=\count338
 \dotsspace@=\muskip18
-\c@parentequation=\count332
-\dspbrk@lvl=\count333
-\tag@help=\toks39
-\row@=\count334
-\column@=\count335
-\maxfields@=\count336
-\andhelp@=\toks40
-\eqnshift@=\dimen285
-\alignsep@=\dimen286
-\tagshift@=\dimen287
-\tagwidth@=\dimen288
-\totwidth@=\dimen289
-\lineht@=\dimen290
-\@envbody=\toks41
+\c@parentequation=\count339
+\dspbrk@lvl=\count340
+\tag@help=\toks43
+\row@=\count341
+\column@=\count342
+\maxfields@=\count343
+\andhelp@=\toks44
+\eqnshift@=\dimen299
+\alignsep@=\dimen300
+\tagshift@=\dimen301
+\tagwidth@=\dimen302
+\totwidth@=\dimen303
+\lineht@=\dimen304
+\@envbody=\toks45
 \multlinegap=\skip71
 \multlinetaggap=\skip72
-\mathdisplay@stack=\toks42
+\mathdisplay@stack=\toks46
 LaTeX Info: Redefining \[ on input line 2950.
 LaTeX Info: Redefining \] on input line 2951.
 ) (c:/texlive/2026/texmf-dist/tex/latex/amsfonts/amsfonts.sty
@@ -487,15 +527,15 @@ LaTeX Font Info:    Overwriting math alphabet `\mathfrak' in version `bold'
 Package: amssymb 2013/01/14 v3.01 AMS font symbols
 ) (c:/texlive/2026/texmf-dist/tex/latex/titlesec/titlesec.sty
 Package: titlesec 2025/01/04 v2.17 Sectioning titles
-\ttl@box=\box74
+\ttl@box=\box75
 \beforetitleunit=\skip73
 \aftertitleunit=\skip74
-\ttl@plus=\dimen291
-\ttl@minus=\dimen292
-\ttl@toksa=\toks43
-\titlewidth=\dimen293
-\titlewidthlast=\dimen294
-\titlewidthfirst=\dimen295
+\ttl@plus=\dimen305
+\ttl@minus=\dimen306
+\ttl@toksa=\toks47
+\titlewidth=\dimen307
+\titlewidthlast=\dimen308
+\titlewidthfirst=\dimen309
 ) (c:/texlive/2026/texmf-dist/tex/latex/tocloft/tocloft.sty
 Package: tocloft 2017/08/31 v2.3i parameterised ToC, etc., typesetting
 Package tocloft Info: The document has chapter divisions on input line 51.
@@ -528,8 +568,8 @@ Package tocloft Info: The document has chapter divisions on input line 51.
 \cftbeforefigskip=\skip101
 \cftfigindent=\skip102
 \cftfignumwidth=\skip103
-\c@lofdepth=\count337
-\c@lotdepth=\count338
+\c@lofdepth=\count344
+\c@lotdepth=\count345
 \cftbeforelottitleskip=\skip104
 \cftafterlottitleskip=\skip105
 \cftbeforetabskip=\skip106
@@ -542,44 +582,44 @@ Package: natbib 2010/09/13 8.31b (PWD, AO)
 \bibhang=\skip109
 \bibsep=\skip110
 LaTeX Info: Redefining \cite on input line 694.
-\c@NAT@ctr=\count339
+\c@NAT@ctr=\count346
 ) (c:/texlive/2026/texmf-dist/tex/latex/caption/caption.sty
 Package: caption 2023/08/05 v3.6o Customizing captions (AR)
  (c:/texlive/2026/texmf-dist/tex/latex/caption/caption3.sty
 Package: caption3 2023/07/31 v2.4d caption3 kernel (AR)
-\caption@tempdima=\dimen296
-\captionmargin=\dimen297
-\caption@leftmargin=\dimen298
-\caption@rightmargin=\dimen299
-\caption@width=\dimen300
-\caption@indent=\dimen301
-\caption@parindent=\dimen302
-\caption@hangindent=\dimen303
+\caption@tempdima=\dimen310
+\captionmargin=\dimen311
+\caption@leftmargin=\dimen312
+\caption@rightmargin=\dimen313
+\caption@width=\dimen314
+\caption@indent=\dimen315
+\caption@parindent=\dimen316
+\caption@hangindent=\dimen317
 Package caption Info: Standard document class detected.
 )
-\c@caption@flags=\count340
-\c@continuedfloat=\count341
+\c@caption@flags=\count347
+\c@continuedfloat=\count348
 Package caption Info: float package is loaded.
 Package caption Info: hyperref package is loaded.
 ) (c:/texlive/2026/texmf-dist/tex/latex/booktabs/booktabs.sty
 Package: booktabs 2020/01/12 v1.61803398 Publication quality tables
-\heavyrulewidth=\dimen304
-\lightrulewidth=\dimen305
-\cmidrulewidth=\dimen306
-\belowrulesep=\dimen307
-\belowbottomsep=\dimen308
-\aboverulesep=\dimen309
-\abovetopsep=\dimen310
-\cmidrulesep=\dimen311
-\cmidrulekern=\dimen312
-\defaultaddspace=\dimen313
-\@cmidla=\count342
-\@cmidlb=\count343
-\@aboverulesep=\dimen314
-\@belowrulesep=\dimen315
-\@thisruleclass=\count344
-\@lastruleclass=\count345
-\@thisrulewidth=\dimen316
+\heavyrulewidth=\dimen318
+\lightrulewidth=\dimen319
+\cmidrulewidth=\dimen320
+\belowrulesep=\dimen321
+\belowbottomsep=\dimen322
+\aboverulesep=\dimen323
+\abovetopsep=\dimen324
+\cmidrulesep=\dimen325
+\cmidrulekern=\dimen326
+\defaultaddspace=\dimen327
+\@cmidla=\count349
+\@cmidlb=\count350
+\@aboverulesep=\dimen328
+\@belowrulesep=\dimen329
+\@thisruleclass=\count351
+\@lastruleclass=\count352
+\@thisrulewidth=\dimen330
 ) (c:/texlive/2026/texmf-dist/tex/latex/minted/minted.sty
 Package: minted 2026/03/03 v3.8.0 Yet another Pygments shim for LaTeX
  (c:/texlive/2026/texmf-dist/tex/generic/catchfile/catchfile.sty
@@ -590,100 +630,136 @@ Package: etexcmds 2019/12/15 v1.7 Avoid name clashes with e-TeX commands (HO)
 Package: fvextra 2026/02/25 v1.14.0 fvextra - extensions and patches for fancyvrb
  (c:/texlive/2026/texmf-dist/tex/latex/fancyvrb/fancyvrb.sty
 Package: fancyvrb 2026/04/16 4.6a verbatim text (tvz,hv)
-\FV@CodeLineNo=\count346
+\FV@CodeLineNo=\count353
 \FV@InFile=\read3
-\FV@TabBox=\box75
-\c@FancyVerbLine=\count347
-\FV@StepNumber=\count348
+\FV@TabBox=\box76
+\c@FancyVerbLine=\count354
+\FV@StepNumber=\count355
 \FV@OutFile=\write4
 ) (c:/texlive/2026/texmf-dist/tex/latex/upquote/upquote.sty
 Package: upquote 2012/04/19 v1.3 upright-quote and grave-accent glyphs in verbatim
 ) (c:/texlive/2026/texmf-dist/tex/latex/lineno/lineno.sty
 Package: lineno 2026/03/08 line numbers on paragraphs v5.9
-\linenopenalty=\count349
-\output=\toks44
-\linenoprevgraf=\count350
-\linenumbersep=\dimen317
-\linenumberwidth=\dimen318
-\c@linenumber=\count351
-\c@pagewiselinenumber=\count352
-\c@LN@truepage=\count353
-\c@internallinenumber=\count354
-\c@internallinenumbers=\count355
-\quotelinenumbersep=\dimen319
-\bframerule=\dimen320
-\bframesep=\dimen321
-\bframebox=\box76
-\@LN@amsmath@ams@eqpen=\count356
+\linenopenalty=\count356
+\output=\toks48
+\linenoprevgraf=\count357
+\linenumbersep=\dimen331
+\linenumberwidth=\dimen332
+\c@linenumber=\count358
+\c@pagewiselinenumber=\count359
+\c@LN@truepage=\count360
+\c@internallinenumber=\count361
+\c@internallinenumbers=\count362
+\quotelinenumbersep=\dimen333
+\bframerule=\dimen334
+\bframesep=\dimen335
+\bframebox=\box77
+\@LN@amsmath@ams@eqpen=\count363
 )
-\c@FancyVerbWriteLine=\count357
-\c@FancyVerbBufferLine=\count358
-\c@FV@TrueTabGroupLevel=\count359
-\c@FV@TrueTabCounter=\count360
-\FV@TabBox@Group=\box77
-\FV@bgcolorstructbox=\box78
+\c@FancyVerbWriteLine=\count364
+\c@FancyVerbBufferLine=\count365
+\c@FV@TrueTabGroupLevel=\count366
+\c@FV@TrueTabCounter=\count367
+\FV@TabBox@Group=\box78
+\FV@bgcolorstructbox=\box79
 \FV@TmpLength=\skip111
-\c@FV@HighlightLinesStart=\count361
-\c@FV@HighlightLinesStop=\count362
-\FV@LoopCount=\count363
-\FV@NCharsBox=\box79
-\FV@BreakIndent=\dimen322
-\FV@BreakIndentNChars=\count364
-\FV@BreakSymbolSepLeft=\dimen323
-\FV@BreakSymbolSepLeftNChars=\count365
-\FV@BreakSymbolSepRight=\dimen324
-\FV@BreakSymbolSepRightNChars=\count366
-\FV@BreakSymbolIndentLeft=\dimen325
-\FV@BreakSymbolIndentLeftNChars=\count367
-\FV@BreakSymbolIndentRight=\dimen326
-\FV@BreakSymbolIndentRightNChars=\count368
-\c@FancyVerbLineBreakLast=\count369
-\FV@LineBox=\box80
-\FV@LineIndentBox=\box81
-\c@FV@BreakBufferDepth=\count370
-\FV@LineWidth=\dimen327
+\c@FV@HighlightLinesStart=\count368
+\c@FV@HighlightLinesStop=\count369
+\FV@LoopCount=\count370
+\FV@NCharsBox=\box80
+\FV@BreakIndent=\dimen336
+\FV@BreakIndentNChars=\count371
+\FV@BreakSymbolSepLeft=\dimen337
+\FV@BreakSymbolSepLeftNChars=\count372
+\FV@BreakSymbolSepRight=\dimen338
+\FV@BreakSymbolSepRightNChars=\count373
+\FV@BreakSymbolIndentLeft=\dimen339
+\FV@BreakSymbolIndentLeftNChars=\count374
+\FV@BreakSymbolIndentRight=\dimen340
+\FV@BreakSymbolIndentRightNChars=\count375
+\c@FancyVerbLineBreakLast=\count376
+\FV@LineBox=\box81
+\FV@LineIndentBox=\box82
+\c@FV@BreakBufferDepth=\count377
+\FV@LineWidth=\dimen341
 ) (c:/texlive/2026/texmf-dist/tex/latex/latex2pydata/latex2pydata.sty
 Package: latex2pydata 2026/02/25 v0.7.0 latex2pydata - write data to file in Python literal format
 ) (c:/texlive/2026/texmf-dist/tex/latex/pgfopts/pgfopts.sty
 Package: pgfopts 2014/07/10 v2.1a LaTeX package options with pgfkeys
-\pgfopts@list@add@a@toks=\toks45
-\pgfopts@list@add@b@toks=\toks46
+\pgfopts@list@add@a@toks=\toks49
+\pgfopts@list@add@b@toks=\toks50
 ) (c:/texlive/2026/texmf-dist/tex/latex/tools/shellesc.sty
 Package: shellesc 2023/07/08 v1.0d unified shell escape interface for LaTeX
 Package shellesc Info: Unrestricted shell escape enabled on input line 75.
 )
-\c@minted@FancyVerbLineTemp=\count371
-\@float@every@listing=\toks47
-\c@listing=\count372
-) (c:/texlive/2026/texmf-dist/tex/latex/colortbl/colortbl.sty
+\c@minted@FancyVerbLineTemp=\count378
+\@float@every@listing=\toks51
+\c@listing=\count379
+) (c:/texlive/2026/texmf-dist/tex/latex/tcolorbox/tcolorbox.sty
+Package: tcolorbox 2025/11/28 version 6.9.0 text color boxes
+ (c:/texlive/2026/texmf-dist/tex/latex/tools/verbatim.sty
+Package: verbatim 2024-01-22 v1.5x LaTeX2e package for verbatim enhancements
+\every@verbatim=\toks52
+\verbatim@line=\toks53
+\verbatim@in@stream=\read4
+) (c:/texlive/2026/texmf-dist/tex/latex/environ/environ.sty
+Package: environ 2014/05/04 v0.3 A new way to define environments
+ (c:/texlive/2026/texmf-dist/tex/latex/trimspaces/trimspaces.sty
+Package: trimspaces 2009/09/17 v1.1 Trim spaces around a token list
+))
+\tcb@titlebox=\box83
+\tcb@upperbox=\box84
+\tcb@lowerbox=\box85
+\tcb@phantombox=\box86
+\c@tcbbreakpart=\count380
+\c@tcblayer=\count381
+\c@tcolorbox@number=\count382
+\l__tcobox_tmpa_box=\box87
+\l__tcobox_tmpa_dim=\dimen342
+\tcb@temp=\box88
+\tcb@temp=\box89
+\tcb@temp=\box90
+\tcb@temp=\box91
+) (c:/texlive/2026/texmf-dist/tex/latex/tcolorbox/tcbskins.code.tex
+Library (tcolorbox): 'tcbskins.code.tex' version '6.9.0'
+(c:/texlive/2026/texmf-dist/tex/latex/tikzfill/tikzfill.image.sty
+Package: tikzfill.image 2026/04/23 v1.2.0 Image filling library for TikZ
+ (c:/texlive/2026/texmf-dist/tex/latex/tikzfill/tikzlibraryfill.image.code.tex
+File: tikzlibraryfill.image.code.tex 2026/04/23 v1.2.0 Image filling library
+\l__tikzfill_tmpa_dim=\dimen343
+\l__tikzfill_tmpb_dim=\dimen344
+\l__tikzfill_img_box=\box92
+)) (c:/texlive/2026/texmf-dist/tex/latex/tcolorbox/tcbskinsjigsaw.code.tex
+Library (tcolorbox): 'tcbskinsjigsaw.code.tex' version '6.9.0'
+)) (c:/texlive/2026/texmf-dist/tex/latex/colortbl/colortbl.sty
 Package: colortbl 2024/10/29 v1.0k Color table columns (DPC)
-\everycr=\toks48
+\everycr=\toks54
 \minrowclearance=\skip112
-\rownum=\count373
+\rownum=\count383
 ) (c:/texlive/2026/texmf-dist/tex/latex/l3backend/l3backend-pdftex.def
 File: l3backend-pdftex.def 2026-02-18 L3 backend support: PDF output (pdfTeX)
-\l__color_backend_stack_int=\count374
-) (./main (2).aux (./chapters/Chapter1.aux) (./chapters/Chapter2.aux))
+\l__color_backend_stack_int=\count384
+) (./main (2).aux (./chapters/Chapter1.aux) (./chapters/Chapter2.aux) (./chapters/Chapter3.aux) (./chapters/Chapter4.aux))
 \openout1 = `"main (2).aux"'.
 
-LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 80.
-LaTeX Font Info:    ... okay on input line 80.
-LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 80.
-LaTeX Font Info:    ... okay on input line 80.
-LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 80.
-LaTeX Font Info:    ... okay on input line 80.
-LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 80.
-LaTeX Font Info:    ... okay on input line 80.
-LaTeX Font Info:    Checking defaults for TS1/cmr/m/n on input line 80.
-LaTeX Font Info:    ... okay on input line 80.
-LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 80.
-LaTeX Font Info:    ... okay on input line 80.
-LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 80.
-LaTeX Font Info:    ... okay on input line 80.
-LaTeX Font Info:    Checking defaults for PD1/pdf/m/n on input line 80.
-LaTeX Font Info:    ... okay on input line 80.
-LaTeX Font Info:    Checking defaults for PU/pdf/m/n on input line 80.
-LaTeX Font Info:    ... okay on input line 80.
+LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 84.
+LaTeX Font Info:    ... okay on input line 84.
+LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 84.
+LaTeX Font Info:    ... okay on input line 84.
+LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 84.
+LaTeX Font Info:    ... okay on input line 84.
+LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 84.
+LaTeX Font Info:    ... okay on input line 84.
+LaTeX Font Info:    Checking defaults for TS1/cmr/m/n on input line 84.
+LaTeX Font Info:    ... okay on input line 84.
+LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 84.
+LaTeX Font Info:    ... okay on input line 84.
+LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 84.
+LaTeX Font Info:    ... okay on input line 84.
+LaTeX Font Info:    Checking defaults for PD1/pdf/m/n on input line 84.
+LaTeX Font Info:    ... okay on input line 84.
+LaTeX Font Info:    Checking defaults for PU/pdf/m/n on input line 84.
+LaTeX Font Info:    ... okay on input line 84.
 
 *geometry* driver: auto-detecting
 *geometry* detected driver: pdftex
@@ -721,32 +797,35 @@ LaTeX Font Info:    ... okay on input line 80.
 
 (c:/texlive/2026/texmf-dist/tex/context/base/mkii/supp-pdf.mkii
 [Loading MPS to PDF converter (version 2006.09.02).]
-\scratchcounter=\count375
-\scratchdimen=\dimen328
-\scratchbox=\box82
-\nofMPsegments=\count376
-\nofMParguments=\count377
-\everyMPshowfont=\toks49
-\MPscratchCnt=\count378
-\MPscratchDim=\dimen329
-\MPnumerator=\count379
-\makeMPintoPDFobject=\count380
-\everyMPtoPDFconversion=\toks50
+\scratchcounter=\count385
+\scratchdimen=\dimen345
+\scratchbox=\box93
+\nofMPsegments=\count386
+\nofMParguments=\count387
+\everyMPshowfont=\toks55
+\MPscratchCnt=\count388
+\MPscratchDim=\dimen346
+\MPnumerator=\count389
+\makeMPintoPDFobject=\count390
+\everyMPtoPDFconversion=\toks56
 ) (c:/texlive/2026/texmf-dist/tex/latex/epstopdf-pkg/epstopdf-base.sty
 Package: epstopdf-base 2020-01-24 v2.11 Base part for package epstopdf
 Package epstopdf-base Info: Redefining graphics rule for `.eps' on input line 485.
  (c:/texlive/2026/texmf-dist/tex/latex/latexconfig/epstopdf-sys.cfg
 File: epstopdf-sys.cfg 2010/07/13 v1.3 Configuration of (r)epstopdf for TeX Live
 ))
-Package hyperref Info: Link coloring OFF on input line 80.
+Package hyperref Info: Link coloring OFF on input line 84.
  (./main (2).out) (./main (2).out)
 \@outlinefile=\write5
 \openout5 = `"main (2).out"'.
 
+
+Package pgfplots notification 'compat/show suggested version=true': document has been generated with the most recent feature set (\pgfplotsset{compat=1.18}).
+
 Package caption Info: Begin \AtBeginDocument code.
 Package caption Info: End \AtBeginDocument code.
- (./titlepage (3).tex
-<images/ISET.jpg, id=139, 631.35875pt x 631.35875pt>
+(./titlepage (3).tex
+<images/ISET.jpg, id=296, 631.35875pt x 631.35875pt>
 File: images/ISET.jpg Graphic file (type jpg)
 <use images/ISET.jpg>
 Package pdftex.def Info: images/ISET.jpg  used on input line 7.
@@ -759,12 +838,12 @@ LaTeX Font Info:    Trying to load font information for U+msb on input line 78.
  (c:/texlive/2026/texmf-dist/tex/latex/amsfonts/umsb.fd
 File: umsb.fd 2013/01/14 v3.01 AMS symbols B
 )
-<images/TS2I.png, id=140, 602.25pt x 314.17375pt>
+<images/TS2I.png, id=297, 602.25pt x 314.17375pt>
 File: images/TS2I.png Graphic file (type png)
 <use images/TS2I.png>
 Package pdftex.def Info: images/TS2I.png  used on input line 81.
 (pdftex.def)             Requested size: 85.35826pt x 44.52573pt.
-<images/tesca.png, id=142, 338.26375pt x 81.30376pt>
+<images/tesca.png, id=299, 338.26375pt x 81.30376pt>
 File: images/tesca.png Graphic file (type png)
 <use images/tesca.png>
 Package pdftex.def Info: images/tesca.png  used on input line 92.
@@ -793,24 +872,24 @@ LaTeX Font Warning: Font shape `OT1/cmr/m/n' in size <15> not available
 LaTeX Font Warning: Font shape `OT1/cmr/m/n' in size <13> not available
 (Font)              size <12> substituted on input line 7.
 
-)
+[6
+
+
+])
 \tf@toc=\write6
 \openout6 = `"main (2).toc"'.
 
- [6
-
-
-] (./main (2).lof)
+ [7] (./main (2).lof)
 \tf@lof=\write7
 \openout7 = `"main (2).lof"'.
 
- [7
+ [8
 
 ] (./main (2).lot)
 \tf@lot=\write8
 \openout8 = `"main (2).lot"'.
 
- [8
+ [9
 
 ] (./Generalintroduction.tex
 
@@ -821,7 +900,7 @@ Package hyperref Warning: The anchor of a bookmark and its parent's must not
 pdfTeX warning (ext4): destination with the same identifier (name{page.1}) has been already used, duplicate ignored
 <to be read again> 
                    \relax 
-l.117 \clearpage
+l.121 \clearpage
                  [1
 
 ]
@@ -842,13 +921,13 @@ LaTeX Font Warning: Font shape `OT1/cmr/bx/n' in size <13> not available
 
 
 ]
-<images/partners.png, id=254, 474.573pt x 166.221pt>
+<images/partners.png, id=478, 474.573pt x 166.221pt>
 File: images/partners.png Graphic file (type png)
 <use images/partners.png>
 Package pdftex.def Info: images/partners.png  used on input line 73.
 (pdftex.def)             Requested size: 386.95897pt x 135.5361pt.
  [3 <./images/partners.png>] [4]
-<images/organigramme.png, id=266, 711.25725pt x 311.36325pt>
+<images/organigramme.png, id=490, 711.25725pt x 311.36325pt>
 File: images/organigramme.png Graphic file (type png)
 <use images/organigramme.png>
 Package pdftex.def Info: images/organigramme.png  used on input line 162.
@@ -858,12 +937,32 @@ Package pdftex.def Info: images/organigramme.png  used on input line 162.
 
  (./chapters/Chapter2.tex
 Chapter 2.
+) [9
+
+
+
+
+]
+\openout2 = `chapters/Chapter3.aux'.
+
+ (./chapters/Chapter3.tex
+Chapter 3.
+) [10
+
+
+
+
+]
+\openout2 = `chapters/Chapter4.aux'.
+
+ (./chapters/Chapter4.tex
+Chapter 4.
 
 Overfull \hbox (7.3838pt too wide) in paragraph at lines 31--32
 []|[]\OT1/cmr/bx/n/10.95 Constraint[]| 
  []
 
-[9
+[11
 
 
 
@@ -872,20 +971,129 @@ Overfull \hbox (7.3838pt too wide) in paragraph at lines 31--32
 \pydata@fh@0=\write9
 \openout9 = `_FE8F0DFC9A85AC954EE8E8C4AF8783D0.data.minted'.
 
-runsystem(latexminted config  --timestamp 20260516134022 FE8F0DFC9A85AC954EE8E8C4AF8783D0)...executed.
+runsystem(latexminted config  --timestamp 20260519155033 FE8F0DFC9A85AC954EE8E8C4AF8783D0)...executed.
 
  (./_FE8F0DFC9A85AC954EE8E8C4AF8783D0.config.minted)
-runsystem(latexminted cleanconfig  --timestamp 20260516134022 FE8F0DFC9A85AC954EE8E8C4AF8783D0)...executed.
+runsystem(latexminted cleanconfig  --timestamp 20260519155033 FE8F0DFC9A85AC954EE8E8C4AF8783D0)...executed.
 
  (./_minted/default.style.minted) (./_minted/5EF39054F8D36071C448F60932CA35BD.highlight.minted
 LaTeX Font Info:    Font shape `OT1/cmtt/bx/n' in size <10> not available
 (Font)              Font shape `OT1/cmtt/m/n' tried instead on input line 2.
- [10] [11])
+ [12] [13])
 Overfull \hbox (23.47018pt too wide) in paragraph at lines 181--182
 \OT1/cmr/m/n/12 Com-pound-ing this, the cor-re-lated sub-query uses a non-sargable pred-i-cate | \OT1/cmtt/m/n/12 DATE[]FORMAT(IF(...))
  []
 
-[12]) [13] (./main (2).bbl
+[14]
+Underfull \hbox (badness 10000) in paragraph at lines 240--241
+[]|\OT1/cmtt/m/n/10 idx[]prod[]day[]func \OT1/cmr/m/n/10 on
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 240--241
+\OT1/cmtt/m/n/10 DATE[]FORMAT(IF(...))\OT1/cmr/m/n/10 , \OT1/cmtt/m/n/10 idx[]cause
+ []
+
+
+Underfull \hbox (badness 2591) in paragraph at lines 242--243
+[]|\OT1/cmtt/m/n/10 idx[]covering[]queryb \OT1/cmr/m/n/10 (Jour, De-but,
+ []
+
+[15] (./_minted/F55F5FF2E68987E2719C6178CBC2C453.highlight.minted)
+LaTeX Font Info:    Font shape `OT1/cmtt/bx/n' in size <12> not available
+(Font)              Font shape `OT1/cmtt/m/n' tried instead on input line 312.
+ [16] (./_minted/A0B712792AF849DBB49A4FAE3C4C503E.highlight.minted) [17] (./_minted/8C013C7BDF200BA037F4F0510D93BA48.highlight.minted) [18] (./_minted/848B67C84CDAE0D430EEEE4FAE8B2BE6.highlight.minted) [19]
+Underfull \hbox (badness 10000) in paragraph at lines 552--552
+[]|\OT1/cmr/m/n/10 B2 --- Func-
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 552--552
+[]|\OT1/cmr/m/n/10 -28%
+ []
+
+
+Underfull \hbox (badness 1968) in paragraph at lines 554--555
+\OT1/cmr/m/n/10 stead of main-table pages; loop
+ []
+
+[20] (./_minted/72CC64296ED02F3D2EF0BB87FEAD3668.highlight.minted [21])
+Underfull \hbox (badness 10000) in paragraph at lines 686--686
+[]|\OT1/cmr/m/n/10 Materialize GROUP
+ []
+
+[22]
+Overfull \hbox (8.02383pt too wide) in paragraph at lines 724--725
+[]|  \OT1/cmr/m/n/12 The func-tion \OT1/cmtt/m/n/12 SUM(Duree) OVER(PARTITION BY prod[]day, equipe) \OT1/cmr/m/n/12 com-putes each row's
+ []
+
+[23] (./_minted/B2C8C9D01C1D499FD9FC1292693C23CF.highlight.minted)
+Overfull \hbox (9.40163pt too wide) in paragraph at lines 782--782
+[]|\OT1/cmr/m/n/10 D[]WINDOW[]final| 
+ []
+
+[24]
+Underfull \hbox (badness 7116) in paragraph at lines 822--822
+[]|[]\OT1/cmr/bx/n/10 Query C (De-
+ []
+
+
+Underfull \hbox (badness 3930) in paragraph at lines 827--827
+[]|\OT1/cmr/m/n/10 Sort for GROUP
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 829--829
+[]|\OT1/cmr/m/n/10 Intermediate
+ []
+
+
+Underfull \hbox (badness 6542) in paragraph at lines 833--833
+[]|\OT1/cmr/m/n/10 Result at 1M
+ []
+
+
+Overfull \hbox (1.8554pt too wide) in paragraph at lines 840--841
+[]|  \OT1/cmr/m/n/12 Fur-ther im-prove-ment re-quires elim-i-nat-ing the sort cost en-tirely --- which re-quires schema-
+ []
+
+[25]
+Overfull \hbox (8.19218pt too wide) in paragraph at lines 852--853
+|  \OT1/cmr/bx/n/12 Prob-lem solved: \OT1/cmr/m/n/12 Non-sargable \OT1/cmtt/m/n/12 DATE[]FORMAT(IF(...)) \OT1/cmr/m/n/12 and in-line \OT1/cmtt/m/n/12 CASE TIME[]TO[]SEC(...)
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 888--888
+[]|\OT1/cmtt/m/n/10 PRIMARY KEY (prod[]day,
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 890--891
+[]|\OT1/cmr/m/n/10 Satisfies MySQL's re-quire-ment that
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 892--892
+[]|\OT1/cmtt/m/n/10 idx[]covering (prod[]day,
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 892--892
+\OT1/cmtt/m/n/10 equipe, cause[]id,
+ []
+
+[26] (./_minted/59566BE9A47AAE7169C66C7194B820A0.highlight.minted [27]) [28]
+Package pgfplots info on input line 1045: Using 'lua backend=false' for axis: xmode=log unsupported (yet).
+Package pgfplots info on input line 1045: Using 'lua backend=false' for axis: ymode=log unsupported (yet).
+
+Missing character: There is no ; in font nullfont!
+Missing character: There is no ; in font nullfont!
+Missing character: There is no ; in font nullfont!
+Missing character: There is no ; in font nullfont!
+Missing character: There is no ; in font nullfont!
+Missing character: There is no ; in font nullfont!
+Missing character: There is no ; in font nullfont!
+[29]) [30] (./main (2).bbl
 Underfull \hbox (badness 5022) in paragraph at lines 27--28
 []\OT1/cmr/m/n/12 Automotive In-dus-try Ac-tion Group (AIAG), ``IATF 16949:2016 | Au-to-mo-tive
  []
@@ -895,11 +1103,19 @@ Underfull \hbox (badness 1776) in paragraph at lines 33--34
 []\OT1/cmr/m/n/12 Tesca Group, ``Tesca Group | Au-to-mo-tive In-te-rior Man-u-fac-turer,'' []$https : / / www .
  []
 
-) [14
+) [31
 
 
 
-] (./main (2).aux (./chapters/Chapter1.aux) (./chapters/Chapter2.aux))
+]
+Appendix A.
+(./_minted/505AA724B788EA74721E0B61189C9CA7.highlight.minted) [32
+
+]
+Appendix B.
+(./_minted/EAF7BB50D2642473C8F73EA55879CFEC.highlight.minted [33
+
+]) [34] (./main (2).aux (./chapters/Chapter1.aux) (./chapters/Chapter2.aux) (./chapters/Chapter3.aux) (./chapters/Chapter4.aux))
  ***********
 LaTeX2e <2025-11-01>
 L3 programming layer <2026-03-20>
@@ -910,21 +1126,21 @@ LaTeX Font Warning: Size substitutions with differences
 (Font)              up to 1.0pt have occurred.
 
 Package rerunfilecheck Info: File `"main (2)".out' has not changed.
-(rerunfilecheck)             Checksum: BF0BAECF2061E25B87BC96E86C8BEF19;6182.
+(rerunfilecheck)             Checksum: 764EE8EF99A6BE06966D409764A2B81A;13387.
  ) 
 Here is how much of TeX's memory you used:
- 28647 strings out of 467349
- 565262 string characters out of 5419863
- 1083329 words of memory out of 5000000
- 57185 multiletter control sequences out of 15000+600000
- 641053 words of font info for 91 fonts, out of 8000000 for 9000
+ 42558 strings out of 467349
+ 1014088 string characters out of 5419863
+ 1656364 words of memory out of 5000000
+ 70820 multiletter control sequences out of 15000+600000
+ 641221 words of font info for 92 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
- 84i,12n,104p,885b,1124s stack positions out of 10000i,1000n,20000p,200000b,200000s
-<c:/texlive/2026/texmf-dist/fonts/type1/public/amsfonts/cm/cmbx10.pfb><c:/texlive/2026/texmf-dist/fonts/type1/public/amsfonts/cm/cmbx12.pfb><c:/texlive/2026/texmf-dist/fonts/type1/public/amsfonts/cm/cmbxti10.pfb><c:/texlive/2026/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi10.pfb><c:/texlive/2026/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi12.pfb><c:/texlive/2026/texmf-dist/fonts/type1/public/amsfonts/cm/cmr10.pfb><c:/texlive/2026/texmf-dist/fonts/type1/public/amsfonts/cm/cmr12.pfb><c:/texlive/2026/texmf-dist/fonts/type1/public/amsfonts/cm/cmr6.pfb><c:/texlive/2026/texmf-dist/fonts/type1/public/amsfonts/cm/cmr8.pfb><c:/texlive/2026/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy10.pfb><c:/texlive/2026/texmf-dist/fonts/type1/public/amsfonts/cm/cmti10.pfb><c:/texlive/2026/texmf-dist/fonts/type1/public/amsfonts/cm/cmti12.pfb><c:/texlive/2026/texmf-dist/fonts/type1/public/amsfonts/cm/cmtt10.pfb><c:/texlive/2026/texmf-dist/fonts/type1/public/amsfonts/cm/cmtt12.pfb><c:/texlive/2026/texmf-dist/fonts/type1/public/cm-super/sfrm1095.pfb><c:/texlive/2026/texmf-dist/fonts/type1/public/cm-super/sfrm1200.pfb>
-Output written on "main (2).pdf" (23 pages, 623317 bytes).
+ 84i,19n,104p,885b,2322s stack positions out of 10000i,1000n,20000p,200000b,200000s
+<c:/texlive/2026/texmf-dist/fonts/type1/public/amsfonts/cm/cmbx10.pfb><c:/texlive/2026/texmf-dist/fonts/type1/public/amsfonts/cm/cmbx12.pfb><c:/texlive/2026/texmf-dist/fonts/type1/public/amsfonts/cm/cmbxti10.pfb><c:/texlive/2026/texmf-dist/fonts/type1/public/amsfonts/cm/cmitt10.pfb><c:/texlive/2026/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi10.pfb><c:/texlive/2026/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi12.pfb><c:/texlive/2026/texmf-dist/fonts/type1/public/amsfonts/cm/cmr10.pfb><c:/texlive/2026/texmf-dist/fonts/type1/public/amsfonts/cm/cmr12.pfb><c:/texlive/2026/texmf-dist/fonts/type1/public/amsfonts/cm/cmr6.pfb><c:/texlive/2026/texmf-dist/fonts/type1/public/amsfonts/cm/cmr7.pfb><c:/texlive/2026/texmf-dist/fonts/type1/public/amsfonts/cm/cmr8.pfb><c:/texlive/2026/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy10.pfb><c:/texlive/2026/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy8.pfb><c:/texlive/2026/texmf-dist/fonts/type1/public/amsfonts/cm/cmti10.pfb><c:/texlive/2026/texmf-dist/fonts/type1/public/amsfonts/cm/cmti12.pfb><c:/texlive/2026/texmf-dist/fonts/type1/public/amsfonts/cm/cmtt10.pfb><c:/texlive/2026/texmf-dist/fonts/type1/public/amsfonts/cm/cmtt12.pfb><c:/texlive/2026/texmf-dist/fonts/type1/public/cm-super/sfrm1095.pfb><c:/texlive/2026/texmf-dist/fonts/type1/public/cm-super/sfrm1200.pfb>
+Output written on "main (2).pdf" (44 pages, 740875 bytes).
 PDF statistics:
- 419 PDF objects out of 1000 (max. 8388607)
- 349 compressed objects within 4 object streams
- 72 named destinations out of 1000 (max. 500000)
- 302 words of extra memory for PDF output out of 10000 (max. 10000000)
+ 762 PDF objects out of 1000 (max. 8388607)
+ 662 compressed objects within 7 object streams
+ 144 named destinations out of 1000 (max. 500000)
+ 614 words of extra memory for PDF output out of 10000 (max. 10000000)
 
