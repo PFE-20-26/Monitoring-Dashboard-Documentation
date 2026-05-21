@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.29 (TeX Live 2026) (preloaded format=pdflatex 2026.5.3)  19 MAY 2026 18:35
+This is pdfTeX, Version 3.141592653-2.6-1.40.29 (TeX Live 2026) (preloaded format=pdflatex 2026.5.3)  20 MAY 2026 19:51
 entering extended mode
  \write18 enabled.
  %&-line parsing enabled.
@@ -825,7 +825,7 @@ Package pgfplots notification 'compat/show suggested version=true': document has
 Package caption Info: Begin \AtBeginDocument code.
 Package caption Info: End \AtBeginDocument code.
 (./titlepage (3).tex
-<images/ISET.jpg, id=296, 631.35875pt x 631.35875pt>
+<images/ISET.jpg, id=292, 631.35875pt x 631.35875pt>
 File: images/ISET.jpg Graphic file (type jpg)
 <use images/ISET.jpg>
 Package pdftex.def Info: images/ISET.jpg  used on input line 7.
@@ -838,12 +838,12 @@ LaTeX Font Info:    Trying to load font information for U+msb on input line 78.
  (c:/texlive/2026/texmf-dist/tex/latex/amsfonts/umsb.fd
 File: umsb.fd 2013/01/14 v3.01 AMS symbols B
 )
-<images/TS2I.png, id=297, 602.25pt x 314.17375pt>
+<images/TS2I.png, id=293, 602.25pt x 314.17375pt>
 File: images/TS2I.png Graphic file (type png)
 <use images/TS2I.png>
 Package pdftex.def Info: images/TS2I.png  used on input line 81.
 (pdftex.def)             Requested size: 85.35826pt x 44.52573pt.
-<images/tesca.png, id=299, 338.26375pt x 81.30376pt>
+<images/tesca.png, id=295, 338.26375pt x 81.30376pt>
 File: images/tesca.png Graphic file (type png)
 <use images/tesca.png>
 Package pdftex.def Info: images/tesca.png  used on input line 92.
@@ -921,16 +921,16 @@ LaTeX Font Warning: Font shape `OT1/cmr/bx/n' in size <13> not available
 
 
 ]
-<images/partners.png, id=478, 474.573pt x 166.221pt>
+<images/partners.png, id=474, 474.573pt x 166.221pt>
 File: images/partners.png Graphic file (type png)
 <use images/partners.png>
 Package pdftex.def Info: images/partners.png  used on input line 73.
 (pdftex.def)             Requested size: 386.95897pt x 135.5361pt.
  [3 <./images/partners.png>] [4]
-<images/organigramme.png, id=490, 711.25725pt x 311.36325pt>
+<images/organigramme.png, id=494, 711.25725pt x 311.36325pt>
 File: images/organigramme.png Graphic file (type png)
 <use images/organigramme.png>
-Package pdftex.def Info: images/organigramme.png  used on input line 162.
+Package pdftex.def Info: images/organigramme.png  used on input line 164.
 (pdftex.def)             Requested size: 459.51054pt x 201.15794pt.
  [5 <./images/organigramme.png>] [6] [7]) [8]
 \openout2 = `chapters/Chapter2.aux'.
@@ -971,17 +971,17 @@ Overfull \hbox (7.3838pt too wide) in paragraph at lines 31--32
 \pydata@fh@0=\write9
 \openout9 = `_FE8F0DFC9A85AC954EE8E8C4AF8783D0.data.minted'.
 
-runsystem(latexminted config  --timestamp 20260519183539 FE8F0DFC9A85AC954EE8E8C4AF8783D0)...executed.
+runsystem(latexminted config  --timestamp 20260520195113 FE8F0DFC9A85AC954EE8E8C4AF8783D0)...executed.
 
  (./_FE8F0DFC9A85AC954EE8E8C4AF8783D0.config.minted)
-runsystem(latexminted cleanconfig  --timestamp 20260519183539 FE8F0DFC9A85AC954EE8E8C4AF8783D0)...executed.
+runsystem(latexminted cleanconfig  --timestamp 20260520195113 FE8F0DFC9A85AC954EE8E8C4AF8783D0)...executed.
 
  (./_minted/default.style.minted) (./_minted/5EF39054F8D36071C448F60932CA35BD.highlight.minted
 LaTeX Font Info:    Font shape `OT1/cmtt/bx/n' in size <10> not available
 (Font)              Font shape `OT1/cmtt/m/n' tried instead on input line 2.
  [12] [13])
-Overfull \hbox (23.47018pt too wide) in paragraph at lines 181--182
-\OT1/cmr/m/n/12 Com-pound-ing this, the cor-re-lated sub-query uses a non-sargable pred-i-cate | \OT1/cmtt/m/n/12 DATE[]FORMAT(IF(...))
+Overfull \hbox (8.78284pt too wide) in paragraph at lines 181--182
+\OT1/cmr/m/n/12 Com-pound-ing this, the cor-re-lated sub-query uses a non-sargable pred-i-cate \OT1/cmtt/m/n/12 DATE[]FORMAT(IF(...))
  []
 
 [14]
@@ -1001,90 +1001,90 @@ Underfull \hbox (badness 2591) in paragraph at lines 242--243
 
 [15] (./_minted/F55F5FF2E68987E2719C6178CBC2C453.highlight.minted)
 LaTeX Font Info:    Font shape `OT1/cmtt/bx/n' in size <12> not available
-(Font)              Font shape `OT1/cmtt/m/n' tried instead on input line 312.
+(Font)              Font shape `OT1/cmtt/m/n' tried instead on input line 310.
  [16] (./_minted/A0B712792AF849DBB49A4FAE3C4C503E.highlight.minted) [17] (./_minted/8C013C7BDF200BA037F4F0510D93BA48.highlight.minted) [18] (./_minted/848B67C84CDAE0D430EEEE4FAE8B2BE6.highlight.minted) [19]
-Underfull \hbox (badness 10000) in paragraph at lines 552--552
+Underfull \hbox (badness 10000) in paragraph at lines 546--546
 []|\OT1/cmr/m/n/10 B2 --- Func-
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 552--552
+Underfull \hbox (badness 10000) in paragraph at lines 546--546
 []|\OT1/cmr/m/n/10 -28%
  []
 
 
-Underfull \hbox (badness 1968) in paragraph at lines 554--555
+Underfull \hbox (badness 1968) in paragraph at lines 548--549
 \OT1/cmr/m/n/10 stead of main-table pages; loop
  []
 
 [20] (./_minted/72CC64296ED02F3D2EF0BB87FEAD3668.highlight.minted [21])
-Underfull \hbox (badness 10000) in paragraph at lines 686--686
+Underfull \hbox (badness 10000) in paragraph at lines 680--680
 []|\OT1/cmr/m/n/10 Materialize GROUP
  []
 
 [22]
-Overfull \hbox (8.02383pt too wide) in paragraph at lines 724--725
+Overfull \hbox (8.02383pt too wide) in paragraph at lines 718--719
 []|  \OT1/cmr/m/n/12 The func-tion \OT1/cmtt/m/n/12 SUM(Duree) OVER(PARTITION BY prod[]day, equipe) \OT1/cmr/m/n/12 com-putes each row's
  []
 
 [23] (./_minted/B2C8C9D01C1D499FD9FC1292693C23CF.highlight.minted)
-Overfull \hbox (9.40163pt too wide) in paragraph at lines 782--782
+Overfull \hbox (9.40163pt too wide) in paragraph at lines 776--776
 []|\OT1/cmr/m/n/10 D[]WINDOW[]final| 
  []
 
 [24]
-Underfull \hbox (badness 7116) in paragraph at lines 822--822
+Underfull \hbox (badness 7116) in paragraph at lines 816--816
 []|[]\OT1/cmr/bx/n/10 Query C (De-
  []
 
 
-Underfull \hbox (badness 3930) in paragraph at lines 827--827
+Underfull \hbox (badness 3930) in paragraph at lines 821--821
 []|\OT1/cmr/m/n/10 Sort for GROUP
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 829--829
+Underfull \hbox (badness 10000) in paragraph at lines 823--823
 []|\OT1/cmr/m/n/10 Intermediate
  []
 
 
-Underfull \hbox (badness 6542) in paragraph at lines 833--833
+Underfull \hbox (badness 6542) in paragraph at lines 827--827
 []|\OT1/cmr/m/n/10 Result at 1M
  []
 
 
-Overfull \hbox (1.8554pt too wide) in paragraph at lines 840--841
+Overfull \hbox (1.8554pt too wide) in paragraph at lines 834--835
 []|  \OT1/cmr/m/n/12 Fur-ther im-prove-ment re-quires elim-i-nat-ing the sort cost en-tirely --- which re-quires schema-
  []
 
 [25]
-Overfull \hbox (8.19218pt too wide) in paragraph at lines 852--853
+Overfull \hbox (8.19218pt too wide) in paragraph at lines 846--847
 |  \OT1/cmr/bx/n/12 Prob-lem solved: \OT1/cmr/m/n/12 Non-sargable \OT1/cmtt/m/n/12 DATE[]FORMAT(IF(...)) \OT1/cmr/m/n/12 and in-line \OT1/cmtt/m/n/12 CASE TIME[]TO[]SEC(...)
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 888--888
+Underfull \hbox (badness 10000) in paragraph at lines 882--882
 []|\OT1/cmtt/m/n/10 PRIMARY KEY (prod[]day,
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 890--891
+Underfull \hbox (badness 10000) in paragraph at lines 884--885
 []|\OT1/cmr/m/n/10 Satisfies MySQL's re-quire-ment that
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 892--892
+Underfull \hbox (badness 10000) in paragraph at lines 886--886
 []|\OT1/cmtt/m/n/10 idx[]covering (prod[]day,
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 892--892
+Underfull \hbox (badness 10000) in paragraph at lines 886--886
 \OT1/cmtt/m/n/10 equipe, cause[]id,
  []
 
 [26] (./_minted/59566BE9A47AAE7169C66C7194B820A0.highlight.minted [27]) [28]
-Package pgfplots info on input line 1046: Using 'lua backend=false' for axis: xmode=log unsupported (yet).
-Package pgfplots info on input line 1046: Using 'lua backend=false' for axis: ymode=log unsupported (yet).
+Package pgfplots info on input line 1040: Using 'lua backend=false' for axis: xmode=log unsupported (yet).
+Package pgfplots info on input line 1040: Using 'lua backend=false' for axis: ymode=log unsupported (yet).
 
 Missing character: There is no ; in font nullfont!
 Missing character: There is no ; in font nullfont!
@@ -1126,21 +1126,21 @@ LaTeX Font Warning: Size substitutions with differences
 (Font)              up to 1.0pt have occurred.
 
 Package rerunfilecheck Info: File `"main (2)".out' has not changed.
-(rerunfilecheck)             Checksum: 764EE8EF99A6BE06966D409764A2B81A;13387.
+(rerunfilecheck)             Checksum: A3F3A470760E8F5D58E662C1DF9AD748;13384.
  ) 
 Here is how much of TeX's memory you used:
- 42559 strings out of 467349
- 1014099 string characters out of 5419863
- 1656375 words of memory out of 5000000
- 70821 multiletter control sequences out of 15000+600000
+ 42556 strings out of 467349
+ 1014036 string characters out of 5419863
+ 1657372 words of memory out of 5000000
+ 70819 multiletter control sequences out of 15000+600000
  641221 words of font info for 92 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
- 84i,19n,104p,885b,2322s stack positions out of 10000i,1000n,20000p,200000b,200000s
+ 84i,19n,104p,910b,2322s stack positions out of 10000i,1000n,20000p,200000b,200000s
 <c:/texlive/2026/texmf-dist/fonts/type1/public/amsfonts/cm/cmbx10.pfb><c:/texlive/2026/texmf-dist/fonts/type1/public/amsfonts/cm/cmbx12.pfb><c:/texlive/2026/texmf-dist/fonts/type1/public/amsfonts/cm/cmbxti10.pfb><c:/texlive/2026/texmf-dist/fonts/type1/public/amsfonts/cm/cmitt10.pfb><c:/texlive/2026/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi10.pfb><c:/texlive/2026/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi12.pfb><c:/texlive/2026/texmf-dist/fonts/type1/public/amsfonts/cm/cmr10.pfb><c:/texlive/2026/texmf-dist/fonts/type1/public/amsfonts/cm/cmr12.pfb><c:/texlive/2026/texmf-dist/fonts/type1/public/amsfonts/cm/cmr6.pfb><c:/texlive/2026/texmf-dist/fonts/type1/public/amsfonts/cm/cmr7.pfb><c:/texlive/2026/texmf-dist/fonts/type1/public/amsfonts/cm/cmr8.pfb><c:/texlive/2026/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy10.pfb><c:/texlive/2026/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy8.pfb><c:/texlive/2026/texmf-dist/fonts/type1/public/amsfonts/cm/cmti10.pfb><c:/texlive/2026/texmf-dist/fonts/type1/public/amsfonts/cm/cmti12.pfb><c:/texlive/2026/texmf-dist/fonts/type1/public/amsfonts/cm/cmtt10.pfb><c:/texlive/2026/texmf-dist/fonts/type1/public/amsfonts/cm/cmtt12.pfb><c:/texlive/2026/texmf-dist/fonts/type1/public/cm-super/sfrm1095.pfb><c:/texlive/2026/texmf-dist/fonts/type1/public/cm-super/sfrm1200.pfb>
-Output written on "main (2).pdf" (44 pages, 740932 bytes).
+Output written on "main (2).pdf" (44 pages, 740650 bytes).
 PDF statistics:
- 762 PDF objects out of 1000 (max. 8388607)
- 662 compressed objects within 7 object streams
- 144 named destinations out of 1000 (max. 500000)
- 614 words of extra memory for PDF output out of 10000 (max. 10000000)
+ 766 PDF objects out of 1000 (max. 8388607)
+ 666 compressed objects within 7 object streams
+ 143 named destinations out of 1000 (max. 500000)
+ 606 words of extra memory for PDF output out of 10000 (max. 10000000)
 

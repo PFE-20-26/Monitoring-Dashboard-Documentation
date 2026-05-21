@@ -8,14 +8,14 @@
 
 \subsection{\fontsize{14}{17}\selectfont Context}
 
-\hspace*{\parindent} At the start of this project, the database contained a working implementation. The queries returned correct results. The system appeared functional. However, as the dataset grew during testing toward realistic production volumes, a fundamental problem emerged: what worked at a few thousand rows began to show alarming degradation at tens of thousands, and became completely unusable when approaching the million-row scale that real multi-year industrial deployments would inevitably reach.
+\hspace*{\parindent} At the start of this project, the database contained a working implementation. The queries returned correct results. The system appeared functional. However, as the dataset grew during testing toward realistic production volumes, a fundamental problem emerged: what worked at a few thousand rows began to show alarming degradation at tens of thousands and became completely unusable when approaching the million-row scale that real multi-year industrial deployments would inevitably reach.
 
 \subsection{\fontsize{14}{17}\selectfont System Overview}
 
 
 \subsubsection{\fontsize{13}{16}\selectfont Database Structure}
 
-\hspace*{\parindent} The production database consists of four main tables: stops (machine downtime events), causes (reason categories), vitesse (machine speed tracking), and metrage (distance metrics). This optimization focuses on the stops and causes tables, which form the core of the dashboard queries and represent the primary performance challenge.
+\hspace*{\parindent} The production database consists of four main tables: stops (machine downtime events), causes (reason categories), vitesse (machine speed tracking) and metrage (distance metrics). This optimization focuses on the stops and causes tables, which form the core of the dashboard queries and represent the primary performance challenge.
 
 The stops table stores one record per machine stop event:
 
@@ -54,7 +54,7 @@ The stops table stores one record per machine stop event:
 
 \item \textbf{Shifted production day:} Stops occurring before 06:00 belong to the \textit{previous} calendar day's Team 3 shift. This introduces a derived \textit{production day} concept that differs from the calendar date.
 
-\item \textbf{Insert-heavy workload:} 2,000--7,000 stop events per day, inserted automatically via machine controllers. Stops are never deleted.
+\item \textbf{Insert-heavy workload:} 800 -- 1,500 stop events per day, inserted automatically via machine controllers. Stops are never deleted.
 
 \item \textbf{Dashboard usage:} Up to three supervisors query date-range filtered views throughout each shift. Sub-second response is the target.
 
@@ -62,19 +62,19 @@ The stops table stores one record per machine stop event:
 
 \subsubsection{\fontsize{13}{16}\selectfont The Key Metric: Percentage of Daily Downtime (PCT)}
 
-\hspace*{\parindent} The primary computed field in every query is the percentage of total downtime that each stop represents within its production day and team:
+\hspace*{0.700cm} The primary computed field in every query is the percentage of total downtime that each stop represents within its production day and team:
 
 \begin{equation}
 \text{PCT} = \frac{\text{stop duration (seconds)}}{\text{total team downtime for that production day}} \times 100
 \end{equation}
 
-This metric is deceptively simple to state but computationally expensive at scale. The denominator requires aggregating all stops for the \textit{same team on the same production day} for every single row in the result. How that aggregation is implemented is the central performance challenge of this entire part.
+\hspace*{0.1cm} This metric is deceptively simple to state but computationally expensive at scale. The denominator requires aggregating all stops for the \textit{same team on the same production day} for every single row in the result. How that aggregation is implemented is the central performance challenge of this entire part.
 
 \section{\fontsize{15}{18}\selectfont Query A: The Original Implementation}
 
 \subsection{\fontsize{14}{17}\selectfont Implementation}
 
-\hspace*{\parindent} The original query was written to correctly compute all required fields for the dashboard: stop times, duration, team assignment, cause information, and the PCT metric. The implementation is shown in Listing 4.1.
+\hspace*{0.700cm} The original query was written to correctly compute all required fields for the dashboard: stop times, duration, team assignment, cause information and the PCT metric. The implementation is shown in Listing 4.1.
 
 \begin{minted}[linenos,bgcolor=codebg,fontsize=\small,frame=lines,framesep=8pt,rulecolor=codeframe,framerule=1.5pt]{sql}
 SELECT
@@ -133,9 +133,9 @@ WHERE DATE_FORMAT(
 
 \subsection{\fontsize{14}{17}\selectfont Initial Behavior}
 
-\hspace*{\parindent} At small row counts, Query A functions correctly and returns accurate results. For a development environment or early testing phase, it raises no alarms.
+\hspace*{\parindent} At small row counts, Query A functions correctly and returns accurate results. For an early testing phase, it raises no alarms.
 
-But as the data grows, the pattern in Table 2 reveals something alarming: each time the row count doubles, the execution time does not double — it quadruples. This is the signature of O(n$^2$) complexity.
+But as the data grows, the pattern in Table 2 reveals something alarming: each time the row count doubles, the execution time does not double, it quadruples. This is the signature of O(n$^2$) complexity.
 
 \begin{table}[H]
 \centering
@@ -178,7 +178,7 @@ But as the data grows, the pattern in Table 2 reveals something alarming: each t
 T_{\text{Query B}}(n) \approx k \cdot n^2
 \end{equation}
 
-\hspace*{\parindent} where $n$ is the number of rows and $k$ is a constant representing the per-comparison cost. Compounding this, the correlated subquery uses a non-sargable predicate — \texttt{DATE\_FORMAT(IF(...))} wraps the column in a function call, making it impossible for MySQL to use any index even if one existed on \texttt{Debut} or \texttt{Jour}.
+\hspace*{\parindent} where $n$ is the number of rows and $k$ is a constant representing the per-comparison cost. Compounding this, the correlated subquery uses a non-sargable predicate  \texttt{DATE\_FORMAT(IF(...))}  which wraps the column in a function call, making it impossible for MySQL to use any index even if one existed on \texttt{Debut} or \texttt{Jour}.
 
 \hspace*{\parindent} The fundamental problem with Query B is the PCT denominator computation. For every single row $s$ in the outer query, MySQL fires a full scan of the entire \texttt{stops} table to compute the daily total.
 
@@ -188,7 +188,7 @@ T_{\text{Query B}}(n) \approx k \cdot n^2
 
 \begin{table}[H]
 \centering
-\caption{SHOW PROFILE results for Query B}
+\caption{SHOW PROFILE results for Query A}
 \label{tab:show_profile_query_b}
 \setlength{\extrarowheight}{4pt}
 \begin{tabular}{@{}p{6.5cm}p{3cm}p{2.5cm}@{}}
@@ -208,16 +208,16 @@ T_{\text{Query B}}(n) \approx k \cdot n^2
 \end{table}
 \hspace*{\parindent} This confirms that almost all time (99.94\%) is spent inside the correlated
 subquery loop, with all other database operations ( table opening, memory allocation, logging, cleanup )account
-for just 1.045ms combined, validating the O(n2) diagnosis and highlighting the denominator computation
+for just 1.045ms combined, validating the O(n$^2$) diagnosis and highlighting the denominator computation
 as the dominant bottleneck.
 
 \section{\fontsize{15}{18}\selectfont Query B: Optimized Implementation}
 
 \subsection{\fontsize{14}{17}\selectfont Motivation}
 
-\hspace*{\parindent} Before restructuring the query, a natural question arises: is it possible to achieve acceptable performance on Query B through index engineering alone, without touching the query itself? This question is not merely academic --- it represents the first instinct of any DBA confronted with a slow query: \textit{add an index}. This chapter documents three systematic experiments that answer this question definitively.
+\hspace*{0.777cm} Before restructuring the query, a natural question arises: is it possible to achieve acceptable performance on Query B through index engineering alone, without touching the query itself? This question is not merely academic, it represents the first instinct of any DataBase Administrator confronted with a slow query: \textit{add an index}. This chapter documents three systematic experiments that answer this question definitively.
 
-\hspace*{\parindent} Three index strategies are evaluated on identical copies of the \texttt{stops} table (\texttt{stopsB1}, \texttt{stopsB2}, \texttt{stopsB3}), each running the same unmodified Query B against a different index configuration. The results draw a clear line between what indexing can and cannot accomplish.
+\hspace*{0.1cm} Three index strategies are evaluated on identical copies of the \texttt{stops} table (\texttt{stopsB1}, \texttt{stopsB2}, \texttt{stopsB3}), each running the same unmodified Query B against a different index configuration. The results draw a clear line between what indexing can and cannot accomplish.
 
 \subsection{\fontsize{14}{17}\selectfont Experimental Setup}
 
@@ -277,8 +277,6 @@ as the dominant bottleneck.
     5,000 & 95.841 & \\
     \rowcolor[HTML]{FFFFFF}
     10,000 & 437.9 & O(n$^2$) pattern clearly visible \\
-    \rowcolor[HTML]{E8F4F8}
-    1,000,000 & $\approx$ 44 days & Projected via $k \cdot n^2$ \\
     \bottomrule
 \end{tabular}
 \end{table}
@@ -356,8 +354,6 @@ subquery is completely unchanged.
     5,000 & 96.542 & O(n$^2$) pattern clearly visible \\
     \rowcolor[HTML]{FFFFFF}
     10,000 & 451.7 & \\
-    \rowcolor[HTML]{E8F4F8}
-    1,000,000 & $\approx$ 52 days & Projected via $k \cdot n^2$ \\
     \bottomrule
 \end{tabular}
 \end{table}
@@ -412,7 +408,7 @@ This is the most instructive negative result: even a theoretically correct index
 
 \subsubsection{\fontsize{13}{16}\selectfont Hypothesis}
 
-\hspace*{\parindent} A \textit{covering index} contains every column that a query touches, allowing MySQL to read from the index structure instead of the main table rows. Even when the predicate is non-sargable (so the index cannot \textit{filter} rows), a covering index can still be used as the \textit{scan source} --- replacing expensive main-table page reads with cheaper, denser index reads.
+\hspace*{\parindent} A \textit{covering index} contains every column that a query touches, allowing MySQL to read from the index structure instead of the main table rows. Even when the predicate is non-sargable (so the index cannot \textit{filter} rows), a covering index can still be used as the \textit{scan source}, replacing expensive main-table page reads with cheaper, denser index reads.
 
 \hspace*{\parindent} The covering index for Query B must include every column referenced in the \texttt{SELECT} list, the \texttt{WHERE} clause, and the correlated subquery:
 
@@ -450,8 +446,6 @@ ALTER TABLE stopsB3
     5,000 & 100.702 & O(n$^2$) pattern clearly visible \\
     \rowcolor[HTML]{FFFFFF}
     10,000 & 265.4 & \\
-    \rowcolor[HTML]{E8F4F8}
-    1,000,000 & $\approx$ 31 days & Projected via $k \cdot n^2$ \\
     \bottomrule
 \end{tabular}
 \end{table}
@@ -527,7 +521,7 @@ At 8,000 rows: \textbf{37.6\% faster than B1} --- 4.5 minutes saved.
 At large scale: improvements grow because smaller index pages mean better buffer pool utilization and fewer disk page reads.
 
 \medskip
-However, the inner subquery still scans all 10,000 rows per outer row. The O(n$^2$) loop structure is untouched. At one million rows, B3 is projected to take $\approx$44 days --- vs Query A's 46 seconds. The 37.6\% gain is noise against that gap.
+However, the inner subquery still scans all 10,000 rows per outer row. The O(n$^2$) loop structure is untouched.
 
 \end{tcolorbox}
 
@@ -559,7 +553,7 @@ However, the inner subquery still scans all 10,000 rows per outer row. The O(n$^
 \end{tabular}
 \end{table}
 
-\hspace*{\parindent} The hard ceiling of 37--40\% is a mathematical inevitability: even with perfect indexing, the correlated subquery must still execute roughly once for every outer row. Improving scan efficiency cannot change the loop count. To exceed this ceiling requires restructuring the query itself --- moving from a correlated subquery approach to a fundamentally different algorithm.
+\hspace*{\parindent} The hard ceiling of 37--40\% is a mathematical inevitability: even with perfect indexing, the correlated subquery must still execute roughly once for every outer row. Improving scan efficiency cannot change the loop count. To exceed this ceiling requires restructuring the query itself,  moving from a correlated subquery approach to a fundamentally different algorithm.
 
 \begin{tcolorbox}[
 enhanced,
@@ -573,7 +567,7 @@ boxrule=0.8pt,
 arc=3pt
 ]
 
-In big data systems, the equivalent lesson is equally fundamental: columnar storage, predicate pushdown, and partition pruning all reduce the \textit{constant factor} in a computation --- they do not change the algorithmic complexity class. A full O(n$^2$) Cartesian join remains O(n$^2$) even on Apache Spark, no matter how the data is partitioned. Only query restructuring --- moving from a nested scan to a pre-aggregated hash join --- changes the exponent. Indexes are a multiplier on good architecture, not a replacement for it.
+In big data systems, the equivalent lesson is equally fundamental: columnar storage, predicate pushdown, and partition pruning all reduce the \textit{constant factor} in a computation, yet they do not change the algorithmic complexity class. A full O(n$^2$) Cartesian join remains O(n$^2$) even on Apache Spark, no matter how the data is partitioned. Only query restructuring and moving from a nested scan to a pre-aggregated hash join can changes the exponent. Indexes are a multiplier on good architecture, not a replacement for it.
 
 \end{tcolorbox}
 
@@ -656,9 +650,9 @@ JOIN (
     \rowcolor[HTML]{E8F4F8}
     10,000 & 265.4 s & 0.373 s & $711.5\times$ faster \\
     \rowcolor[HTML]{FFFFFF}
-    100,000 & N/A & 4.263 s & — \\
+    100,000 & $\approx$ 13 hours & 4.263 s & — \\
     \rowcolor[HTML]{E8F4F8}
-    1,000,000 & $\approx$ 31 days & 46.642 ms & — \\
+    1,000,000 & $\approx$ 54.2 days & 46.642 ms & — \\
     \bottomrule
 \end{tabular}
 \end{table}
@@ -719,9 +713,9 @@ JOIN (
 
 \subsection{\fontsize{14}{17}\selectfont The Reasoning Behind the Attempt}
 
-\hspace*{\parindent} After Query C reduced execution from an estimated 73 days to 46.642 ms at one million rows, the next question was: can we improve further without a full schema redesign? The \texttt{EXPLAIN ANALYZE} profile of Query C reveals two distinct table scans --- one for the main \texttt{SELECT} and one inside the pre-aggregated derived table. A natural hypothesis emerged: SQL window functions could collapse these into a single pass.
+\hspace*{\parindent} After Query C reduced execution from an estimated 73 days to 46.642 ms at one million rows, the next question was: can we improve further without a full schema redesign? The \texttt{EXPLAIN ANALYZE} profile of Query C reveals two distinct table scans, one for the main \texttt{SELECT} and one inside the pre-aggregated derived table. A natural hypothesis emerged: SQL window functions could collapse these into a single pass.
 
-\hspace*{\parindent} The function \texttt{SUM(Duree) OVER(PARTITION BY prod\_day, equipe)} computes each row's group total inline, during the same pass that reads the row --- theoretically eliminating the separate pre-aggregation scan and the subsequent \texttt{JOIN}. In theory, this means:
+\hspace*{\parindent} The function \texttt{SUM(Duree) OVER(PARTITION BY prod\_day, equipe)} computes each row's group total inline, during the same pass that reads the row, theoretically eliminating the separate pre-aggregation scan and the subsequent \texttt{JOIN}. In theory, this means:
 
 \begin{itemize}
 
@@ -784,15 +778,15 @@ VALUES ('D_WINDOW_final', @total_rows, @elapsed, @row_count);
 \end{tabular}
 \end{table}
 
-\hspace*{\parindent} Query D ran in 25.9 seconds --- a 1.8$\times$ improvement over Query A's 46.642 ms, confirming that the window function does provide some benefit. However, it remains an order of magnitude too slow for a production dashboard. Understanding why the improvement stalled at 25 seconds is the critical question.
+\hspace*{\parindent} Query D ran in 25.9 seconds, a 1.8$\times$ improvement over Query C's 46.642 ms, confirming that the window function does provide some benefit. However, it remains an order of magnitude too slow for a production dashboard. Understanding why the improvement stalled at 25 seconds is the critical question.
 
 \subsection{\fontsize{14}{17}\selectfont Root Cause: Sort Buffer Spill to Disk}
 
-\hspace*{\parindent} The limited improvement --- and the failure to surpass Query C's eventual 2,200 ms --- is caused by how MySQL 8.0 implements window function evaluation internally.
+\hspace*{\parindent} The limited improvement is caused by how MySQL implements window function evaluation internally.
 
 \subsubsection{\fontsize{13}{16}\selectfont How MySQL Executes Window Functions}
 
-\hspace*{\parindent} Unlike a pre-aggregation approach --- which produces a compact intermediate result --- a window function must hold all rows belonging to a partition in memory simultaneously before it can emit any output row. The execution sequence is:
+\hspace*{\parindent} Unlike a pre-aggregation approach, which produces a compact intermediate result, a window function must hold all rows belonging to a partition in memory simultaneously before it can emit any output row. The execution sequence is:
 
 \begin{itemize}
 
@@ -841,9 +835,9 @@ VALUES ('D_WINDOW_final', @total_rows, @elapsed, @row_count);
 
 \section{\fontsize{15}{18}\selectfont Query E: Big Data Principles Applied to MySQL}
 
-\hspace*{\parindent} The window function hypothesis tested in Chapter 5 demonstrated that standard MySQL session-level constraints prevent a single-pass approach from outperforming a two-pass pre-aggregation strategy at production scale. Improving on Query D's 25,955 ms result required addressing the root problem differently: not eliminating a scan, but making every scan as efficient as physically possible through comprehensive schema-level redesign.
+\hspace*{\parindent} The window function hypothesis demonstrated that standard MySQL session-level constraints prevent a single-pass approach from outperforming a two-pass pre-aggregation strategy at production scale. Improving on Query D's 25,955 ms result required addressing the root problem differently: not eliminating a scan, but making every scan as efficient as physically possible through comprehensive schema-level redesign.
 
-\hspace*{\parindent} This chapter presents the final, fully optimized architecture. The solution requires no auxiliary tables, no triggers, and no scheduled events --- only a redesigned table schema with stored generated columns, a carefully chosen set of indexes, and a single optimized SQL query.
+\hspace*{\parindent} This query presents the final, fully optimized architecture. The solution requires no auxiliary tables, no triggers, and no scheduled events, only a redesigned table schema with stored generated columns, a carefully chosen set of indexes, and a single optimized SQL query.
 
 \subsection{\fontsize{14}{17}\selectfont Schema Redesign}
 
@@ -865,7 +859,7 @@ boxrule=1pt,
 arc=3pt
 ]
 
-Stored generated columns prod\_day, equipe, and Duree are computed once at insert time. All subsequent reads find pre-computed values. This is the feature store pattern used in Databricks, MLflow, and all major data warehouse platforms --- shift expensive computation from read time to write time.
+Stored generated columns prod\_day, equipe, and Duree are computed once at insert time. All subsequent reads find pre-computed values. This is the feature store pattern used in Databricks, MLflow, and all major data warehouse platforms that shift expensive computation from read time to write time.
 
 \end{tcolorbox}
 
@@ -909,7 +903,7 @@ boxrule=0.8pt,
 arc=3pt
 ]
 
-The covering index \texttt{idx\_covering}(prod\_day, equipe, cause\_id, Duree) allows MySQL to answer the entire query from the index without reading main table rows. This mirrors the I/O reduction of columnar storage engines such as Apache Parquet and Google BigTable — only the columns relevant to the query are read; the rest of the row is never accessed.
+The covering index \texttt{idx\_covering}(prod\_day, equipe, cause\_id, Duree) allows MySQL to answer the entire query from the index without reading main table rows. This mirrors the I/O reduction of columnar storage engines such as Apache Parquet and Google BigTable, only the columns relevant to the query are read: the rest of the row is never accessed.
 
 \end{tcolorbox}
 
@@ -975,7 +969,7 @@ SELECT 'C_CTE_final' AS query, @total_rows AS total_rows,
        @row_count AS row_count, CONCAT(@elapsed, ' ms') AS elapsed;
 \end{minted}
 
-\textit{Listing 4.8: Query C --- CTE pre-aggregation with covering index}
+\textit{Listing 4.8: Query E --- CTE pre-aggregation with covering index}
 
 \subsubsection{\fontsize{13}{16}\selectfont Results}
 
