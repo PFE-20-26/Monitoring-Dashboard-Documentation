@@ -1,0 +1,21 @@
+sequenceDiagram
+    actor Admin
+    participant UI as Interface: Stops analytics
+    participant SC as Stops Controller
+    participant ST as SQL table: stops
+    participant CA as SQL table: causes
+
+    Admin->>UI: Open stops analytics page
+    Admin->>UI: Select start date, end date and team
+    UI->>SC: Request daily stops summary
+    SC->>ST: Aggregate stops by production day
+    SC->>CA: Read TRS impact per cause
+    ST-->>SC: Stop count and downtime totals
+    CA-->>SC: Cause TRS flags
+    SC-->>UI: Daily summary rows
+    UI->>UI: Calculate/display TRS and pagination
+    UI-->>Admin: Show stops summary table
+
+    alt Invalid range, no data or request error
+        UI-->>Admin: Show validation, empty state or error message
+    end

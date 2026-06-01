@@ -1,0 +1,19 @@
+sequenceDiagram
+    actor Admin
+    participant UI as Interface: Dashboard or Stops page
+    participant SC as Stops Controller
+    participant ST as SQL table: stops
+    participant CA as SQL table: causes
+
+    Admin->>UI: Select period/team or selected day
+    UI->>SC: Request downtime by cause
+    SC->>ST: Group stop duration by cause
+    SC->>CA: Join cause names
+    ST-->>SC: Downtime totals by cause_id
+    CA-->>SC: Cause labels
+    SC-->>UI: Downtime-by-cause series
+    UI-->>Admin: Display downtime chart
+
+    alt No downtime or request error
+        UI-->>Admin: Show empty chart or error message
+    end

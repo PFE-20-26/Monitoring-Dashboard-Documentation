@@ -1,0 +1,170 @@
+\PassOptionsToPackage{table}{xcolor}
+\documentclass[11pt, a4paper]{report}
+
+% ── PAGE GEOMETRY & PACKAGES ───────────────────────────────────────────────
+\usepackage[a4paper, top=2cm, bottom=2cm, left=2cm, right=2cm]{geometry}
+\usepackage{graphicx}
+\usepackage[hidelinks]{hyperref}
+\usepackage{ulem}
+\usepackage{enumitem}
+\usepackage{tikz}
+\usepackage{pgfplots}
+\pgfplotsset{compat=1.18}
+\usepackage{fancyhdr}
+\usepackage{array}
+\usepackage{tabularx}
+\usepackage{longtable}
+\usepackage{ragged2e}
+\usepackage{makecell}
+\usepackage{adjustbox}
+\usepackage{float}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{amssymb}
+\usepackage{titlesec}
+\usepackage{tocloft}
+\newcommand*{\noaddvspace}{\renewcommand*{\addvspace}[1]{}}
+\usepackage{etoolbox}
+\usepackage{setspace}
+\usepackage{float}
+\usepackage[numbers,sort&compress]{natbib}
+\usepackage{caption}
+\usepackage{xcolor}
+\usepackage{booktabs}
+\usepackage{minted}
+\usepackage[table]{xcolor}
+\usepackage{tcolorbox}
+\usepackage{chngcntr}
+\tcbuselibrary{skins,breakable}
+
+\definecolor{codebg}{HTML}{E8F4F8}
+\definecolor{codeframe}{HTML}{1A5490}
+
+\definecolor{tableheader}{HTML}{1A5490}
+\definecolor{tablelight}{HTML}{E8F4F8}
+\definecolor{tableline}{HTML}{B7C9D6}
+\newcolumntype{P}[1]{>{\RaggedRight\arraybackslash}p{#1}}
+\newcolumntype{C}[1]{>{\Centering\arraybackslash}p{#1}}
+\newcolumntype{Y}{>{\RaggedRight\arraybackslash}X}
+\newcommand{\tablehead}[1]{\textcolor{white}{\textbf{#1}}}
+\newcommand{\reportimage}[2][]{\includegraphics[width=0.95\textwidth,height=0.64\textheight,keepaspectratio,#1]{#2}}
+\newcommand{\reportimagewide}[2][]{\includegraphics[width=\textwidth,height=0.82\textheight,keepaspectratio,#1]{#2}}
+\AtBeginEnvironment{table}{\centering\small\renewcommand{\arraystretch}{1.23}\setlength{\tabcolsep}{4pt}\arrayrulecolor{tableline}}
+\AtBeginEnvironment{figure}{\centering}
+\tcbset{reportcode/.style={enhanced,breakable,colback=codebg,colframe=codeframe,boxrule=0.7pt,arc=2pt,left=1mm,right=1mm,top=1mm,bottom=1mm,before skip=8pt,after skip=8pt}}
+\usepackage{colortbl}
+
+% ── CUSTOM HEADER/FOOTER SETUP ────────────────────────────────────────────
+% Style for normal pages
+\fancypagestyle{fancy}{
+  \fancyhf{} % Clear default header/footer
+  \renewcommand{\headrulewidth}{0.8pt}  % Top line
+  \renewcommand{\footrulewidth}{0.8pt}  % Bottom line
+  \fancyhead{}                          % No header text
+  \fancyfoot[R]{\thepage}               % Page number at bottom RIGHT
+}
+
+% Style for chapter start pages (default is 'plain', we override it to match)
+\fancypagestyle{plain}{
+  \fancyhf{}
+  \renewcommand{\headrulewidth}{0.8pt}
+  \renewcommand{\footrulewidth}{0.8pt}
+  \fancyfoot[R]{\thepage}
+}
+
+% Apply globally
+\pagestyle{fancy}
+
+% ── CUSTOM COMMANDS ────────────────────────────────────────────────────────
+\newcommand{\logobox}[3]{%
+  \begin{tikzpicture}
+    \draw[gray, thick] (0,0) rectangle (#1,#2);
+    \node[gray, font=\tiny] at (#1/2, #2/2) {#3};
+  \end{tikzpicture}%
+}
+
+% ── SECTION NUMBERING ──────────────────────────────────────────────────────
+\renewcommand{\thesection}{\arabic{section}}
+\renewcommand{\thefigure}{\arabic{figure}}
+\renewcommand{\thetable}{\arabic{table}}
+
+% Make figure and table numbering global (not per-chapter)
+\counterwithout{figure}{chapter}
+\counterwithout{table}{chapter}
+
+% ── CAPTION FORMAT ──────────────────────────────────────────────────────────
+\DeclareCaptionFormat{custom}{{\small\textcolor[HTML]{44536a}{\underline{\textit{#1#2#3}}}}}
+\captionsetup[figure]{format=custom}
+\captionsetup[table]{format=custom}
+
+% ── NUMBERING DEPTH ────────────────────────────────────────────────────────
+\setcounter{secnumdepth}{3}
+\setcounter{tocdepth}{3}
+
+% ── TITLE FORMATTING & SIZES ───────────────────────────────────────────────
+\newcommand{\majorsection}[1]{\section*{\fontsize{15}{18}\selectfont #1}}
+\titleformat{\section}{\normalfont\fontsize{14}{17}\bfseries}{\thesection}{1em}{}
+\titleformat{\subsection}{\normalfont\fontsize{13}{16}\bfseries}{\thesubsection}{1em}{}
+\titleformat{\subsubsection}{\normalfont\fontsize{13}{16}\bfseries}{\thesubsubsection}{1em}{}
+
+\begin{document}
+\addtocontents{lof}{\protect\noaddvspace}
+                                                                         \addtocontents{lot}{\protect\noaddvspace}
+
+
+% === 1. TITLE PAGE ===
+\input{titlepage.tex}
+\thispagestyle{empty} % No lines/numbers on title page
+\clearpage
+
+% === 2. BLANK PAGE + START ROMAN NUMBERING ===
+\cleardoublepage
+\pagenumbering{roman}
+\thispagestyle{empty} % Blank page stays empty
+\null\newpage
+\onehalfspacing
+% === 3. FRONT MATTER (Lines + Roman numbering bottom right) ===
+ \input{Abstract.tex}
+\clearpage
+ \input{Dedication Fedi.tex }
+\clearpage
+ \input{Dedication-Firas}
+\clearpage
+\input{Acknowledgement.tex}
+\clearpage
+\clearpage
+
+% === 4. TABLE OF CONTENTS, FIGURES, TABLES ===
+ \tableofcontents
+\clearpage
+ \listoffigures
+\clearpage
+ \listoftables
+\clearpage
+
+% === 5. MAIN CONTENT (Switch to Arabic numbering) ===
+\pagenumbering{arabic}
+\input{Generalintroduction.tex}
+\clearpage
+\include{chapters/Chapter1}
+\include{chapters/Chapter2}
+\include{chapters/Chapter3}
+\include{chapters/Chapter4}
+\clearpage
+\input{Generalconclusion.tex}
+\clearpage
+
+% === 6. APPENDIX (Switch to Roman numbering) ===
+\pagenumbering{roman}
+\appendix
+\renewcommand{\thechapter}{\roman{chapter}}
+
+\include{chapters/AppendixA}
+\include{chapters/AppendixB}
+
+% === 7. BACK MATTER (NETOGRAPHY) ===
+\renewcommand{\bibname}{Netography}
+\bibliographystyle{IEEEtran}
+\bibliography{references}
+
+\end{document}

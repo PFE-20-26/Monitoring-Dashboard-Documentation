@@ -1,4 +1,0 @@
-\begin{MintedVerbatim}[commandchars=\\\{\}]
-\PYGZhy{}\PYGZgt{} Table scan on sx  (cost=805 rows=8000)
-(actual time=0.283..0.337 rows=8000 loops=98)
-\end{MintedVerbatim}

@@ -1,0 +1,20 @@
+sequenceDiagram
+    actor Admin
+    participant UI as Interface: Stops details
+    participant SC as Stops Controller
+    participant ST as SQL table: stops
+    participant CA as SQL table: causes
+
+    Admin->>UI: Select a day from summary table
+    UI->>UI: Store selected day and reset detail page
+    UI->>SC: Request stop events for day/team
+    SC->>ST: Read paginated stop events
+    SC->>CA: Join cause name and TRS flag
+    ST-->>SC: Stop event rows
+    CA-->>SC: Cause information
+    SC-->>UI: Detailed stop list and total count
+    UI-->>Admin: Display stop details table
+
+    alt No selected day, no stops or request error
+        UI-->>Admin: Show placeholder, empty state or error message
+    end

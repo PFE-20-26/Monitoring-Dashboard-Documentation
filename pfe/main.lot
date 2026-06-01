@@ -1,0 +1,45 @@
+\noaddvspace 
+\addvspace {10\p@ }
+\contentsline {table}{\numberline {1}{\ignorespaces Technical file of TESCA}}{5}{table.caption.6}%
+\contentsline {table}{\numberline {2}{\ignorespaces Functional requirements of the dashboard to be developed}}{8}{table.caption.11}%
+\contentsline {table}{\numberline {3}{\ignorespaces Non-functional requirements and industrial constraints}}{9}{table.caption.12}%
+\addvspace {10\p@ }
+\contentsline {table}{\numberline {4}{\ignorespaces Text description of diagram use case "Consult overview"}}{13}{table.2.4}%
+\contentsline {table}{\numberline {5}{\ignorespaces Text description of diagram use case "View stops summary"}}{14}{table.2.5}%
+\contentsline {table}{\numberline {6}{\ignorespaces Text description of diagram use case "View stops details"}}{16}{table.2.6}%
+\contentsline {table}{\numberline {7}{\ignorespaces Text description of diagram use case "View cause"}}{17}{table.2.7}%
+\contentsline {table}{\numberline {8}{\ignorespaces Text description of diagram use case "Create cause"}}{19}{table.2.8}%
+\contentsline {table}{\numberline {9}{\ignorespaces Text description of diagram use case "Delete cause"}}{20}{table.2.9}%
+\contentsline {table}{\numberline {10}{\ignorespaces Text description of diagram use case "View Yardage statistics"}}{22}{table.2.10}%
+\contentsline {table}{\numberline {11}{\ignorespaces Text description of diagram use case "View speed statistics"}}{24}{table.2.11}%
+\contentsline {table}{\numberline {12}{\ignorespaces Text description of diagram use case "Export data to Excel"}}{26}{table.2.12}%
+\contentsline {table}{\numberline {13}{\ignorespaces Scope of the technical revision}}{27}{table.caption.24}%
+\contentsline {table}{\numberline {14}{\ignorespaces CAD mate correction strategy}}{28}{table.caption.25}%
+\contentsline {table}{\numberline {15}{\ignorespaces Final CAD assembly validation criteria}}{28}{table.caption.26}%
+\contentsline {table}{\numberline {16}{\ignorespaces Main fields of the revised industrial title block}}{29}{table.caption.27}%
+\contentsline {table}{\numberline {17}{\ignorespaces Organization of the technical drawing package}}{29}{table.caption.28}%
+\contentsline {table}{\numberline {18}{\ignorespaces Recommended view selection for the drawing sheets}}{30}{table.caption.29}%
+\contentsline {table}{\numberline {19}{\ignorespaces Mechanical reading after CAD correction}}{30}{table.caption.30}%
+\addvspace {10\p@ }
+\contentsline {table}{\numberline {20}{\ignorespaces Core data model and workload constraints}}{36}{table.caption.37}%
+\contentsline {table}{\numberline {21}{\ignorespaces Query A growth pattern}}{37}{table.caption.38}%
+\contentsline {table}{\numberline {22}{\ignorespaces Index-only experiments on the original query shape}}{38}{table.caption.39}%
+\contentsline {table}{\numberline {23}{\ignorespaces Impact of replacing the correlated denominator with pre-aggregation}}{38}{table.caption.40}%
+\contentsline {table}{\numberline {24}{\ignorespaces Generated columns introduced in the optimised schema}}{39}{table.caption.41}%
+\contentsline {table}{\numberline {25}{\ignorespaces Optimised index design}}{39}{table.caption.42}%
+\contentsline {table}{\numberline {26}{\ignorespaces One-million-row benchmark summary}}{40}{table.caption.43}%
+\addvspace {10\p@ }
+\contentsline {table}{\numberline {27}{\ignorespaces Responsibilities of the main components used for Visiteuse 2}}{44}{table.caption.47}%
+\contentsline {table}{\numberline {28}{\ignorespaces Timer and synchronization parameters used in the implementation}}{48}{table.caption.50}%
+\contentsline {table}{\numberline {29}{\ignorespaces Main variables used in the Visiteuse 2 ladder program}}{49}{table.caption.51}%
+\contentsline {table}{\numberline {30}{\ignorespaces Timestamp register format used by Node-RED}}{49}{table.caption.52}%
+\contentsline {table}{\numberline {31}{\ignorespaces Correspondence between cause bits and the value stored in \texttt {D30}}}{50}{table.caption.53}%
+\contentsline {table}{\numberline {32}{\ignorespaces Main communication parameters for the Veichi VC3 PLC}}{50}{table.caption.54}%
+\contentsline {table}{\numberline {33}{\ignorespaces Useful registers extracted by Node-RED}}{51}{table.caption.55}%
+\contentsline {table}{\numberline {34}{\ignorespaces Modbus operations used by Node-RED for Visiteuse 2}}{51}{table.caption.56}%
+\contentsline {table}{\numberline {35}{\ignorespaces Main REST endpoints used by the web HMI}}{57}{table.caption.65}%
+\contentsline {table}{\numberline {36}{\ignorespaces Complementary roles of the two HMI layers}}{57}{table.caption.66}%
+\contentsline {table}{\numberline {37}{\ignorespaces Validation matrix for the Visiteuse 2 extension}}{59}{table.caption.68}%
+\contentsline {table}{\numberline {38}{\ignorespaces Reusable and machine-specific elements of the extension}}{60}{table.caption.69}%
+\addvspace {10\p@ }
+\addvspace {10\p@ }

@@ -1,0 +1,20 @@
+sequenceDiagram
+    actor Admin
+    participant UI as Interface: Dashboard
+    participant SC as Stops Controller
+    participant ST as SQL table: stops
+    participant CA as SQL table: causes
+
+    Admin->>UI: Choose date/period and team
+    UI->>SC: Request daily stop summary
+    SC->>ST: Aggregate stop count and downtime
+    SC->>CA: Read causes affecting TRS
+    ST-->>SC: Daily stop totals
+    CA-->>SC: TRS impact flags
+    SC-->>UI: KPI source data
+    UI->>UI: Calculate stops, downtime, TRS and analysed days
+    UI-->>Admin: Show KPI cards
+
+    alt No data or API error
+        UI-->>Admin: Show neutral KPI values or error message
+    end

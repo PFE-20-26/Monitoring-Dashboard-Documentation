@@ -1,0 +1,16 @@
+sequenceDiagram
+    actor Admin
+    participant UI as Interface: Causes table
+    participant CC as Causes Controller
+    participant CA as SQL table: causes
+
+    Admin->>UI: Open causes page or apply filters
+    UI->>CC: Request cause list
+    CC->>CA: Select causes with name, description, TRS flag and active status
+    CA-->>CC: Cause records
+    CC-->>UI: Cause list
+    UI-->>Admin: Display cause information
+
+    alt No matching cause or request error
+        UI-->>Admin: Show empty table or error message
+    end

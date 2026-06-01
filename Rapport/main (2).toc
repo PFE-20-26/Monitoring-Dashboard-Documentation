@@ -1,71 +1,91 @@
-\contentsline {chapter}{Acknowledgments}{v}{chapter*.3}%
-\contentsline {section}{General Introduction}{1}{section*.4}%
+\contentsline {section}{General Introduction}{1}{Doc-Start}%
 \contentsline {chapter}{\numberline {1}Preliminary analysis}{2}{chapter.1}%
 \contentsline {section}{\numberline {1}\fontsize {15}{18}\selectfont Presentation of the enterprises}{2}{section.1.1}%
 \contentsline {subsection}{\numberline {1.1}\fontsize {14}{17}\selectfont Technique Solution Et Innovation Industriel (TS2I)}{2}{subsection.1.1.1}%
 \contentsline {subsection}{\numberline {1.2}\fontsize {14}{17}\selectfont TESCA}{3}{subsection.1.1.2}%
 \contentsline {subsubsection}{\numberline {1.2.1}\fontsize {13}{16}\selectfont Presentation of the company}{3}{subsubsection.1.1.2.1}%
-\contentsline {subsubsection}{\numberline {1.2.2}\fontsize {13}{16}\selectfont Technical file}{5}{subsubsection.1.1.2.2}%
+\contentsline {subsubsection}{\numberline {1.2.2}\fontsize {13}{16}\selectfont Technical file}{4}{subsubsection.1.1.2.2}%
 \contentsline {subsubsection}{\numberline {1.2.3}\fontsize {13}{16}\selectfont Organizational chart}{5}{subsubsection.1.1.2.3}%
 \contentsline {section}{\numberline {2}\fontsize {15}{18}\selectfont Case study}{5}{section.1.2}%
 \contentsline {subsection}{\numberline {2.1}\fontsize {14}{17}\selectfont Overview of the Existing System}{5}{subsection.1.2.1}%
 \contentsline {subsection}{\numberline {2.2}\fontsize {14}{17}\selectfont Criticism of the existing system}{6}{subsection.1.2.2}%
 \contentsline {subsubsection}{\numberline {2.2.1}\fontsize {13}{16}\selectfont Limited Data Analysis}{6}{subsubsection.1.2.2.1}%
-\contentsline {subsubsection}{\numberline {2.2.2}\fontsize {13}{16}\selectfont No Real-Time Manager Updates}{6}{subsubsection.1.2.2.2}%
-\contentsline {subsubsection}{\numberline {2.2.3}\fontsize {13}{16}\selectfont Limited Performance Metrics}{6}{subsubsection.1.2.2.3}%
-\contentsline {subsubsection}{\numberline {2.2.4}\fontsize {13}{16}\selectfont Inflexible User Interface and Limited Access}{6}{subsubsection.1.2.2.4}%
+\contentsline {subsubsection}{\numberline {2.2.2}\fontsize {13}{16}\selectfont No Real-Time Manager Updates}{7}{subsubsection.1.2.2.2}%
+\contentsline {subsubsection}{\numberline {2.2.3}\fontsize {13}{16}\selectfont Limited Performance Metrics}{7}{subsubsection.1.2.2.3}%
+\contentsline {subsubsection}{\numberline {2.2.4}\fontsize {13}{16}\selectfont Inflexible User Interface and Limited Access}{7}{subsubsection.1.2.2.4}%
 \contentsline {subsubsection}{\numberline {2.2.5}\fontsize {13}{16}\selectfont Data Quality and Verification}{7}{subsubsection.1.2.2.5}%
 \contentsline {subsubsection}{\numberline {2.2.6}\fontsize {13}{16}\selectfont Lack of Security and Integration}{7}{subsubsection.1.2.2.6}%
 \contentsline {subsubsection}{\numberline {2.2.7}\fontsize {13}{16}\selectfont Scalability Concerns}{7}{subsubsection.1.2.2.7}%
-\contentsline {section}{\numberline {3}\fontsize {15}{18}\selectfont Modeling languages: SysMl}{7}{section.1.3}%
-\contentsline {chapter}{\numberline {2}Architecture and Design}{9}{chapter.2}%
-\contentsline {chapter}{\numberline {3}Implementation}{10}{chapter.3}%
-\contentsline {chapter}{\numberline {4}SQL Optimisation}{11}{chapter.4}%
-\contentsline {section}{\numberline {1}\fontsize {15}{18}\selectfont Context and System Overview}{11}{section.4.1}%
-\contentsline {subsection}{\numberline {1.1}\fontsize {14}{17}\selectfont Context}{11}{subsection.4.1.1}%
-\contentsline {subsection}{\numberline {1.2}\fontsize {14}{17}\selectfont System Overview}{11}{subsection.4.1.2}%
-\contentsline {subsubsection}{\numberline {1.2.1}\fontsize {13}{16}\selectfont Database Structure}{11}{subsubsection.4.1.2.1}%
-\contentsline {subsubsection}{\numberline {1.2.2}\fontsize {13}{16}\selectfont Production Context}{12}{subsubsection.4.1.2.2}%
-\contentsline {subsubsection}{\numberline {1.2.3}\fontsize {13}{16}\selectfont The Key Metric: Percentage of Daily Downtime (PCT)}{12}{subsubsection.4.1.2.3}%
-\contentsline {section}{\numberline {2}\fontsize {15}{18}\selectfont Query A: The Original Implementation}{12}{section.4.2}%
-\contentsline {subsection}{\numberline {2.1}\fontsize {14}{17}\selectfont Implementation}{12}{subsection.4.2.1}%
-\contentsline {subsection}{\numberline {2.2}\fontsize {14}{17}\selectfont Initial Behavior}{14}{subsection.4.2.2}%
-\contentsline {subsection}{\numberline {2.3}\fontsize {14}{17}\selectfont The Root Cause: A Fully Correlated PCT Sub-query}{14}{subsection.4.2.3}%
-\contentsline {subsection}{\numberline {2.4}\fontsize {14}{17}\selectfont SHOW PROFILE Analysis}{14}{subsection.4.2.4}%
-\contentsline {section}{\numberline {3}\fontsize {15}{18}\selectfont Query B: Optimized Implementation}{15}{section.4.3}%
-\contentsline {subsection}{\numberline {3.1}\fontsize {14}{17}\selectfont Motivation}{15}{subsection.4.3.1}%
-\contentsline {subsection}{\numberline {3.2}\fontsize {14}{17}\selectfont Experimental Setup}{15}{subsection.4.3.2}%
-\contentsline {subsection}{\numberline {3.3}\fontsize {14}{17}\selectfont Experiment B1: Simple Indexes}{16}{subsection.4.3.3}%
-\contentsline {subsubsection}{\numberline {3.3.1}\fontsize {13}{16}\selectfont Hypothesis}{16}{subsubsection.4.3.3.1}%
-\contentsline {subsubsection}{\numberline {3.3.2}\fontsize {13}{16}\selectfont Results}{16}{subsubsection.4.3.3.2}%
-\contentsline {subsection}{\numberline {3.4}\fontsize {14}{17}\selectfont Experiment B2: Functional Index}{17}{subsection.4.3.4}%
-\contentsline {subsubsection}{\numberline {3.4.1}\fontsize {13}{16}\selectfont Hypothesis}{17}{subsubsection.4.3.4.1}%
-\contentsline {subsubsection}{\numberline {3.4.2}\fontsize {13}{16}\selectfont Results}{17}{subsubsection.4.3.4.2}%
-\contentsline {subsection}{\numberline {3.5}\fontsize {14}{17}\selectfont Experiment B3: Covering Index}{18}{subsection.4.3.5}%
-\contentsline {subsubsection}{\numberline {3.5.1}\fontsize {13}{16}\selectfont Hypothesis}{18}{subsubsection.4.3.5.1}%
-\contentsline {subsubsection}{\numberline {3.5.2}\fontsize {13}{16}\selectfont Results}{18}{subsubsection.4.3.5.2}%
-\contentsline {subsubsection}{\numberline {3.5.3}\fontsize {13}{16}\selectfont EXPLAIN ANALYZE Output}{19}{subsubsection.4.3.5.3}%
-\contentsline {subsection}{\numberline {3.6}\fontsize {14}{17}\selectfont Side by Side Comparison}{20}{subsection.4.3.6}%
-\contentsline {section}{\numberline {4}\fontsize {15}{18}\selectfont Query C: Breaking the Quadratic Loop}{21}{section.4.4}%
-\contentsline {subsection}{\numberline {4.1}\fontsize {14}{17}\selectfont The Targeted Fix}{21}{subsection.4.4.1}%
-\contentsline {subsection}{\numberline {4.2}\fontsize {14}{17}\selectfont Results}{22}{subsection.4.4.2}%
-\contentsline {subsection}{\numberline {4.3}\fontsize {14}{17}\selectfont EXPLAIN ANALYZE: Diagnosing the Remaining Bottlenecks}{22}{subsection.4.4.3}%
-\contentsline {section}{\numberline {5}\fontsize {15}{18}\selectfont Query D: The Window Function Hypothesis}{23}{section.4.5}%
-\contentsline {subsection}{\numberline {5.1}\fontsize {14}{17}\selectfont The Reasoning Behind the Attempt}{23}{subsection.4.5.1}%
-\contentsline {subsection}{\numberline {5.2}\fontsize {14}{17}\selectfont Implementation}{24}{subsection.4.5.2}%
-\contentsline {subsection}{\numberline {5.3}\fontsize {14}{17}\selectfont Measured Result}{24}{subsection.4.5.3}%
-\contentsline {subsection}{\numberline {5.4}\fontsize {14}{17}\selectfont Root Cause: Sort Buffer Spill to Disk}{25}{subsection.4.5.4}%
-\contentsline {subsubsection}{\numberline {5.4.1}\fontsize {13}{16}\selectfont How MySQL Executes Window Functions}{25}{subsubsection.4.5.4.1}%
-\contentsline {subsection}{\numberline {5.5}\fontsize {14}{17}\selectfont Learnings from Query D}{25}{subsection.4.5.5}%
-\contentsline {section}{\numberline {6}\fontsize {15}{18}\selectfont Query E: Big Data Principles Applied to MySQL}{25}{section.4.6}%
-\contentsline {subsection}{\numberline {6.1}\fontsize {14}{17}\selectfont Schema Redesign}{26}{subsection.4.6.1}%
-\contentsline {subsubsection}{\numberline {6.1.1}\fontsize {13}{16}\selectfont Stored Generated Columns}{26}{subsubsection.4.6.1.1}%
-\contentsline {subsubsection}{\numberline {6.1.2}\fontsize {13}{16}\selectfont Why Each Index Exists}{26}{subsubsection.4.6.1.2}%
-\contentsline {subsection}{\numberline {6.2}\fontsize {14}{17}\selectfont The Optimized Query}{27}{subsection.4.6.2}%
-\contentsline {subsubsection}{\numberline {6.2.1}\fontsize {13}{16}\selectfont Results}{28}{subsubsection.4.6.2.1}%
-\contentsline {section}{\numberline {7}\fontsize {15}{18}\selectfont Performance Visualization}{29}{section.4.7}%
-\contentsline {subsection}{\numberline {7.1}\fontsize {14}{17}\selectfont Query Execution Time Comparison}{29}{subsection.4.7.1}%
-\contentsline {chapter}{\numberline {A}EXPLAIN ANALYZE Traces}{32}{chapter.A}%
-\contentsline {section}{\numberline {1}Query B on stopsB1 (LIMIT 50)}{32}{section.A.1}%
-\contentsline {chapter}{\numberline {B}Optimized Table Schema with Stored Generated Columns}{33}{chapter.B}%
-\contentsline {section}{\numberline {1}Complete Schema Definition}{33}{section.B.1}%
+\contentsline {subsection}{\numberline {2.3}\fontsize {14}{17}\selectfont Specifications Book}{8}{subsection.1.2.3}%
+\contentsline {subsubsection}{\numberline {2.3.1}\fontsize {13}{16}\selectfont Functional Requirements}{9}{subsubsection.1.2.3.1}%
+\contentsline {subsubsection}{\numberline {2.3.2}\fontsize {13}{16}\selectfont Non-functional Requirements}{10}{subsubsection.1.2.3.2}%
+\contentsline {section}{\numberline {3}\fontsize {15}{18}\selectfont Modeling languages: SysMl}{10}{section.1.3}%
+\contentsline {chapter}{\numberline {2}Architecture and Design}{12}{chapter.2}%
+\contentsline {section}{\numberline {1}Dashboard}{12}{section.2.1}%
+\contentsline {subsection}{\numberline {1.1}Use Case Diagram}{12}{subsection.2.1.1}%
+\contentsline {subsection}{\numberline {1.2}Use Case Description}{13}{subsection.2.1.2}%
+\contentsline {subsection}{\numberline {1.3}Sequence - Overview Consultation}{14}{subsection.2.1.3}%
+\contentsline {subsection}{\numberline {1.4}Sequence - Stop Analysis and Excel Export}{14}{subsection.2.1.4}%
+\contentsline {section}{\numberline {2}Technical Revision Context}{14}{section.2.2}%
+\contentsline {section}{\numberline {3}Existing Machine and Functional Reference}{15}{section.2.3}%
+\contentsline {subsection}{\numberline {3.1}Complete assembly view}{15}{subsection.2.3.1}%
+\contentsline {section}{\numberline {4}CAD Assembly Correction}{15}{section.2.4}%
+\contentsline {subsection}{\numberline {4.1}Mate review method}{15}{subsection.2.4.1}%
+\contentsline {subsection}{\numberline {4.2}Final assembly validation}{15}{subsection.2.4.2}%
+\contentsline {section}{\numberline {5}Industrial Title Block Standardization}{16}{section.2.5}%
+\contentsline {section}{\numberline {6}Technical Drawing Package}{16}{section.2.6}%
+\contentsline {subsection}{\numberline {6.1}Drawing package organization}{16}{subsection.2.6.1}%
+\contentsline {subsection}{\numberline {6.2}Required views for the parts}{16}{subsection.2.6.2}%
+\contentsline {section}{\numberline {7}Mechanical Reading After Correction}{16}{section.2.7}%
+\contentsline {subsection}{\numberline {7.1}CAD views of the functional blocks}{17}{subsection.2.7.1}%
+\contentsline {subsubsection}{\numberline {7.1.1}Unwinding Unit -- Input Roll and Drive Support}{17}{subsubsection.2.7.1.1}%
+\contentsline {subsubsection}{\numberline {7.1.2}Inspection Unit -- Central Viewing and Guiding Section}{17}{subsubsection.2.7.1.2}%
+\contentsline {subsubsection}{\numberline {7.1.3}Rewinding Unit -- Output Roll and Take-up Drive}{18}{subsubsection.2.7.1.3}%
+\contentsline {section}{\numberline {8}Conclusion}{19}{section.2.8}%
+\contentsline {chapter}{\numberline {3}Realisation}{20}{chapter.3}%
+\contentsline {section}{\numberline {1}Dashboard Realisation}{20}{section.3.1}%
+\contentsline {subsection}{\numberline {1.1}Overview Dashboard - Single-Day Mode}{20}{subsection.3.1.1}%
+\contentsline {subsection}{\numberline {1.2}Overview Dashboard - Period Mode}{21}{subsection.3.1.2}%
+\contentsline {subsection}{\numberline {1.3}Stops and Analytics Page}{22}{subsection.3.1.3}%
+\contentsline {section}{\numberline {2}Operational Context and Performance Metric}{23}{section.3.2}%
+\contentsline {section}{\numberline {3}Baseline Diagnosis: Query A}{24}{section.3.3}%
+\contentsline {section}{\numberline {4}Optimisation Path}{24}{section.3.4}%
+\contentsline {subsection}{\numberline {4.1}Index-Only Experiments}{24}{subsection.3.4.1}%
+\contentsline {subsection}{\numberline {4.2}Algorithmic Rewrite: Query C}{25}{subsection.3.4.2}%
+\contentsline {subsection}{\numberline {4.3}Window Function Test: Query D}{25}{subsection.3.4.3}%
+\contentsline {section}{\numberline {5}Final Architecture: Query E}{26}{section.3.5}%
+\contentsline {subsection}{\numberline {5.1}Stored Generated Columns}{26}{subsection.3.5.1}%
+\contentsline {subsection}{\numberline {5.2}Index Design}{26}{subsection.3.5.2}%
+\contentsline {subsection}{\numberline {5.3}Optimised Query}{26}{subsection.3.5.3}%
+\contentsline {section}{\numberline {6}Results and Discussion}{27}{section.3.6}%
+\contentsline {section}{\numberline {7}Conclusion}{28}{section.3.7}%
+\contentsline {chapter}{\numberline {4}Extension of the Supervision Architecture to Visiteuse 2}{29}{chapter.4}%
+\contentsline {section}{Introduction}{29}{section*.34}%
+\contentsline {section}{\numberline {1}Positioning of the Extension}{29}{section.4.1}%
+\contentsline {subsection}{\numberline {1.1}Extension Beyond the Initial Specifications}{29}{subsection.4.1.1}%
+\contentsline {subsection}{\numberline {1.2}Technical Objectives}{29}{subsection.4.1.2}%
+\contentsline {section}{\numberline {2}Implementation Methodology}{30}{section.4.2}%
+\contentsline {subsection}{\numberline {2.1}Adopted Work Methodology}{30}{subsection.4.2.1}%
+\contentsline {subsection}{\numberline {2.2}Preserved Functional Principle}{31}{subsection.4.2.2}%
+\contentsline {section}{\numberline {3}Programming and Control Logic}{31}{section.4.3}%
+\contentsline {subsection}{\numberline {3.1}Ladder Development in AutoStudio}{31}{subsection.4.3.1}%
+\contentsline {subsection}{\numberline {3.2}Timer Adaptation Through TON Blocks}{32}{subsection.4.3.2}%
+\contentsline {subsection}{\numberline {3.3}PLC Synchronization and Variables Used}{33}{subsection.4.3.3}%
+\contentsline {subsection}{\numberline {3.4}Timestamp Register Format}{34}{subsection.4.3.4}%
+\contentsline {subsection}{\numberline {3.5}Stop-Cause Encoding}{35}{subsection.4.3.5}%
+\contentsline {section}{\numberline {4}Industrial Connectivity and SQL Integration}{35}{section.4.4}%
+\contentsline {subsection}{\numberline {4.1}Node-RED Configuration for the Veichi Profile}{35}{subsection.4.4.1}%
+\contentsline {subsection}{\numberline {4.2}Reading Stop Data}{36}{subsection.4.4.2}%
+\contentsline {subsection}{\numberline {4.3}Integration with the Existing SQL Recording Logic}{37}{subsection.4.4.3}%
+\contentsline {section}{\numberline {5}Development of Supervision Interfaces}{37}{section.4.5}%
+\contentsline {subsection}{\numberline {5.1}Local Veichi HMI Developed with VI20}{37}{subsection.4.5.1}%
+\contentsline {subsection}{\numberline {5.2}Centralized Web HMI}{38}{subsection.4.5.2}%
+\contentsline {subsection}{\numberline {5.3}Complementarity Between the Local HMI and the Web HMI}{40}{subsection.4.5.3}%
+\contentsline {section}{\numberline {6}Functional Validation of the Extension}{41}{section.4.6}%
+\contentsline {subsection}{\numberline {6.1}Test Scenarios}{41}{subsection.4.6.1}%
+\contentsline {subsection}{\numberline {6.2}Results Obtained}{41}{subsection.4.6.2}%
+\contentsline {section}{\numberline {7}Contribution of the Extension to the Project}{41}{section.4.7}%
+\contentsline {subsection}{\numberline {7.1}Technical Contribution}{41}{subsection.4.7.1}%
+\contentsline {subsection}{\numberline {7.2}Industrial Contribution}{41}{subsection.4.7.2}%
+\contentsline {subsection}{\numberline {7.3}Personal and Pedagogical Contribution}{41}{subsection.4.7.3}%
+\contentsline {section}{Conclusion}{42}{subsection.4.7.3}%

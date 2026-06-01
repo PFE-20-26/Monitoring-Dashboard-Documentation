@@ -1,0 +1,23 @@
+sequenceDiagram
+    actor Admin
+    participant UI as Interface: Causes page
+    participant CC as Causes Controller
+    participant CA as SQL table: causes
+
+    Admin->>UI: Open causes management page
+    UI->>CC: Request causes with default filters
+    CC->>CA: Read active causes
+    CA-->>CC: Cause rows
+    CC-->>UI: Cause list
+    UI-->>Admin: Display causes table and actions
+
+    opt Search or include inactive causes
+        Admin->>UI: Change filter/search
+        UI->>CC: Request filtered causes
+        CC->>CA: Select causes by filters
+        CA-->>CC: Filtered rows
+        CC-->>UI: Filtered cause list
+        UI-->>Admin: Refresh table
+    end
+
+    note over UI: View, create and delete/deactivate are extension flows.

@@ -1,0 +1,24 @@
+sequenceDiagram
+    actor Admin
+    participant UI as Interface: Cause form
+    participant CC as Causes Controller
+    participant CA as SQL table: causes
+
+    Admin->>UI: Click New Cause
+    UI-->>Admin: Show create-cause form
+    Admin->>UI: Enter name, description, TRS flag and active status
+    UI->>UI: Validate required fields
+    UI->>CC: Submit new cause
+    CC->>CC: Validate cause data
+    CC->>CA: Insert new cause
+    CA-->>CC: Saved cause
+    CC-->>UI: Creation success
+    UI->>CC: Refresh cause list
+    CC->>CA: Read causes
+    CA-->>CC: Updated list
+    CC-->>UI: Updated list
+    UI-->>Admin: Close form and show new cause
+
+    alt Invalid data or save error
+        UI-->>Admin: Show validation or creation error
+    end

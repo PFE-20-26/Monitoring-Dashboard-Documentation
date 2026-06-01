@@ -1,4 +1,0 @@
-\begin{MintedVerbatim}[commandchars=\\\{\}]
-\PYG{k}{ALTER}\PYG{+w}{ }\PYG{k}{TABLE}\PYG{+w}{ }\PYG{n}{stopsB3}
-\PYG{+w}{  }\PYG{k}{ADD}\PYG{+w}{ }\PYG{k}{INDEX}\PYG{+w}{ }\PYG{n}{idx\PYGZus{}covering\PYGZus{}queryb}\PYG{+w}{ }\PYG{p}{(}\PYG{n}{Jour}\PYG{p}{,}\PYG{+w}{ }\PYG{n}{Debut}\PYG{p}{,}\PYG{+w}{ }\PYG{n}{Fin}\PYG{p}{,}\PYG{+w}{ }\PYG{n}{cause\PYGZus{}id}\PYG{p}{);}
-\end{MintedVerbatim}

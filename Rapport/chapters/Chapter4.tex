@@ -1,1137 +1,458 @@
-\chapter{SQL Optimisation}
+\chapter{Extension of the Supervision Architecture to Visiteuse 2}
 
 \section*{Introduction}
+\addcontentsline{toc}{section}{Introduction}
+This chapter presents the extension of the stop-supervision system to \textit{Visiteuse 2}, a second production machine equipped with a Veichi VC3 PLC. The work focuses on adapting the PLC logic, Modbus TCP exchange, Node-RED processing, SQL insertion and HMI layers to this new machine.
 
-\hspace*{\parindent} This chapter documents the complete optimization journey of our MySQL database that collapsed under its own computational weight from the first symptoms of degradation, through systematic diagnosis, to a confirmed final architecture that achieves sub-second response times at full production scale.
+\section{Positioning of the Extension}
 
-\section{\fontsize{15}{18}\selectfont Context and System Overview}
+\subsection{Extension Beyond the Initial Specifications}
+The initial project focused on implementing a stop-supervision and stop-recording solution for one production machine. After this first implementation, the same functional principle was adapted to Visiteuse 2 in order to verify that it could be rebuilt on another PLC platform.
 
-\subsection{\fontsize{14}{17}\selectfont Context}
+This extension represents an additional contribution to the project. It preserves the same operating principle: detection of a stop state, classification according to the stop duration, stop-cause selection, restart blocking for significant stops and database archiving.
 
-\hspace*{\parindent} At the start of this project, the database contained a working implementation. The queries returned correct results. The system appeared functional. However, as the dataset grew during testing toward realistic production volumes, a fundamental problem emerged: what worked at a few thousand rows began to show alarming degradation at tens of thousands and became completely unusable when approaching the million-row scale that real multi-year industrial deployments would inevitably reach.
+The interest of this extension is both practical and technical. From a practical point of view, it gives the company a concrete example of how the supervision method can be reused. From a technical point of view, it required working with the Veichi VC3 PLC, the AutoStudio programming environment, the VI20 local HMI and a dedicated Node-RED communication profile.
 
-\subsection{\fontsize{14}{17}\selectfont System Overview}
+\subsection{Technical Objectives}
+The extension to Visiteuse 2 was structured around four objectives:
 
-
-\subsubsection{\fontsize{13}{16}\selectfont Database Structure}
-
-\hspace*{\parindent} The production database consists of four main tables: stops (machine downtime events), causes (reason categories), vitesse (machine speed tracking) and metrage (distance metrics). This optimization focuses on the stops and causes tables, which form the core of the dashboard queries and represent the primary performance challenge.
-
-The stops table stores one record per machine stop event:
-
-\setcounter{table}{1}
-\begin{table}[H]
-\centering
-\caption{Core stops table structure}
-\label{tab:stops_structure}
-\setlength{\extrarowheight}{4pt}
-\begin{tabular}{@{}p{1.6cm}p{1.8cm}p{3.8cm}p{1.8cm}@{}}
-    \toprule
-    \rowcolor[HTML]{1A5490}
-    \textcolor{white}{\textbf{Column}} & \textcolor{white}{\textbf{Type}} & \textcolor{white}{\textbf{Description}} & \textcolor{white}{\textbf{Constraint}} \\
-    \midrule
-    \rowcolor[HTML]{E8F4F8}
-    \texttt{id} & INT & Unique identifier & PK \\
-    \rowcolor[HTML]{FFFFFF}
-    \texttt{Jour} & DATE & Stop date & NN \\
-    \rowcolor[HTML]{E8F4F8}
-    \texttt{Debut} & TIME & Start time & NN \\
-    \rowcolor[HTML]{FFFFFF}
-    \texttt{Fin} & TIME & End time & NN \\
-    \rowcolor[HTML]{E8F4F8}
-    \texttt{cause} & INT & Cause reference & FK \\
-    \bottomrule
-\end{tabular}
-\end{table}
-
-\subsubsection{\fontsize{13}{16}\selectfont Production Context}
-
-\hspace*{\parindent} The industrial context imposes specific constraints that directly shape every optimization decision:
-
-\begin{itemize}
-
-\item \textbf{Three production teams (\textit{équipes}):} Team 1 works 06:00--14:00, Team 2 works 14:00--22:00, Team 3 works 22:00--06:00.
-
-\item \textbf{Shifted production day:} Stops occurring before 06:00 belong to the \textit{previous} calendar day's Team 3 shift. This introduces a derived \textit{production day} concept that differs from the calendar date.
-
-\item \textbf{Insert-heavy workload:} 800 -- 1,500 stop events per day, inserted automatically via machine controllers. Stops are never deleted.
-
-\item \textbf{Dashboard usage:} Up to three supervisors query date-range filtered views throughout each shift. Sub-second response is the target.
-
+\begin{itemize}[leftmargin=1.1cm]
+  \item develop a ladder program for the Veichi VC3 PLC while preserving the stop-recording principle used in the main project;
+  \item configure Modbus TCP communication between Node-RED and the Veichi PLC according to the VC3 addressing convention;
+  \item integrate the stop data into the existing SQL recording logic used by the project;
+  \item provide two complementary interfaces: a VI20 local HMI near the machine and a browser-based web HMI for centralized supervision.
 \end{itemize}
-
-\subsubsection{\fontsize{13}{16}\selectfont The Key Metric: Percentage of Daily Downtime (PCT)}
-
-\hspace*{0.700cm} The primary computed field in every query is the percentage of total downtime that each stop represents within its production day and team:
-
-\begin{equation}
-\text{PCT} = \frac{\text{stop duration (seconds)}}{\text{total team downtime for that production day}} \times 100
-\end{equation}
-
-\hspace*{0.1cm} This metric is deceptively simple to state but computationally expensive at scale. The denominator requires aggregating all stops for the \textit{same team on the same production day} for every single row in the result. How that aggregation is implemented is the central performance challenge of this entire part.
-
-\section{\fontsize{15}{18}\selectfont Query A: The Original Implementation}
-
-\subsection{\fontsize{14}{17}\selectfont Implementation}
-
-\hspace*{0.700cm} The original query was written to correctly compute all required fields for the dashboard: stop times, duration, team assignment, cause information and the PCT metric. The implementation is shown in Listing 4.1.
-
-\begin{minted}[linenos,bgcolor=codebg,fontsize=\small,frame=lines,framesep=8pt,rulecolor=codeframe,framerule=1.5pt]{sql}
-SELECT
-    s.Debut AS startTime,
-    s.Fin AS stopTime,
-    CASE
-        WHEN s.Fin IS NULL THEN NULL
-        WHEN s.Fin >= s.Debut
-            THEN TIME_TO_SEC(s.Fin) - TIME_TO_SEC(s.Debut)
-        ELSE (TIME_TO_SEC(s.Fin) + 86400) -
-            TIME_TO_SEC(s.Debut)
-    END AS duree_secondes,
-    (SELECT c.name FROM causes c
-        WHERE c.id = s.cause_id LIMIT 1) AS cause,
-    (SELECT c.affect_trs FROM causes c
-        WHERE c.id = s.cause_id LIMIT 1) AS affect_trs,
-    ROUND(
-        CASE
-            WHEN s.Fin IS NULL THEN NULL
-            WHEN s.Fin >= s.Debut
-                THEN TIME_TO_SEC(s.Fin) - TIME_TO_SEC(s.Debut)
-            ELSE (TIME_TO_SEC(s.Fin)+86400)-TIME_TO_SEC(s.Debut)
-        END
-    ) * 100.0
-    / NULLIF((
-        SELECT SUM(
-            CASE
-                WHEN sx.Fin IS NULL THEN 0
-                WHEN sx.Fin >= sx.Debut
-                    THEN TIME_TO_SEC(sx.Fin) -
-                        TIME_TO_SEC(sx.Debut)
-                ELSE (TIME_TO_SEC(sx.Fin)+86400)-
-                    TIME_TO_SEC(sx.Debut)
-            END
-        )
-        FROM stops sx
-        WHERE DATE_FORMAT(
-            IF(sx.Debut < '06:00:00',
-                DATE_SUB(sx.Jour, INTERVAL 1 DAY), sx.Jour),
-            '%Y-%m-%d'
-        ) = DATE_FORMAT(
-            IF(s.Debut < '06:00:00',
-                DATE_SUB(s.Jour, INTERVAL 1 DAY), s.Jour),
-            '%Y-%m-%d'
-        ), 0), 2
-    AS pct
-FROM stops s
-WHERE DATE_FORMAT(
-    IF(s.Debut < '06:00:00',
-        DATE_SUB(s.Jour, INTERVAL 1 DAY), s.Jour),
-    '%Y-%m-%d'
-) BETWEEN @from AND @to;
-\end{minted}
-
-\textit{Listing 4.1: Query A --- Original Implementation}
-
-\subsection{\fontsize{14}{17}\selectfont Initial Behavior}
-
-\hspace*{\parindent} At small row counts, Query A functions correctly and returns accurate results. For an early testing phase, it raises no alarms.
-
-But as the data grows, the pattern in Table 2 reveals something alarming: each time the row count doubles, the execution time does not double, it quadruples. This is the signature of O(n$^2$) complexity.
-
-\begin{table}[H]
-\centering
-\caption{Query A measurements}
-\label{tab:query_a_measurements_3}
-\setlength{\extrarowheight}{4pt}
-\begin{tabular}{@{}p{1.8cm}p{2cm}p{4.5cm}@{}}
-    \toprule
-    \rowcolor[HTML]{1A5490}
-    \textcolor{white}{\textbf{Rows}} & \textcolor{white}{\textbf{Time (s)}} & \textcolor{white}{\textbf{Observation}} \\
-    \midrule
-    \rowcolor[HTML]{E8F4F8}
-    100 & 0.291 & Fast, no concern \\
-    \rowcolor[HTML]{FFFFFF}
-    500 & 7.812 & Slightly slow but tolerable \\
-    \rowcolor[HTML]{E8F4F8}
-    1,000 & 28.347 & First warning sign \\
-    \rowcolor[HTML]{FFFFFF}
-    1,500 & 67.093 & Clearly problematic \\
-    \rowcolor[HTML]{E8F4F8}
-    2,000 & 114.156 & Unusable in production \\
-    \rowcolor[HTML]{FFFFFF}
-    3,000 & 273.987 & \\
-    \rowcolor[HTML]{E8F4F8}
-    5,000 & 701.245 & \\
-    \rowcolor[HTML]{FFFFFF}
-    10,000 & 3,041.678 & \\
-    \rowcolor[HTML]{E8F4F8}
-    14,000 & 5,512.934 & Testing stopped here \\
-    \rowcolor[HTML]{FFFFFF}
-    1,000,000 & $\approx$ 329 days & Projected via $k \cdot n^2$ \\
-    \bottomrule
-\end{tabular}
-\end{table}
-\subsection{\fontsize{14}{17}\selectfont The Root Cause: A Fully Correlated PCT Sub-query}
-
-\hspace*{\parindent} The measured growth follows a quadratic pattern:
-
-\begin{equation}
-T_{\text{Query B}}(n) \approx k \cdot n^2
-\end{equation}
-
-\hspace*{\parindent} where $n$ is the number of rows and $k$ is a constant representing the per-comparison cost. Compounding this, the correlated subquery uses a non-sargable predicate  \texttt{DATE\_FORMAT(IF(...))}  which wraps the column in a function call, making it impossible for MySQL to use any index even if one existed on \texttt{Debut} or \texttt{Jour}.
-
-\hspace*{\parindent} The fundamental problem with Query B is the PCT denominator computation. For every single row $s$ in the outer query, MySQL fires a full scan of the entire \texttt{stops} table to compute the daily total.
-
-\subsection{\fontsize{14}{17}\selectfont SHOW PROFILE Analysis}
-
-\hspace*{\parindent} To obtain quantitative evidence of where time was being spent, MySQL's SHOW PROFILE was used with a 5-row LIMIT on the outer query. Even with only 5 outer rows processed, the profile captured 93 execution cycles consuming 1,759 ms in total.
-
-\begin{table}[H]
-\centering
-\caption{SHOW PROFILE results for Query A}
-\label{tab:show_profile_query_b}
-\setlength{\extrarowheight}{4pt}
-\begin{tabular}{@{}p{6.5cm}p{3cm}p{2.5cm}@{}}
-    \toprule
-    \textbf{Phase} & \textbf{Duration (ms)} & \textbf{\% of total} \\
-    \midrule
-    executing (correlated subquery loop) & 1,759.6 & 99.94\% \\
-    freeing items & 0.357 & 0.02\% \\
-    logging slow query & 0.489 & 0.03\% \\
-    closing tables & 0.033 & 0.00\% \\
-    cleaning up & 0.065 & 0.00\% \\
-    Other & 0.101 & 0.01\% \\
-    \midrule
-    \textbf{Total} & \textbf{1,760.6} & \textbf{100\%} \\
-    \bottomrule
-\end{tabular}
-\end{table}
-\hspace*{\parindent} This confirms that almost all time (99.94\%) is spent inside the correlated
-subquery loop, with all other database operations ( table opening, memory allocation, logging, cleanup )account
-for just 1.045ms combined, validating the O(n$^2$) diagnosis and highlighting the denominator computation
-as the dominant bottleneck.
-
-\section{\fontsize{15}{18}\selectfont Query B: Optimized Implementation}
-
-\subsection{\fontsize{14}{17}\selectfont Motivation}
-
-\hspace*{0.777cm} Before restructuring the query, a natural question arises: is it possible to achieve acceptable performance on Query B through index engineering alone, without touching the query itself? This question is not merely academic, it represents the first instinct of any DataBase Administrator confronted with a slow query: \textit{add an index}. This chapter documents three systematic experiments that answer this question definitively.
-
-\hspace*{0.1cm} Three index strategies are evaluated on identical copies of the \texttt{stops} table (\texttt{stopsB1}, \texttt{stopsB2}, \texttt{stopsB3}), each running the same unmodified Query B against a different index configuration. The results draw a clear line between what indexing can and cannot accomplish.
-
-\subsection{\fontsize{14}{17}\selectfont Experimental Setup}
-
-\hspace*{\parindent} Three copies of the \texttt{stops} table were created with identical data but different index configurations. Each benchmark table contains approximately 10,000 rows, representative of roughly one week of real industrial data at 1,200 stops per day.
-
-\begin{table}[H]
-\centering
-\small
-\caption{Index configuration summary for all three experimental tables}
-\label{tab:index_config_summary}
-\setlength{\extrarowheight}{2pt}
-\begin{tabular}{@{}p{1.8cm}p{3cm}p{6cm}@{}}
-    \toprule
-    \rowcolor[HTML]{1A5490}
-    \textcolor{white}{\textbf{Table}} & \textcolor{white}{\textbf{Strategy}} & \textcolor{white}{\textbf{Indexes added}} \\
-    \midrule
-    \rowcolor[HTML]{E8F4F8}
-    \texttt{stopsB1} & Simple/naïve & \texttt{idx\_jour} (Jour), \texttt{idx\_debut} (Debut), \texttt{idx\_cause} (cause\_id) \\
-    \rowcolor[HTML]{FFFFFF}
-    \texttt{stopsB2} & Functional & \texttt{idx\_prod\_day\_func} on \texttt{DATE\_FORMAT(IF(...))}, \texttt{idx\_cause} (cause\_id) \\
-    \rowcolor[HTML]{E8F4F8}
-    \texttt{stopsB3} & Covering & \texttt{idx\_covering\_queryb} (Jour, Debut, Fin, cause\_id) \\
-    \bottomrule
-\end{tabular}
-\end{table}
-
-\subsection{\fontsize{14}{17}\selectfont Experiment B1: Simple Indexes}
-
-\subsubsection{\fontsize{13}{16}\selectfont Hypothesis}
-
-\hspace*{\parindent} Adding individual column indexes on Jour, Debut, and cause\_id is the most common first response to a slow query. The hypothesis is that MySQL will use \texttt{idx\_jour} or \texttt{idx\_debut} to accelerate the outer \texttt{WHERE} clause filter and the inner correlated subquery's \texttt{WHERE} condition.
-
-\subsubsection{\fontsize{13}{16}\selectfont Results}
-
-\hspace*{\parindent} The results confirm that simple column indexes provide minimal improvement. Despite the indexes being present, MySQL's optimizer cannot use them effectively because of the non-sargable \texttt{DATE\_FORMAT(IF(...))} predicates.
-
-\begin{table}[H]
-\centering
-\small
-\caption{stopsB1 benchmark results with simple indexes}
-\label{tab:stopsb1_results}
-\setlength{\extrarowheight}{2pt}
-\begin{tabular}{@{}p{2cm}p{2cm}p{5cm}@{}}
-    \toprule
-    \rowcolor[HTML]{1A5490}
-    \textcolor{white}{\textbf{Rows}} & \textcolor{white}{\textbf{Time (s)}} & \textcolor{white}{\textbf{Observation}} \\
-    \midrule
-    \rowcolor[HTML]{E8F4F8}
-    100 & 0.026 & Tiny overhead vs. no index \\
-    \rowcolor[HTML]{FFFFFF}
-    500 & 0.772 & \\
-    \rowcolor[HTML]{E8F4F8}
-    1,000 & 4.381 & \\
-    \rowcolor[HTML]{FFFFFF}
-    2,000 & 15.803 & \\
-    \rowcolor[HTML]{E8F4F8}
-    5,000 & 95.841 & \\
-    \rowcolor[HTML]{FFFFFF}
-    10,000 & 437.9 & O(n$^2$) pattern clearly visible \\
-    \bottomrule
-\end{tabular}
-\end{table}
-
-\hspace*{\parindent} The \texttt{EXPLAIN ANALYZE} output exposes the root cause directly. The innermost node of the execution plan reveals:
-
-\begin{minted}[linenos,bgcolor=codebg,fontsize=\small,frame=lines,framesep=8pt,rulecolor=codeframe,framerule=1.5pt]{text}
--> Table scan on sx  (cost=805 rows=8000)
-(actual time=0.283..0.337 rows=8000 loops=98)
-\end{minted}
-
-\textit{Listing 4.2: EXPLAIN ANALYZE excerpt --- stopsB1 full table scan}
-
-\hspace*{\parindent} For each of the 98 outer rows examined, MySQL performs a full 8,000-row
-scan of \texttt{stopsB1} to compute the PCT denominator --- 784,000 row reads to produce a
-50-row result. The complete \texttt{EXPLAIN ANALYZE} trace is provided in
-Appendix~\ref{app:explain-b1}.
-
-\begin{tcolorbox}[
-enhanced,
-colback=white,
-colframe=red!70!black,
-colbacktitle=red!70!black,
-coltitle=white,
-fonttitle=\bfseries\fontsize{13}{15}\selectfont,
-title=B1 Verdict: Indexes Ignored,
-boxrule=0.8pt,
-arc=3pt
-]
-
-\textbf{\texttt{idx\_jour}} and \textbf{\texttt{idx\_debut}}: silently rejected
-by the optimizer. \texttt{DATE\_FORMAT(IF(...))} wraps the column, making the
-predicate non-sargable.
-
-\medskip
-\textbf{\texttt{idx\_cause}}: used for the \texttt{causes} lookups (already a
-PRIMARY key lookup --- no additional gain).
-
-\medskip
-\textbf{Net improvement}: approximately 0--5\%. The full table scan on the inner
-subquery is completely unchanged.
-
-\end{tcolorbox}
-
-\subsection{\fontsize{14}{17}\selectfont Experiment B2: Functional Index}
-
-\subsubsection{\fontsize{13}{16}\selectfont Hypothesis}
-
-\hspace*{\parindent} MySQL 8.0 supports \textit{functional indexes} --- indexes on expressions rather than raw columns. If the index stores the exact value of \texttt{DATE\_FORMAT(IF(Debut < '06:00:00', DATE\_SUB(Jour, INTERVAL 1 DAY), Jour), '\%Y-\%m-\%d')} for every row, then the correlated subquery's \texttt{WHERE} clause, which tests exactly that expression, should be able to use the index and avoid the full table scan.
-
-\subsubsection{\fontsize{13}{16}\selectfont Results}
-
-\hspace*{\parindent} The results reveal that despite the functional index being present, the performance degradation continues following the same O(n$^2$) pattern as Query B with simple indexes. Functional indexes, while theoretically attractive, provide no measurable improvement for this particular query structure.
-
-\begin{table}[H]
-\centering
-\small
-\caption{stopsB2 benchmark results with functional indexes}
-\label{tab:stopsb2_results}
-\setlength{\extrarowheight}{2pt}
-\begin{tabular}{@{}p{2cm}p{2cm}p{5cm}@{}}
-    \toprule
-    \rowcolor[HTML]{1A5490}
-    \textcolor{white}{\textbf{Rows}} & \textcolor{white}{\textbf{Time (s)}} & \textcolor{white}{\textbf{Observation}} \\
-    \midrule
-    \rowcolor[HTML]{E8F4F8}
-    100 & 0.023 & Marginal improvement vs. B1 \\
-    \rowcolor[HTML]{FFFFFF}
-    500 & 1.028 & \\
-    \rowcolor[HTML]{E8F4F8}
-    1,000 & 4.023 & \\
-    \rowcolor[HTML]{FFFFFF}
-    2,000 & 15.718 & \\
-    \rowcolor[HTML]{E8F4F8}
-    5,000 & 96.542 & O(n$^2$) pattern clearly visible \\
-    \rowcolor[HTML]{FFFFFF}
-    10,000 & 451.7 & \\
-    \bottomrule
-\end{tabular}
-\end{table}
-
-\hspace*{\parindent} The \texttt{EXPLAIN ANALYZE} output for Query B on \texttt{stopsB2} reveals that despite the functional index, MySQL still cannot effectively accelerate the correlated subquery:
-
-\begin{minted}[linenos,bgcolor=codebg,fontsize=\small,frame=lines,framesep=8pt,rulecolor=codeframe,framerule=1.5pt]{text}
--> Limit: 50 row(s) (cost=805 rows=50)
-   (actual time=0.118..0.228 rows=50 loops=1)
--> Table scan on s (cost=805 rows=8000)
-   (actual time=0.117..0.206 rows=50 loops=1)
-
--> Select #4 (subquery in projection; dependent)
--> Aggregate: sum(CASE WHEN sx.Fin IS NULL ...)
-   (actual time=23.4..23.4 rows=1 loops=98)
--> Filter: (date_format(if((sx.Debut < '06:00:00'),
-     (sx.Jour - interval 1 day),sx.Jour),'%Y-%m-%d')
-     = date_format(...))
-   (cost=1605 rows=8000)
-   (actual time=0.41..23.3 rows=66 loops=98)
--> Table scan on sx (cost=1605 rows=8000)
-   (actual time=0.348..7.35 rows=8000 loops=98)
-\end{minted}
-
-\textit{Listing 4.3: EXPLAIN ANALYZE for Query B on stopsB2 (LIMIT 50)}
-
-\hspace*{\parindent} The critical observation is that the correlated subquery still performs a full table scan (\texttt{Table scan on sx}) for each of the 98 outer rows examined, despite the functional index being present. The functional index is not being used because MySQL's optimizer cannot recognize that the expression in the index matches the predicate in the \texttt{WHERE} clause when wrapped in additional function calls.
-
-\begin{tcolorbox}[
-enhanced,
-colback=white,
-colframe=magenta!70!black,
-colbacktitle=magenta!70!black,
-coltitle=white,
-fonttitle=\bfseries\fontsize{13}{15}\selectfont,
-title=B2 Verdict: Functional Index Rejected,
-boxrule=0.8pt,
-arc=3pt
-]
-
-The functional index exists in the catalog but the optimizer cannot match it to the correlated subquery's \texttt{WHERE} predicate.
-
-\medskip
-\textbf{Result}: B2 is 28\% slower than B1 (23.4 ms vs 18.2 ms per inner loop) due to optimization overhead with zero benefit.
-
-\medskip
-This is the most instructive negative result: even a theoretically correct index can fail silently if the expression matching is not exact. Strategy can fail invisibly if expression matching is not exact.
-
-\end{tcolorbox}
-
-\subsection{\fontsize{14}{17}\selectfont Experiment B3: Covering Index}
-
-\subsubsection{\fontsize{13}{16}\selectfont Hypothesis}
-
-\hspace*{\parindent} A \textit{covering index} contains every column that a query touches, allowing MySQL to read from the index structure instead of the main table rows. Even when the predicate is non-sargable (so the index cannot \textit{filter} rows), a covering index can still be used as the \textit{scan source}, replacing expensive main-table page reads with cheaper, denser index reads.
-
-\hspace*{\parindent} The covering index for Query B must include every column referenced in the \texttt{SELECT} list, the \texttt{WHERE} clause, and the correlated subquery:
-
-\begin{minted}[linenos,bgcolor=codebg,fontsize=\small,frame=lines,framesep=8pt,rulecolor=codeframe,framerule=1.5pt]{sql}
-ALTER TABLE stopsB3
-  ADD INDEX idx_covering_queryb (Jour, Debut, Fin, cause_id);
-\end{minted}
-
-\textit{Listing 4.4: Covering index definition for stopsB3}
-
-\subsubsection{\fontsize{13}{16}\selectfont Results}
-
-\hspace*{\parindent} The covering index provides modest improvement by reducing the I/O cost of table scans, but the fundamental O(n$^2$) complexity remains unchanged. Even when MySQL can read all necessary columns from a dense index instead of main-table pages, it still must perform a full scan for every outer row.
-
-\begin{table}[H]
-\centering
-\small
-\caption{stopsB3 benchmark results with covering indexes}
-\label{tab:stopsb3_results}
-\setlength{\extrarowheight}{2pt}
-\begin{tabular}{@{}p{2cm}p{2cm}p{5cm}@{}}
-    \toprule
-    \rowcolor[HTML]{1A5490}
-    \textcolor{white}{\textbf{Rows}} & \textcolor{white}{\textbf{Time (s)}} & \textcolor{white}{\textbf{Observation}} \\
-    \midrule
-    \rowcolor[HTML]{E8F4F8}
-    100 & 0.020 & Marginal improvement over B2 \\
-    \rowcolor[HTML]{FFFFFF}
-    500 & 0.661 & \\
-    \rowcolor[HTML]{E8F4F8}
-    1,000 & 4.679 & \\
-    \rowcolor[HTML]{FFFFFF}
-    2,000 & 17.549 & \\
-    \rowcolor[HTML]{E8F4F8}
-    5,000 & 100.702 & O(n$^2$) pattern clearly visible \\
-    \rowcolor[HTML]{FFFFFF}
-    10,000 & 265.4 & \\
-    \bottomrule
-\end{tabular}
-\end{table}
-
-\subsubsection{\fontsize{13}{16}\selectfont EXPLAIN ANALYZE Output}
-
-\hspace*{\parindent} The covering index is confirmed active on both the outer scan and the inner subquery. Two key differences from B1/B2 are immediately visible:
-
-\begin{minted}[linenos,bgcolor=codebg,fontsize=\small,frame=lines,framesep=8pt,rulecolor=codeframe,framerule=1.5pt]{text}
--> Limit: 50 row(s) (cost=1032 rows=50)
-   (actual time=0.192..0.26 rows=50 loops=1)
--> Covering index scan on s using idx_covering_queryb
-   (cost=1032 rows=10257)
-   (actual time=0.192..0.242 rows=50 loops=1)
-
--> Select #2 (subquery in projection; dependent)
--> Limit: 1 row(s) (cost=0.35 rows=1)
-   (actual time=0.0196..0.0198 rows=1 loops=50)
--> Single-row index lookup on c using PRIMARY (id=s.cause_id)
-   (actual time=0.0188..0.0188 rows=1 loops=50)
-
--> Select #3 (subquery in projection; dependent)
--> Limit: 1 row(s) (cost=0.35 rows=1)
-   (actual time=0.00429..0.00438 rows=1 loops=50)
--> Single-row index lookup on c using PRIMARY (id=s.cause_id)
-   (actual time=0.00401..0.00401 rows=1 loops=50)
-
--> Select #4 (subquery in projection; dependent)
--> Aggregate: sum(CASE WHEN sx.Fin IS NULL ...)
-   (actual time=13..13 rows=1 loops=100)
--> Filter: (date_format(if((sx.Debut < '06:00:00'),
-     (sx.Jour - interval 1 day),sx.Jour),'%Y-%m-%d')
-     = date_format(...))
-   (cost=2058 rows=10257)
-   (actual time=0.249..13 rows=115 loops=100)
--> Covering index scan on sx using idx_covering_queryb
-   (cost=1032 rows=10257)
-   (actual time=0.246..4.23 rows=10000 loops=100)
-\end{minted}
-
-\textit{Listing 4.5: EXPLAIN ANALYZE for Query B on stopsB3 (LIMIT 50)}
-
-\hspace*{\parindent} The covering index is confirmed active on both the outer scan and the inner subquery. Two key differences from B1/B2 are immediately visible:
-
-\begin{itemize}
-
-\item \textbf{The outer query now shows \textit{Covering index scan on s} instead of \textit{Table scan on s}} --- the main table rows are never touched.
-
-\item \textbf{The inner correlated subquery shows \textit{Covering index scan on sx}} --- the full table scan is replaced by a covering index scan, reducing the actual time per inner loop from 5.33 ms to 4.23 ms (a 20.6\% improvement per iteration).
-
-\end{itemize}
-
-\hspace*{\parindent} The full-scale benchmark confirms this translates to meaningful end-to-end gains.
-
-\begin{tcolorbox}[
-enhanced,
-colback=white,
-colframe=blue!70!black,
-colbacktitle=blue!70!black,
-coltitle=white,
-fonttitle=\bfseries\fontsize{13}{15}\selectfont,
-title=B3 Verdict: Covering Index Works --- Up to a Point,
-boxrule=0.8pt,
-arc=3pt
-]
-
-The covering index \texttt{idx\_covering\_queryb} (Jour, Debut, Fin, cause\_id) is the maximum achievable improvement through indexing alone.
-
-\medskip
-At 8,000 rows: \textbf{37.6\% faster than B1} --- 4.5 minutes saved.
-
-\medskip
-At large scale: improvements grow because smaller index pages mean better buffer pool utilization and fewer disk page reads.
-
-\medskip
-However, the inner subquery still scans all 10,000 rows per outer row. The O(n$^2$) loop structure is untouched.
-
-\end{tcolorbox}
-
-\subsection{\fontsize{14}{17}\selectfont Side by Side Comparison}
-
-\hspace*{\parindent} The three experiments reveal a clear hierarchy of what indexing can and cannot accomplish. The following table summarizes the results and identifies the hard ceiling imposed by algorithmic complexity:
-
-\begin{table}[H]
-\centering
-\small
-\caption{Index strategy comparison: Query B on stops table}
-\label{tab:index_strategy_comparison}
-\setlength{\extrarowheight}{3pt}
-\begin{tabular}{@{}p{2.5cm}p{2cm}p{5.5cm}@{}}
-    \toprule
-    \rowcolor[HTML]{1A5490}
-    \textcolor{white}{\textbf{Strategy}} & \textcolor{white}{\textbf{Gain}} & \textcolor{white}{\textbf{Reason}} \\
-    \midrule
-    \rowcolor[HTML]{E8F4F8}
-    B1 --- Simple indexes & $\approx$0\% & Predicate is non-sargable; optimizer ignores all added indexes \\
-    \rowcolor[HTML]{FFFFFF}
-    B2 --- Functional index & -28\% (slower!) & Expression match fails; optimizer evaluates then discards the index, adding overhead \\
-    \rowcolor[HTML]{E8F4F8}
-    B3 --- Covering index & 37.6\% at 8K rows & Scan reads dense index pages instead of main-table pages; loop structure unchanged \\
-    \midrule
-    \rowcolor[HTML]{FFF3CD}
-    Hard ceiling & $\approx$37--40\% & The O(n$^2$) loop is architectural, not indexable \\
-    \bottomrule
-\end{tabular}
-\end{table}
-
-\hspace*{\parindent} The hard ceiling of 37--40\% is a mathematical inevitability: even with perfect indexing, the correlated subquery must still execute roughly once for every outer row. Improving scan efficiency cannot change the loop count. To exceed this ceiling requires restructuring the query itself,  moving from a correlated subquery approach to a fundamentally different algorithm.
-
-\begin{tcolorbox}[
-enhanced,
-colback=white,
-colframe=purple!70!black,
-colbacktitle=purple!70!black,
-coltitle=white,
-fonttitle=\bfseries\fontsize{13}{15}\selectfont,
-title=Big Data Principle --- Indexes Reduce Constants,
-boxrule=0.8pt,
-arc=3pt
-]
-
-In big data systems, the equivalent lesson is equally fundamental: columnar storage, predicate pushdown, and partition pruning all reduce the \textit{constant factor} in a computation, yet they do not change the algorithmic complexity class. A full O(n$^2$) Cartesian join remains O(n$^2$) even on Apache Spark, no matter how the data is partitioned. Only query restructuring and moving from a nested scan to a pre-aggregated hash join can changes the exponent. Indexes are a multiplier on good architecture, not a replacement for it.
-
-\end{tcolorbox}
-
-\section{\fontsize{15}{18}\selectfont Query C: Breaking the Quadratic Loop}
-
-\subsection{\fontsize{14}{17}\selectfont The Targeted Fix}
-
-\hspace*{\parindent} Having identified the correlated PCT subquery as the sole cause of Query B's collapse, the first intervention was surgical: replace the per-row full scan with a single pre-aggregated \texttt{JOIN}. The daily totals are computed once in a derived table and joined against the main query. All other problems are intentionally left untouched to allow the impact of this single change to be measured cleanly.
-
-\begin{minted}[linenos,bgcolor=codebg,fontsize=\small,frame=lines,framesep=8pt,rulecolor=codeframe,framerule=1.5pt]{sql}
-SELECT
-    s.Debut AS startTime,
-    s.Fin AS stopTime,
-    CASE
-        WHEN s.Fin IS NULL THEN NULL
-        WHEN s.Fin >= s.Debut
-            THEN TIME_TO_SEC(s.Fin) - TIME_TO_SEC(s.Debut)
-        ELSE (TIME_TO_SEC(s.Fin) + 86400) -
-            TIME_TO_SEC(s.Debut)
-    END AS duree_secondes,
-    (SELECT c.name FROM causes c
-        WHERE c.id = s.cause_id LIMIT 1) AS cause,
-    (SELECT c.affect_trs FROM causes c
-        WHERE c.id = s.cause_id LIMIT 1) AS affect_trs,
-    ROUND(
-        CASE
-            WHEN s.Fin IS NULL THEN NULL
-            WHEN s.Fin >= s.Debut
-                THEN TIME_TO_SEC(s.Fin) - TIME_TO_SEC(s.Debut)
-            ELSE (TIME_TO_SEC(s.Fin)+86400)-TIME_TO_SEC(s.Debut)
-        END
-    ) * 100.0 / NULLIF(dt.day_total, 0),
-    2
-    ) AS pct
-FROM stops s
-JOIN (
-    SELECT
-        DATE_FORMAT(IF(sx.Debut < '06:00:00',
-            DATE_SUB(sx.Jour, INTERVAL 1 DAY),
-            sx.Jour), '%Y-%m-%d') AS prod_day,
-        SUM(CASE
-            WHEN sx.Fin IS NULL THEN 0
-            WHEN sx.Fin >= sx.Debut
-                THEN TIME_TO_SEC(sx.Fin) -
-                    TIME_TO_SEC(sx.Debut)
-            ELSE
-                (TIME_TO_SEC(sx.Fin)+86400)-
-                TIME_TO_SEC(sx.Debut)
-        END) AS day_total
-    FROM stops sx
-    GROUP BY prod_day
-) AS dt ON DATE_FORMAT(
-    IF(s.Debut < '06:00:00',
-        DATE_SUB(s.Jour, INTERVAL 1 DAY), s.Jour),
-    '%Y-%m-%d'
-) = dt.prod_day;
-\end{minted}
-
-\textit{Listing 4.6: Query C --- pre-aggregated PCT JOIN}
-
-\subsection{\fontsize{14}{17}\selectfont Results}
-
-\hspace*{\parindent} Query C successfully transforms the problem from O(n$^2$) to O(n) by eliminating the correlated subquery loop. The pre-aggregated approach computes each daily total once and joins the result, achieving unprecedented scalability:
-
-\begin{table}[H]
-\centering
-\small
-\caption{Query C performance compared to Query B3}
-\label{tab:query_c_performance}
-\setlength{\extrarowheight}{2pt}
-\begin{tabular}{@{}p{2cm}p{2.5cm}p{2.5cm}p{3cm}@{}}
-    \toprule
-    \rowcolor[HTML]{1A5490}
-    \textcolor{white}{\textbf{Rows}} & \textcolor{white}{\textbf{Query B3}} & \textcolor{white}{\textbf{Query C}} & \textcolor{white}{\textbf{Improvement}} \\
-    \midrule
-    \rowcolor[HTML]{E8F4F8}
-    1,000 & 4.679 s & 0.094 s & $49.8\times$ faster \\
-    \rowcolor[HTML]{FFFFFF}
-    5,000 & 100.702 s & 0.287 s & $350.9\times$ faster \\
-    \rowcolor[HTML]{E8F4F8}
-    10,000 & 265.4 s & 0.373 s & $711.5\times$ faster \\
-    \rowcolor[HTML]{FFFFFF}
-    100,000 & $\approx$ 13 hours & 4.263 s & — \\
-    \rowcolor[HTML]{E8F4F8}
-    1,000,000 & $\approx$ 54.2 days & 46.642 ms & — \\
-    \bottomrule
-\end{tabular}
-\end{table}
-
-\hspace*{\parindent} Query C successfully handles one million rows. The algorithmic change from O(n$^2$) to O(n) transforms an impossible problem into a tractable one.
-
-\subsection{\fontsize{14}{17}\selectfont EXPLAIN ANALYZE: Diagnosing the Remaining Bottlenecks}
-
-\hspace*{\parindent} 46 seconds is not acceptable for a production dashboard. \texttt{EXPLAIN ANALYZE} was run on the full one-million-row dataset to identify where time was being spent.
-
-\begin{table}[H]
-\centering
-\small
-\caption{EXPLAIN ANALYZE profile for Query C at 1M rows}
-\label{tab:query_c_explain_analyze}
-\setlength{\extrarowheight}{2pt}
-\begin{tabular}{@{}p{3.5cm}p{2cm}p{1.5cm}p{2cm}@{}}
-    \toprule
-    \rowcolor[HTML]{1A5490}
-    \textcolor{white}{\textbf{Node}} & \textcolor{white}{\textbf{Time (ms)}} & \textcolor{white}{\textbf{\%}} & \textcolor{white}{\textbf{Loops}} \\
-    \midrule
-    \rowcolor[HTML]{E8F4F8}
-    Cause subquery \#2 $\times$ 1M & 14,510 & 31.5\% & 1,000,000 \\
-    \rowcolor[HTML]{FFFFFF}
-    Materialize GROUP BY (PCT) & 13,190 & 28.7\% & 1 \\
-    \rowcolor[HTML]{E8F4F8}
-    Cause subquery \#3 $\times$ 1M & 11,614 & 25.3\% & 1,000,000 \\
-    \rowcolor[HTML]{FFFFFF}
-    Table scan on s & 3,035 & 6.6\% & 1 \\
-    \rowcolor[HTML]{E8F4F8}
-    Table scan on sx & 2,425 & 5.3\% & 1 \\
-    \rowcolor[HTML]{FFFFFF}
-    DATE\_FORMAT filter & 1,215 & 2.6\% & 1,000,000 \\
-    \midrule
-    \rowcolor[HTML]{B8D4E8}
-    \textbf{Total} & \textbf{45,989} & \textbf{100\%} & — \\
-    \bottomrule
-\end{tabular}
-\end{table}
-
-\hspace*{\parindent} The \texttt{EXPLAIN ANALYZE} verdict on Query C reveals four structural problems:
-
-\begin{itemize}
-
-\item \textbf{56.8\%} --- Two cause lookups firing 1M times each (no index used). The subqueries fetch cause name and category for every stop row, executing independently without benefit of any index optimization.
-
-\item \textbf{28.7\%} --- Second full table scan + temporary table for PCT. The materialization of the GROUP BY aggregation requires a full sequential scan of the stops table to compute daily totals, plus materialization cost.
-
-\item \textbf{11.9\%} --- Two full sequential scans (no indexes anywhere). These are the main outer table scans (s and sx) that cannot be optimized further without structural changes.
-
-\item \textbf{2.6\%} --- \texttt{DATE\_FORMAT(IF(...))} non-sargable on every row. The function wrapping makes the predicate non-sargable, forcing a post-scan filter rather than a pre-scan index seek.
-
-\end{itemize}
-
-\hspace*{\parindent} Every problem is structural. None can be fixed by hardware or indexing alone.
-
-\section{\fontsize{15}{18}\selectfont Query D: The Window Function Hypothesis}
-
-\subsection{\fontsize{14}{17}\selectfont The Reasoning Behind the Attempt}
-
-\hspace*{\parindent} After Query C reduced execution from an estimated 73 days to 46.642 ms at one million rows, the next question was: can we improve further without a full schema redesign? The \texttt{EXPLAIN ANALYZE} profile of Query C reveals two distinct table scans, one for the main \texttt{SELECT} and one inside the pre-aggregated derived table. A natural hypothesis emerged: SQL window functions could collapse these into a single pass.
-
-\hspace*{\parindent} The function \texttt{SUM(Duree) OVER(PARTITION BY prod\_day, equipe)} computes each row's group total inline, during the same pass that reads the row, theoretically eliminating the separate pre-aggregation scan and the subsequent \texttt{JOIN}. In theory, this means:
-
-\begin{itemize}
-
-\item One scan instead of two
-
-\item No CTE or derived table materialization
-
-\item No hash join probe loop
-
-\end{itemize}
-
-\hspace*{\parindent} The hypothesis was compelling enough to test rigorously before committing to a full schema redesign.
-
-\subsection{\fontsize{14}{17}\selectfont Implementation}
-
-\begin{minted}[linenos,bgcolor=codebg,fontsize=\small,frame=lines,framesep=8pt,rulecolor=codeframe,framerule=1.5pt]{sql}
--- Benchmark harness
-SET @total_rows = (SELECT COUNT(*) FROM stops);
-SET @t = NOW(6);
-
-SELECT COUNT(*) INTO @row_count
-FROM (
-    SELECT
-        s.Debut, s.Fin, s.Duree, s.prod_day, s.equipe,
-        c.name, c.affect_trs,
-        ROUND(
-            s.Duree * 100.0 / NULLIF(
-                SUM(s.Duree) OVER (PARTITION BY s.prod_day, s.equipe),
-            0), 2
-        ) AS pct
-    FROM stops s  FORCE INDEX (idx_covering)
-    JOIN causes c ON c.id = s.cause_id
-) AS q;
-
-SET @elapsed = TIMESTAMPDIFF(MICROSECOND, @t, NOW(6)) / 1000.0;
-INSERT INTO perf_results (version, total_rows, elapsed_ms, row_count)
-VALUES ('D_WINDOW_final', @total_rows, @elapsed, @row_count);
-\end{minted}
-
-\textit{Listing 4.7: Query D --- window function approach}
-
-\subsection{\fontsize{14}{17}\selectfont Measured Result}
-
-\hspace*{\parindent} The benchmark results for Query D on the full one-million-row dataset:
-
-\begin{table}[H]
-\centering
-\small
-\caption{Query D benchmark results on production dataset}
-\label{tab:query_d_benchmark}
-\setlength{\extrarowheight}{2pt}
-\begin{tabular}{@{}p{2.5cm}p{2.5cm}p{2.5cm}p{2.5cm}@{}}
-    \toprule
-    \rowcolor[HTML]{1A5490}
-    \textcolor{white}{\textbf{Version}} & \textcolor{white}{\textbf{Total Rows}} & \textcolor{white}{\textbf{Row Count}} & \textcolor{white}{\textbf{Elapsed}} \\
-    \midrule
-    \rowcolor[HTML]{E8F4F8}
-    D\_WINDOW\_final & 1,000,000 & 1,000,000 & 25.955 ms \\
-    \bottomrule
-\end{tabular}
-\end{table}
-
-\hspace*{\parindent} Query D ran in 25.9 seconds, a 1.8$\times$ improvement over Query C's 46.642 ms, confirming that the window function does provide some benefit. However, it remains an order of magnitude too slow for a production dashboard. Understanding why the improvement stalled at 25 seconds is the critical question.
-
-\subsection{\fontsize{14}{17}\selectfont Root Cause: Sort Buffer Spill to Disk}
-
-\hspace*{\parindent} The limited improvement is caused by how MySQL implements window function evaluation internally.
-
-\subsubsection{\fontsize{13}{16}\selectfont How MySQL Executes Window Functions}
-
-\hspace*{\parindent} Unlike a pre-aggregation approach, which produces a compact intermediate result, a window function must hold all rows belonging to a partition in memory simultaneously before it can emit any output row. The execution sequence is:
-
-\begin{itemize}
-
-\item Read all 1M rows from the covering index scan.
-
-\item Sort all 1M rows by (prod\_day, equipe) to group partitions.
-
-\item For each partition, accumulate rows in a sort buffer.
-
-\item Compute SUM(Duree) over the buffered partition.
-
-\item Emit rows for that partition with the computed total.
-
-\end{itemize}
-
-\subsection{\fontsize{14}{17}\selectfont Learnings from Query D}
-
-\begin{table}[H]
-\centering
-\small
-\caption{Query C vs Query D --- what actually happens at 1M rows}
-\label{tab:query_c_vs_query_d_execution}
-\setlength{\extrarowheight}{3pt}
-\begin{tabular}{@{}p{2.5cm}p{3cm}p{3.5cm}@{}}
-    \toprule
-    \rowcolor[HTML]{1A5490}
-    \textcolor{white}{\textbf{Step}} & \textcolor{white}{\textbf{Query C (Derived Table)}} & \textcolor{white}{\textbf{Query D (Window Function)}} \\
-    \midrule
-    \rowcolor[HTML]{E8F4F8}
-    Table scans & 2 (full sequential) & 1 (covering index) \\
-    \rowcolor[HTML]{FFFFFF}
-    Sort required & Sort for GROUP BY & Sort all 1M rows (spills to disk) \\
-    \rowcolor[HTML]{E8F4F8}
-    Intermediate data & =N rows in temp table & 1M rows on disk \\
-    \rowcolor[HTML]{FFFFFF}
-    Disk I/O & Table reads + temp table & Index reads + sort spill + merge \\
-    \rowcolor[HTML]{E8F4F8}
-    Result at 1M rows & 46.642 ms & 25.955 ms \\
-    \bottomrule
-\end{tabular}
-\end{table}
-
-\hspace*{\parindent} Query D achieves a 1.8$\times$ improvement over Query C by replacing two unoptimized table scans with one covering-index scan. This confirms that covering indexes are beneficial. However, the window function's mandatory sort phase imposes a disk I/O cost that absorbs the gain from eliminating one scan. The result --- 25,955 ms --- is a meaningful step forward from 46.642 ms, but reveals that escaping the 10-second barrier requires more than a query rewrite.
-
-\hspace*{\parindent} Further improvement requires eliminating the sort cost entirely --- which requires schema-level pre-sorting, not query-level rewriting. This is exactly what our next Query addresses.
-
-\section{\fontsize{15}{18}\selectfont Query E: Big Data Principles Applied to MySQL}
-
-\hspace*{\parindent} The window function hypothesis demonstrated that standard MySQL session-level constraints prevent a single-pass approach from outperforming a two-pass pre-aggregation strategy at production scale. Improving on Query D's 25,955 ms result required addressing the root problem differently: not eliminating a scan, but making every scan as efficient as physically possible through comprehensive schema-level redesign.
-
-\hspace*{\parindent} This query presents the final, fully optimized architecture. The solution requires no auxiliary tables, no triggers, and no scheduled events, only a redesigned table schema with stored generated columns, a carefully chosen set of indexes, and a single optimized SQL query.
-
-\subsection{\fontsize{14}{17}\selectfont Schema Redesign}
-
-\subsubsection{\fontsize{13}{16}\selectfont Stored Generated Columns}
-
-\hspace*{\parindent} \textbf{Problem solved:} Non-sargable \texttt{DATE\_FORMAT(IF(...))} and inline \texttt{CASE TIME\_TO\_SEC(...)} recomputed on every row in every query version to date.
-
-\hspace*{\parindent} \textbf{Solution:} MySQL's \texttt{GENERATED ALWAYS AS ... STORED} creates columns whose values are computed automatically at insert time and stored physically on disk. The expression runs once per row at write time instead of millions of times per query. The complete schema definition is shown in Appendix~\ref{app:optimized_schema_b}.
-
-\begin{tcolorbox}[
-enhanced,
-colback=white,
-colframe=blue!20!white,
-colbacktitle=blue!50!black,
-coltitle=white,
-fonttitle=\bfseries\fontsize{13}{15}\selectfont,
-title=Big Data Principle --- Write-Once-Read-Many (Feature Store),
-boxrule=1pt,
-arc=3pt
-]
-
-Stored generated columns prod\_day, equipe, and Duree are computed once at insert time. All subsequent reads find pre-computed values. This is the feature store pattern used in Databricks, MLflow, and all major data warehouse platforms that shift expensive computation from read time to write time.
-
-\end{tcolorbox}
-
-\subsubsection{\fontsize{13}{16}\selectfont Why Each Index Exists}
-
-\hspace*{\parindent} The index strategy for the optimized schema prioritizes two key principles: eliminating function wrapping in predicates and enabling efficient covering index scans. All indexes are designed with awareness of the exact query patterns and data clustering characteristics.
-
-\begin{table}[H]
-\centering
-\small
-\caption{Index inventory and purpose}
-\label{tab:index_inventory_purpose}
-\setlength{\extrarowheight}{2pt}
-\begin{tabular}{@{}p{4.2cm}p{6.8cm}@{}}
-    \toprule
-    \rowcolor[HTML]{1A5490}
-    \textcolor{white}{\textbf{Index}} & \textcolor{white}{\textbf{Purpose}} \\
-    \midrule
-    \rowcolor[HTML]{E8F4F8}
-    \texttt{PRIMARY KEY (prod\_day, equipe, Duree)} & Records physically reordered rows on disk. The CTE's \texttt{GROUP BY} receives data in correct order — sort eliminated. \\
-    \rowcolor[HTML]{FFFFFF}
-    \texttt{idx\_id (id)} & Satisfies MySQL's requirement that \texttt{AUTO\_INCREMENT} be the leading column. \\
-    \rowcolor[HTML]{E8F4F8}
-    \texttt{idx\_covering (prod\_day, equipe, cause\_id, Duree)} & Enables covering scans without main table access. Supports WHERE filters and JOIN operations. \\
-    \midrule
-    \rowcolor[HTML]{E8F4F8}
-    \texttt{idx\_cause\_id (cause\_id)} & Supports \texttt{JOIN} against causes table. \\
-    \bottomrule
-\end{tabular}
-\end{table}
-
-\begin{tcolorbox}[
-enhanced,
-colback=white,
-colframe=blue!70!black,
-colbacktitle=blue!70!black,
-coltitle=white,
-fonttitle=\bfseries\fontsize{13}{15}\selectfont,
-title=Big Data Principle --- Columnar-Style Access,
-boxrule=0.8pt,
-arc=3pt
-]
-
-The covering index \texttt{idx\_covering}(prod\_day, equipe, cause\_id, Duree) allows MySQL to answer the entire query from the index without reading main table rows. This mirrors the I/O reduction of columnar storage engines such as Apache Parquet and Google BigTable, only the columns relevant to the query are read: the rest of the row is never accessed.
-
-\end{tcolorbox}
-
-\begin{tcolorbox}[
-enhanced,
-colback=white,
-colframe=blue!70!black,
-colbacktitle=blue!70!black,
-coltitle=white,
-fonttitle=\bfseries\fontsize{13}{15}\selectfont,
-title=Big Data Principle --- Clustered Data Layout,
-boxrule=0.8pt,
-arc=3pt
-]
-
-The primary key (prod\_day, equipe, id) physically orders rows on disk by the most common query dimension. This mirrors BigQuery's clustering keys and Spark's sortWithinPartitions() — data arrives at the aggregation step already sorted, eliminating the sort operation entirely.
-
-\end{tcolorbox}
-
-\subsection{\fontsize{14}{17}\selectfont The Optimized Query}
-
-\hspace*{\parindent} The final optimized query combines the pre-aggregation approach with the redesigned schema's stored generated columns and covering indexes. The query uses a Common Table Expression (CTE) to compute daily team totals efficiently, then joins the results with a covering index scan to minimize I/O.
-
-\begin{minted}[linenos,bgcolor=codebg,fontsize=\small,frame=lines,framesep=8pt,rulecolor=codeframe,framerule=1.5pt]{sql}
--- Benchmark harness
-SET @total_rows = (SELECT COUNT(*) FROM stops);
-SET @t        = NOW(6);
-
-SELECT COUNT(*) INTO @row_count
-FROM (
-    WITH day_team_totals AS (
-        SELECT
-            prod_day,
-            equipe,
-            SUM(Duree) AS day_total
-        FROM stops
-        FORCE INDEX (idx_covering)
-        GROUP BY prod_day, equipe
-    )
-    SELECT
-        s.Debut,
-        s.Fin,
-        s.Duree,
-        s.prod_day,
-        s.equipe,
-        c.name,
-        c.affect_trs,
-        ROUND(
-            s.Duree * 100.0 / NULLIF(dt.day_total, 0),
-            2
-        ) AS pct
-    FROM stops                s FORCE INDEX (idx_covering)
-    JOIN causes               c ON c.id = s.cause_id
-    JOIN day_team_totals     dt ON dt.prod_day = s.prod_day
-                                AND dt.equipe   = s.equipe
-) AS q;
-
-SET @elapsed = TIMESTAMPDIFF(MICROSECOND, @t, NOW(6)) / 1000.0;
-INSERT INTO perf_results (version, total_rows, elapsed_ms, row_count)
-VALUES ('C_CTE_final', @total_rows, @elapsed, @row_count);
-
-SELECT 'C_CTE_final' AS query, @total_rows AS total_rows,
-       @row_count AS row_count, CONCAT(@elapsed, ' ms') AS elapsed;
-\end{minted}
-
-\textit{Listing 4.8: Query E --- CTE pre-aggregation with covering index}
-
-\subsubsection{\fontsize{13}{16}\selectfont Results}
-
-\hspace*{\parindent} Query E execution analysis on the full one-million-row production dataset reveals a dramatically improved profile. The pre-aggregation strategy combined with the optimized schema's stored generated columns and covering indexes achieves 2.2 seconds total execution time.
-
-\begin{table}[H]
-\centering
-\small
-\caption{EXPLAIN ANALYZE profile for Query E at 1M rows}
-\label{tab:query_e_explain_analyze}
-\setlength{\extrarowheight}{2pt}
-\begin{tabular}{@{}p{5cm}p{2cm}p{1.5cm}p{3cm}@{}}
-    \toprule
-    \rowcolor[HTML]{1A5490}
-    \textcolor{white}{\textbf{Node}} & \textcolor{white}{\textbf{Time (ms)}} & \textcolor{white}{\textbf{\%}} & \textcolor{white}{\textbf{Note}} \\
-    \midrule
-    \rowcolor[HTML]{E8F4F8}
-    CTE covering index scan (1M rows) & 453 & 20.6\% & No sort \\
-    \rowcolor[HTML]{FFFFFF}
-    CTE group aggregate (544 rows out) & 610 & 27.7\% & Streaming \\
-    \rowcolor[HTML]{E8F4F8}
-    Main covering index scan (1M rows) & 541 & 24.6\% & No sort \\
-    \rowcolor[HTML]{FFFFFF}
-    Single-row cause lookups $\times$ 1M & 342 & 15.5\% & 0.3 $\mu$s each \\
-    \rowcolor[HTML]{E8F4F8}
-    CTE hash probe $\times$ 1M & 254 & 11.6\% & 0.002 ms each \\
-    \midrule
-    \rowcolor[HTML]{B8D4E8}
-    \textbf{Total (measured)} & \textbf{2,200} & \textbf{100\%} & \\
-    \bottomrule
-\end{tabular}
-\end{table}
-
-\hspace*{\parindent} The execution profile reveals several key observations:
-
-\begin{itemize}
-
-\item \textbf{No sort node anywhere} --- the clustered PK delivers data in (prod\_day, equipe) order; the CTE's \texttt{GROUP BY} is a streaming aggregation at zero sort cost.
-
-\item \textbf{No full table scan} --- both passes use the covering index exclusively.
-
-\item \textbf{CTE materialized once} --- 544 rows computed once, then probed 1M times at 0.002 ms each.
-
-\item \textbf{Causes hash join} --- MySQL auto-selects a hash join for the 16-row causes table; each lookup costs 0.3 $\mu$s.
-
-\end{itemize}
-
-\hspace*{\parindent} Query E achieves 2.2 seconds at one million rows --- a \textbf{21.2$\times$ improvement} over Query C's previous 46.642 seconds and a \textbf{21,228$\times$ improvement} over Query A's estimated 73 days at production scale.
-
-\section{\fontsize{15}{18}\selectfont Performance Visualization}
-
-\subsection{\fontsize{14}{17}\selectfont Query Execution Time Comparison}
-
-\hspace*{\parindent} The optimization journey from Query A through Query E demonstrates the cumulative impact of algorithmic improvements and schema-level design. The following graph plots execution time against row count on a logarithmic scale, revealing the complexity class of each approach.
 
 \begin{figure}[H]
-\setcounter{figure}{2}
 \centering
-\begin{tikzpicture}
-\begin{loglogaxis}[
-    xlabel={Number of rows},
-    ylabel={Execution time (ms)},
-    width=13cm,
-    height=9cm,
-    grid=major,
-    legend pos=north west,
-    legend style={font=\small},
-]
-
-% Query A - O(n²) measured
-\addplot[color=red, solid, mark=o, line width=2pt] coordinates {
-    (100, 291)
-    (500, 7812)
-    (1000, 28347)
-    (2000, 114156)
-    (5000, 701245)
-    (10000, 3041678)
-    (14000, 5512934)
-};
-\addlegendentry{Query A (measured)};
-
-% Query A - O(n²) projected
-\addplot[color=red, dashed, line width=1.5pt] coordinates {
-    (14000, 5512934)
-    (1000000, 2.84e13)
-};
-\addlegendentry{Query A (projected)};
-
-% Query B3 - O(n²) with covering index
-\addplot[color=orange, solid, mark=square, line width=2pt] coordinates {
-    (100, 20)
-    (500, 661)
-    (1000, 4679)
-    (2000, 17549)
-    (5000, 100702)
-    (10000, 265400)
-};
-\addlegendentry{Query B3 (covering idx)};
-
-% Query B3 projected
-\addplot[color=orange, dashed, line width=1.5pt] coordinates {
-    (10000, 265400)
-    (1000000, 2.68e12)
-};
-\addlegendentry{Query B3 (projected)};
-
-% Query C - O(n) CTE
-\addplot[color=blue, solid, mark=diamond*, line width=2pt] coordinates {
-    (100, 10)
-    (500, 50)
-    (1000, 94)
-    (5000, 287)
-    (10000, 373)
-    (100000, 4263)
-    (1000000, 46642)
-};
-\addlegendentry{Query C (CTE)};
-
-% Query D - O(n) Window (with sort spill)
-% Estimated at ~55.6% of Query C's time (based on 1M row ratio: 25955/46642)
-\addplot[color=purple, solid, mark=triangle*, line width=2pt] coordinates {
-    (100, 6)
-    (500, 28)
-    (1000, 52)
-    (5000, 160)
-    (10000, 208)
-    (100000, 2370)
-    (1000000, 25955)
-};
-\addlegendentry{Query D (Window)};
-
-% Query E - O(n) Optimized
-\addplot[color=green!60!black, solid, mark=*, line width=2.5pt] coordinates {
-    (100, 0.22)
-    (500, 1.1)
-    (1000, 2.2)
-    (5000, 11)
-    (10000, 22)
-    (100000, 220)
-    (1000000, 2200)
-};
-\addlegendentry{Query E (Optimized)};
-
-\end{loglogaxis}
-\end{tikzpicture}
-\caption{Query performance across row counts (logarithmic scale)}
-\label{fig:query_performance_comparison}
+\includegraphics[width=0.9\textwidth, keepaspectratio]{images/fig_01_deployment_visiteuse2.png}
+\caption{Deployment Architecture of the Supervision Extension Applied to Visiteuse 2}
+\label{fig:chapter4-1}
 \end{figure}
 
-\hspace*{\parindent} The graph reveals several critical insights:
+\section{Implementation Methodology}
 
-\begin{itemize}
+\subsection{Adopted Work Methodology}
+The implementation followed a layered sequence. The PLC layer was developed first because it contains the stop-cycle logic and the timestamp preparation. The communication layer was then configured in Node-RED to exchange data with the PLC. Finally, the local HMI and the web HMI were connected to the same functional logic.
 
-\item \textbf{Query A and B3 follow O(n$^2$) growth} --- both measured curves exhibit the characteristic quadratic shape. Query B3 with covering indexes provides 37\% improvement per iteration but cannot escape the fundamental algorithmic complexity. The projected curves extend beyond measurable scale.
+The adopted development order was as follows:
 
-\item \textbf{Query C crosses the complexity threshold at n $\approx$ 1,000} --- the pre-aggregation approach achieves O(n) complexity. Early measurements show slower execution than Query B3 (due to aggregation overhead), but this reverses decisively at larger scales.
+\begin{enumerate}[leftmargin=1.2cm]
+  \item programming the ladder logic of Visiteuse 2 in AutoStudio;
+  \item configuring Modbus TCP communication for the Veichi VC3 address map;
+  \item decoding the stop data and preparing the SQL insertion path;
+  \item developing the web HMI and its API calls through the Node.js server;
+  \item designing the local HMI on the Veichi screen using VI20;
+  \item validating the short-stop and long-stop scenarios through the HMI and SQL records.
+\end{enumerate}
 
-\item \textbf{Query D improves by 44\% through window function optimization} --- the single-pass approach with covering index scans reduces overhead, but the mandatory sort phase for window function evaluation limits further gains.
+Each layer has a defined role. The PLC handles real-time stop logic, Node-RED manages Modbus exchange and SQL insertion, the Node.js server exposes the web interface and REST API, MySQL stores the stop records, and the HMI screens provide operator interaction.
 
-\item \textbf{Query E achieves sub-second performance at one million rows} --- the combination of schema-level clustering (eliminating sort cost) and streaming aggregation delivers a 21$\times$ improvement over Query C and a 12$\times$ improvement over Query D at production scale.
+\begin{table}[H]
+\centering
+\caption{Responsibilities of the main components used for Visiteuse 2}
+\resizebox{\textwidth}{!}{%
+\begin{tabular}{|l|p{10cm}|}
+\hline
+\textbf{Component} & \textbf{Responsibility} \\
+\hline
+Veichi VC3 PLC & Detects the stop cycle, applies the 30-second rule, manages restart blocking and prepares timestamp/cause data. \\
+\hline
+VI20 local HMI & Provides the shop-floor operator interface near the machine. \\
+\hline
+Node-RED & Reads and writes Modbus TCP variables, retrieves stop data and inserts stop records into MySQL. \\
+\hline
+Node.js server & Serves the web HMI, exposes REST endpoints and forwards web commands to Node-RED. \\
+\hline
+MySQL database & Stores stop records and cause labels used by the supervision system. \\
+\hline
+Web HMI & Provides centralized supervision and non-safety operator interaction from the internal network. \\
+\hline
+\end{tabular}%
+}
+\end{table}
 
+\subsection{Preserved Functional Principle}
+The functional rule used for Visiteuse 2 is based on the same distinction between micro-stops and significant stops:
+
+\begin{itemize}[leftmargin=1.1cm]
+  \item a stop lasting less than 30 seconds is automatically classified with cause \texttt{16};
+  \item a stop lasting 30 seconds or more requires the operator to select a valid cause from causes \texttt{1-15} before the stop cycle is closed.
 \end{itemize}
 
-\hspace*{\parindent} The logarithmic scale masks the absolute performance improvement --- a 21$\times$ speedup appears as a modest vertical distance. At production scale (1M rows), this translates to the difference between a 46-second query and a 2.2-second query — the difference between marginal acceptability and true interactivity.
+This rule avoids unnecessary manual recording of very short stops while keeping traceability for significant production losses.
 
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.9\textwidth, keepaspectratio]{images/fig_02_stop_scenario_visiteuse2.png}
+\caption{Functional Stop Scenario on Visiteuse 2}
+\label{fig:chapter4-2}
+\end{figure}
+
+\section{Programming and Control Logic}
+
+\subsection{Ladder Development in AutoStudio}
+For Visiteuse 2, a new ladder program was developed in AutoStudio for the Veichi VC3 PLC. The program was not copied directly from the first machine; it was rebuilt according to the Veichi environment, its variables, its instructions and its timer behavior.
+
+The ladder logic is organized around the following functions:
+
+\begin{itemize}[leftmargin=1.1cm]
+  \item using \texttt{isStopped} at address \texttt{M0} as the stop-state/control bit of the implemented supervision logic;
+  \item recording the stop-start timestamp in \texttt{D10-D15};
+  \item resetting \texttt{D30}, \texttt{stopReady}, \texttt{causeSelected}, \texttt{restartBlocked} and cause bits at the beginning of a stop cycle;
+  \item applying a 30-second timer to identify significant stops;
+  \item blocking restart when a significant stop has no selected cause;
+  \item converting cause bits \texttt{M10-M24} into the numeric cause identifier stored in \texttt{D30};
+  \item recording the stop-end timestamp in \texttt{D20-D25};
+  \item setting \texttt{stopReady} at \texttt{M1} so that Node-RED can read the prepared stop data.
+\end{itemize}
+
+In the current implementation, \texttt{M0} is named \texttt{isStopped} in the PLC variable table and is also written by the web command path through Node-RED. It is therefore described as an internal stop-state/control bit used by the supervision logic.
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.9\textwidth, keepaspectratio]{images/fig_03_autostudio_ladder_structure.png}
+\caption{Logical Structure of the Ladder Program Developed in AutoStudio}
+\label{fig:chapter4-3}
+\end{figure}
+
+\subsection{Timer Adaptation Through TON Blocks}
+Only two timers are essential in this extension. The first timer, \texttt{tCause30}, detects whether the stop has reached the 30-second threshold. The second timer, \texttt{tStopReady}, keeps \texttt{M1/stopReady} active for a short period after the stop data have been prepared.
+
+\begin{table}[H]
+\centering
+\caption{Timer and synchronization parameters used in the implementation}
+\resizebox{\textwidth}{!}{%
+\begin{tabular}{|l|l|p{6cm}|}
+\hline
+\textbf{Parameter} & \textbf{Value} & \textbf{Function} \\
+\hline
+\texttt{tCause30} & \texttt{T1 = 300 = 30 s} & Threshold used to distinguish micro-stops from significant stops. \\
+\hline
+\texttt{tStopReady} & \texttt{T0 = 30 = 3 s} & Holds \texttt{M1/stopReady} long enough for Node-RED to detect the event. \\
+\hline
+Node-RED polling period & \texttt{500 ms} & Polling period used to read \texttt{M1}. \\
+\hline
+Stabilization delay & \texttt{100 ms} & Delay applied before extracting the timestamp and cause registers after \texttt{M1} becomes active. \\
+\hline
+Cause-to-restart delay & \texttt{200 ms} & Delay applied after writing the selected cause bit and before resetting \texttt{M0}. \\
+\hline
+\end{tabular}%
+}
+\end{table}
+
+\subsection{PLC Synchronization and Variables Used}
+The synchronization between PLC control, HMI interaction and Node-RED communication is based on a limited set of bits, timers and registers.
+
+\begin{table}[H]
+\centering
+\caption{Main variables used in the Visiteuse 2 ladder program}
+\resizebox{\textwidth}{!}{%
+\begin{tabular}{|l|l|p{6.5cm}|}
+\hline
+\textbf{Variable} & \textbf{PLC address} & \textbf{Functional role} \\
+\hline
+\texttt{isStopped} & \texttt{M0} & Internal stop-state/control bit. It is set to \texttt{1} when the stop cycle starts and reset to \texttt{0} when the stop cycle is closed. \\
+\hline
+\texttt{stopReady} & \texttt{M1} & Indicates that the stop data are ready for Node-RED reading. \\
+\hline
+\texttt{tStopReady} & \texttt{T0} & Keeps \texttt{stopReady} active for approximately 3 seconds. \\
+\hline
+\texttt{causeSelected} & \texttt{M3} & Confirms that a cause has been selected during a significant stop. \\
+\hline
+\texttt{restartBlocked} & \texttt{M4} & Blocks restart authorization when the stop reaches 30 seconds and no valid cause has been selected. \\
+\hline
+\texttt{tCause30} & \texttt{T1} & 30-second timer used to classify a stop as significant. \\
+\hline
+\texttt{M10-M24} & Cause bits & Bits used to transmit causes \texttt{1-15} to the PLC. \\
+\hline
+\texttt{D10-D15} & D registers & Stop-start timestamp generated by the \texttt{TRD} instruction. \\
+\hline
+\texttt{D20-D25} & D registers & Stop-end timestamp generated by the \texttt{TRD} instruction. \\
+\hline
+\texttt{D30} & D register & Numeric identifier of the selected cause for significant stops. For micro-stops, Node-RED archives cause \texttt{16}. \\
+\hline
+\end{tabular}%
+}
+\end{table}
+
+\subsection{Timestamp Register Format}
+The \texttt{TRD} instruction stores timestamp fields in the order year, month, day, hour, minute and second. Node-RED reconstructs the start and end times from these registers before inserting the stop record.
+
+\begin{table}[H]
+\centering
+\caption{Timestamp register format used by Node-RED}
+\resizebox{\textwidth}{!}{%
+\begin{tabular}{|l|l|p{6cm}|}
+\hline
+\textbf{Register} & \textbf{Field} & \textbf{Format used} \\
+\hline
+\texttt{D10} / \texttt{D20} & Year & Numeric value. Two-digit values are normalized as \texttt{2000 + value}. \\
+\hline
+\texttt{D11} / \texttt{D21} & Month & Numeric value from \texttt{1} to \texttt{12}. \\
+\hline
+\texttt{D12} / \texttt{D22} & Day & Numeric value from \texttt{1} to \texttt{31}. \\
+\hline
+\texttt{D13} / \texttt{D23} & Hour & Numeric value from \texttt{0} to \texttt{23}. \\
+\hline
+\texttt{D14} / \texttt{D24} & Minute & Numeric value from \texttt{0} to \texttt{59}. \\
+\hline
+\texttt{D15} / \texttt{D25} & Second & Numeric value from \texttt{0} to \texttt{59}. \\
+\hline
+\end{tabular}%
+}
+\end{table}
+
+\subsection{Stop-Cause Encoding}
+The stop causes selected by the operator are transmitted as bits. Each bit corresponds to one cause identifier. The ladder program converts the active bit into the numeric value stored in \texttt{D30}.
+
+\begin{table}[H]
+\centering
+\caption{Correspondence between cause bits and the value stored in \texttt{D30}}
+\resizebox{\textwidth}{!}{%
+\begin{tabular}{|c|c|c|c|c|c|}
+\hline
+\textbf{Bit} & \textbf{Cause ID} & \textbf{Bit} & \textbf{Cause ID} & \textbf{Bit} & \textbf{Cause ID} \\
+\hline
+\texttt{M10} & 1 & \texttt{M15} & 6 & \texttt{M20} & 11 \\
+\hline
+\texttt{M11} & 2 & \texttt{M16} & 7 & \texttt{M21} & 12 \\
+\hline
+\texttt{M12} & 3 & \texttt{M17} & 8 & \texttt{M22} & 13 \\
+\hline
+\texttt{M13} & 4 & \texttt{M18} & 9 & \texttt{M23} & 14 \\
+\hline
+\texttt{M14} & 5 & \texttt{M19} & 10 & \texttt{M24} & 15 \\
+\hline
+\end{tabular}%
+}
+\end{table}
+
+Cause \texttt{16} is reserved for automatically classified micro-stops. It is not transmitted to the PLC as a manual cause bit.
+
+\section{Industrial Connectivity and SQL Integration}
+
+\subsection{Node-RED Configuration for the Veichi Profile}
+After the ladder program was implemented, the Node-RED layer was adapted to communicate with the Veichi VC3 PLC. This step required a dedicated communication profile for the IP address, the Modbus TCP port, the unit identifier and the VC3 address mapping.
+
+\begin{table}[H]
+\centering
+\caption{Main communication parameters for the Veichi VC3 PLC}
+\resizebox{\textwidth}{!}{%
+\begin{tabular}{|l|p{8cm}|}
+\hline
+\textbf{Parameter} & \textbf{Value used} \\
+\hline
+PLC & Veichi VC3 \\
+\hline
+PLC programming software & AutoStudio \\
+\hline
+PLC IP address & \texttt{192.168.1.10} \\
+\hline
+Protocol & Modbus TCP \\
+\hline
+Port & \texttt{502} \\
+\hline
+Unit ID & \texttt{1} \\
+\hline
+Modbus client name in Node-RED & \texttt{veichi-vc3-m-2000} \\
+\hline
+Modbus address of \texttt{M0} & Coil/protocol address \texttt{2000} \\
+\hline
+Modbus address of \texttt{M1} & Coil/protocol address \texttt{2001} \\
+\hline
+Modbus addresses of \texttt{M10-M24} & Coil/protocol addresses \texttt{2010-2024} \\
+\hline
+Timestamp and cause registers & Holding-register block starting at address \texttt{10}, with useful fields \texttt{D10-D15}, \texttt{D20-D25} and \texttt{D30}. \\
+\hline
+\end{tabular}%
+}
+\end{table}
+
+The main addressing difference concerns the \texttt{M} bits. In AutoStudio the variables are named \texttt{M0}, \texttt{M1}, \texttt{M10} and so on, whereas the Node-RED Modbus profile accesses them through Veichi protocol addresses: \texttt{M0 = 2000}, \texttt{M1 = 2001} and \texttt{M10-M24 = 2010-2024}.
+
+\subsection{Reading Stop Data}
+Node-RED periodically reads \texttt{M1/stopReady}. When this bit becomes active, the flow detects the rising edge, waits 100 ms and extracts the useful stop fields: \texttt{D10-D15} for the start timestamp, \texttt{D20-D25} for the end timestamp and \texttt{D30} for the selected cause.
+
+\begin{table}[H]
+\centering
+\caption{Useful registers extracted by Node-RED}
+\resizebox{\textwidth}{!}{%
+\begin{tabular}{|l|l|p{6cm}|}
+\hline
+\textbf{Registers} & \textbf{Data} & \textbf{Description} \\
+\hline
+\texttt{D10-D15} & Stop start & Year, month, day, hour, minute and second of the stop start. \\
+\hline
+\texttt{D20-D25} & Stop end & Year, month, day, hour, minute and second of the stop end. \\
+\hline
+\texttt{D30} & PLC cause & Operator cause identifier for significant stops. \\
+\hline
+\end{tabular}%
+}
+\end{table}
+
+If the calculated duration is less than 30 seconds, Node-RED archives cause \texttt{16}. If the duration is greater than or equal to 30 seconds, Node-RED uses the value read from \texttt{D30}, provided that it is between \texttt{1} and \texttt{15}.
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.9\textwidth, keepaspectratio]{images/sql_stop_records_example.jpeg}
+\caption{Example of Stop Records Inserted into the SQL Database}
+\label{fig:chapter4-4}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.9\textwidth, keepaspectratio]{images/fig_04_short_stop_sequence_visiteuse2.png}
+\caption{Short-Stop Communication Sequence Used for Automatic Micro-Stop Recording}
+\label{fig:chapter4-5}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.9\textwidth, keepaspectratio]{images/fig_05_long_stop_sequence_visiteuse2.png}
+\caption{Long-Stop Communication Sequence with Mandatory Cause Selection}
+\label{fig:chapter4-6}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.9\textwidth, keepaspectratio]{images/fig_06_modbus_mapping_veichi.png}
+\caption{Mapping of Visiteuse 2 Variables in Modbus TCP Communication}
+\label{fig:chapter4-7}
+\end{figure}
+
+\subsection{Integration with the Existing SQL Recording Logic}
+The SQL database had already been implemented during the main project. For this extension, Node-RED reuses the existing stop-recording path and inserts the fields \texttt{jour}, \texttt{Debut}, \texttt{Fin} and \texttt{cause\_id}. The remaining analysis fields, such as duration, production day and team, are computed by the existing SQL logic.
+
+The web HMI also retrieves active cause labels from the database through the \texttt{/causes} endpoint. Cause \texttt{16} is excluded from manual selection because it is reserved for automatic micro-stop classification.
+
+\section{Development of Supervision Interfaces}
+
+\subsection{Local Veichi HMI Developed with VI20}
+A local HMI was developed on the Veichi touch screen using VI20. This interface is intended for the operator positioned near the machine. It provides local supervision of Visiteuse 2 and direct access to the main operating commands.
+
+Within this extension, the local HMI is complemented by the web HMI. The two interfaces are not alternatives: the local HMI remains the field interface, while the web HMI provides centralized access from the internal network.
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.75\textwidth, keepaspectratio]{images/hmi_veichi_vi20_main_screen.png}
+\caption{Veichi VI20 Local HMI - Main Operating Screen}
+\label{fig:chapter4-8}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.75\textwidth, keepaspectratio]{images/hmi_veichi_vi20_cause_selection.png}
+\caption{Veichi VI20 Local HMI - Stop-Cause Selection Screen}
+\label{fig:chapter4-9}
+\end{figure}
+
+\subsection{Centralized Web HMI}
+The web HMI was developed as a browser-based dashboard. It is served by the Node.js server and communicates with same-origin REST APIs. The Node.js server forwards validated commands to Node-RED, and Node-RED writes the corresponding Modbus coils or reads the required Modbus registers from the PLC.
+
+The web HMI allows the user to send stop requests, follow restart authorization, display available causes and supervise the machine from the internal network. Safety-related functions remain handled by the PLC, the local safety devices and the existing machine safety chain.
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.5\textwidth, keepaspectratio]{images/web_hmi_runtime_status.png}
+\caption{Runtime Status of the Web HMI Server and Communication Services}
+\label{fig:chapter4-10}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.85\textwidth, keepaspectratio]{images/hmi_web_dashboard_visiteuse2.png}
+\caption{Web HMI - Supervision Dashboard}
+\label{fig:chapter4-11}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.85\textwidth, keepaspectratio]{images/hmi_web_stop_cause_selection.png}
+\caption{Web HMI - Stop-Cause Selection Window}
+\label{fig:chapter4-12}
+\end{figure}
+
+\begin{table}[H]
+\centering
+\caption{Main REST endpoints used by the web HMI}
+\resizebox{\textwidth}{!}{%
+\begin{tabular}{|l|l|p{6cm}|}
+\hline
+\textbf{Endpoint} & \textbf{Method} & \textbf{Function} \\
+\hline
+\texttt{/status} & \texttt{GET} & Returns the current web HMI state. \\
+\hline
+\texttt{/causes} & \texttt{GET} & Reads active causes from MySQL while excluding automatic cause \texttt{16}. \\
+\hline
+\texttt{/start-stop} & \texttt{POST} & Starts a stop cycle by writing \texttt{M0 = 1} through Node-RED. \\
+\hline
+\texttt{/end-stop} & \texttt{POST} & Sends the selected cause when required and closes the stop by resetting \texttt{M0}. \\
+\hline
+\texttt{/set-sens} & \texttt{POST} & Updates the selected winding direction; switching to \texttt{DEROULEMENT} triggers a stop cycle in the current implementation. \\
+\hline
+\end{tabular}%
+}
+\end{table}
+
+\subsection{Complementarity Between the Local HMI and the Web HMI}
+The local HMI and the web HMI serve different operational needs. The VI20 screen is used close to the machine for shop-floor operation, while the web interface provides remote supervision from an internal workstation.
+
+\begin{table}[H]
+\centering
+\caption{Complementary roles of the two HMI layers}
+\resizebox{\textwidth}{!}{%
+\begin{tabular}{|l|l|l|}
+\hline
+\textbf{Criterion} & \textbf{VI20 local HMI} & \textbf{Web HMI} \\
+\hline
+Location & Installed near the machine. & Opened from an internal-network workstation. \\
+\hline
+Main user & Shop-floor operator. & Operator or production monitoring user. \\
+\hline
+Main role & Local operation and cause selection. & Centralized supervision and non-safety commands. \\
+\hline
+Communication path & Direct interaction with PLC variables. & Browser, Node.js server, Node-RED and PLC. \\
+\hline
+\end{tabular}%
+}
+\end{table}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.9\textwidth, keepaspectratio]{images/fig_07_hmi_complementarity.png}
+\caption{Complementary Roles of the Local HMI and the Web HMI}
+\label{fig:chapter4-13}
+\end{figure}
+
+\section{Functional Validation of the Extension}
+
+\subsection{Test Scenarios}
+The extension was validated through the main operating scenarios of Visiteuse 2. The objective was to verify the consistency between the ladder logic, Modbus communication, HMI interaction and SQL recording. The main validation scenarios included short stops, long stops with cause selection, restart blocking, Modbus communication, web HMI operation and local HMI operation.
+
+\subsection{Results Obtained}
+The extension made it possible to deploy the stop-supervision principle on a second machine equipped with a different PLC platform. The ladder program was adapted to AutoStudio, the timers were implemented with TON blocks, the Modbus TCP profile was configured for the Veichi VC3 and the SQL insertion path was preserved.
+
+The result confirms the feasibility of adapting the supervision method to Visiteuse 2. The implementation also provides a clear technical base for future reuse of the same principle, provided that each new machine receives its own PLC mapping and communication profile.
+
+\section{Contribution of the Extension to the Project}
+
+\subsection{Technical Contribution}
+From a technical perspective, this extension made it possible to work on a new PLC platform and verify the portability of the stop-supervision principle. The transition to the Veichi VC3 PLC required timer adaptation, timestamp-register verification and precise configuration of Modbus addresses.
+
+It also helped structure the system into clear layers: PLC logic, Node-RED communication, SQL recording, Node.js web API and HMI interaction.
+
+\subsection{Industrial Contribution}
+For the company, the main interest is the possibility of progressively reusing the same supervision principle on other machines. Visiteuse 2 serves as a concrete implementation example showing how the method can be adapted to another PLC while keeping a common operating logic.
+
+The addition of the web HMI also improves usage flexibility. The operator keeps a local interface near the machine, while production users can access a centralized view from the internal network.
+
+\subsection{Personal and Pedagogical Contribution}
+On a personal level, this extension made it possible to go beyond a single-machine implementation. It provided experience with several technical environments and with the integration constraints between industrial automation, communication, database recording and web interfaces.
+
+This experience strengthens the project because it demonstrates the ability to adapt an existing solution to a new industrial context.
+
+\section*{Conclusion}
+\addcontentsline{toc}{section}{Conclusion}
+The extension to Visiteuse 2 shows that the stop-supervision principle can be adapted to a second production machine equipped with a Veichi VC3 PLC. The final solution combines ladder logic, Modbus TCP communication, Node-RED processing, SQL recording and two complementary HMI layers.

@@ -1,0 +1,37 @@
+sequenceDiagram
+    actor Admin
+    participant UI as Interface: Dashboard
+    participant SC as Stops Controller
+    participant CC as Causes Controller
+    participant ST as SQL table: stops
+    participant CA as SQL table: causes
+
+    Admin->>UI: Open monitoring dashboard
+    UI-->>Admin: Display default filters
+    Admin->>UI: Select date/period and team
+
+    par Load cause reference data
+        UI->>CC: Request causes list
+        CC->>CA: Read causes
+        CA-->>CC: Causes
+        CC-->>UI: Causes list
+    and Load daily stop analytics
+        UI->>SC: Request daily summary
+        SC->>ST: Aggregate stops by day/team
+        SC->>CA: Read cause TRS flags
+        ST-->>SC: Stop totals
+        CA-->>SC: Cause flags
+        SC-->>UI: Daily summary
+    and Load downtime by cause
+        UI->>SC: Request downtime by cause
+        SC->>ST: Sum downtime by cause
+        SC->>CA: Join cause names
+        ST-->>SC: Downtime totals
+        CA-->>SC: Cause names
+        SC-->>UI: Downtime series
+    end
+
+    UI-->>Admin: Display overview, KPIs and charts
+    alt No data or request error
+        UI-->>Admin: Show empty state or error message
+    end

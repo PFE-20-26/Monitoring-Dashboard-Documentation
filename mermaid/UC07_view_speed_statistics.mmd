@@ -1,0 +1,25 @@
+sequenceDiagram
+    actor Admin
+    participant UI as Interface: Vitesse page
+    participant VC as Vitesse Controller
+    participant VT as SQL table: vitesse
+
+    Admin->>UI: Open speed/vitesse page
+    Admin->>UI: Select date range
+
+    par Load daily speed series
+        UI->>VC: Request daily speed statistics
+        VC->>VT: Group speed by recorded date
+        VT-->>VC: Daily average and maximum speed
+        VC-->>UI: Daily speed series
+    and Load period summary
+        UI->>VC: Request speed summary
+        VC->>VT: Calculate period average and maximum
+        VT-->>VC: Summary values
+        VC-->>UI: Summary values
+    end
+
+    UI-->>Admin: Display speed chart and summary cards
+    alt Invalid range, no data or request error
+        UI-->>Admin: Show empty state or error message
+    end

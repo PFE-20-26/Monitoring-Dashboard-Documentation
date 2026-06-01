@@ -72,7 +72,7 @@ prides itself on being a partner to major automotive manufacturers like:
     \centering
     \includegraphics[width=0.8\textwidth, keepaspectratio]{images/partners.png}
     \caption{Tesca's partners}
-    \label{fig:1}
+    \label{fig:chapter1-1}
 \end{figure}
 
 \hspace*{0.25cm}With a clientele consisting of demanding visionaries who shape the future of mobility, Tesca Group
@@ -163,18 +163,32 @@ The organizational chart shown in Figure 2 presents the distribution of position
     \centering
     \includegraphics[width=0.95\textwidth, keepaspectratio]{images/organigramme.png}
     \caption{Organizational chart of TESCA}
-    \label{fig:2}
+    \label{fig:chapter1-2}
 \end{figure}
 
 \section{\fontsize{15}{18}\selectfont Case study}
 
 \subsection{\fontsize{14}{17}\selectfont Overview of the Existing System}
 
-\hspace*{\parindent} The existing production monitoring system was developed in the previous internship project to replace manual paper-based stop recording with automated digital tracking. The system consists of three components working together: a Delta DVP PLC installed on the fabric inspection machine, a Node-RED platform serving as the intermediary that reads PLC data and communicates with the database, and a MySQL database storing all production information.
+\hspace*{\parindent} The existing production monitoring system was developed  to replace manual paper-based stop recording with automated digital tracking. The system consists of three components working together: a Delta DVP PLC installed on the fabric inspection machine, a Node-RED platform serving as the intermediary that reads PLC data and communicates with the database, and a MySQL database storing all production information.
 
-Before this system existed, operators manually recorded all machine stops, causes, and durations on paper during their shifts. This manual approach made monitoring difficult, introduced frequent errors, and prevented real-time analysis. The new system automates data collection: when the machine stops, the PLC detects it, the operator selects the cause through a tablet interface, and the system automatically calculates the duration when the machine restarts.
+Before this system existed, operators manually recorded all machine stops, causes, and durations on paper during their shifts. This process was prone to errors, made it hard to monitor, and could not conduct real-time analysis. In the new system, the PLC senses when the machine is stopped; the operator selects the reason for the stoppage via a tablet, and the system automatically computes the time the machine takes to start.
 
-The system serves two main user groups. Operators on the production floor use a tablet application that displays real-time machine speed, yardage measurements, lighting controls, and a dropdown menu to select stop causes. This interface updates continuously and provides immediate feedback, making it practical for shop-floor use. Managers access a web interface where they can filter data by date and shift team, view a table of all stops with their causes and durations, see a bar chart showing which causes are most frequent, and view the daily OEE (Overall Equipment Effectiveness) metric that measures productive time versus downtime.
+There are two main users of the system. Operators on the production floor use a tablet application that displays real-time machine speed, yardage measurements, lighting controls, and a dropdown menu to select stop causes. This interface updates continuously and provides immediate feedback, making it practical for shop-floor use. Managers access a web interface where they can filter data by date and shift team, view a table of all stops with their causes and durations, see a bar chart showing which causes are most frequent, and view the daily OEE (Overall Equipment Effectiveness) metric that measures productive time versus downtime.
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.9\textwidth, keepaspectratio]{images/block_diagram.png}
+\caption{Block Diagram of the Production Monitoring System}
+\label{fig:chapter1-3}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.9\textwidth, keepaspectratio]{images/architecture_diagram.png}
+\caption{Architecture Diagram of the Production Monitoring System}
+\label{fig:chapter1-4}
+\end{figure}
 
 \subsection{\fontsize{14}{17}\selectfont Criticism of the existing system}
 
@@ -205,6 +219,73 @@ The system serves two main user groups. Operators on the production floor use a 
 \subsubsection{\fontsize{13}{16}\selectfont Scalability Concerns}
 
 \hspace*{\parindent} The Node-RED platform handles all functions in a monolithic design: reading from the PLC, storing in the database, and serving both the operator tablet and manager web interface. As data volume grows or additional machines are added, this architecture may face performance or reliability issues, since any slowdown in one function could impact others.
+
+\subsection{\fontsize{14}{17}\selectfont Specifications Book}
+
+\hspace*{\parindent} The system to be developed shall improve the existing monitoring dashboard by strengthening real-time supervision, data reliability, traceability, analysis capabilities and user access control. It shall continue to use the production data made available by the existing industrial environment and shall not disturb the machine control logic executed by the Delta PLC.
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.9\textwidth, keepaspectratio]{images/requirements_diagram.png}
+\caption{Requirements Diagram}
+\label{fig:chapter1-5}
+\end{figure}
+
+\subsubsection{\fontsize{13}{16}\selectfont Functional Requirements}
+
+\begin{table}[H]
+\centering
+\caption{Functional requirements of the dashboard to be developed}
+\begin{tabular}{|l|l|p{5.5cm}|}
+\hline
+\textbf{ID} & \textbf{Requirement} & \textbf{Description} \\
+\hline
+REQ-F01 & Record stoppage events & The dashboard shall record the start time, end time and duration of each production stoppage. \\
+\hline
+REQ-F02 & Qualify stoppage causes & The operator shall be able to select a stoppage cause from a controlled list of causes. \\
+\hline
+REQ-F03 & Calculate indicators & The dashboard shall calculate TRS/OEE, total downtime, total productive time and number of stoppages. \\
+\hline
+REQ-F04 & Display real-time information & The dashboard shall display the latest machine and production information without relying only on manual consultation. \\
+\hline
+REQ-F05 & Analyze stoppage history & The manager shall be able to analyze stoppages by date, team, cause and duration. \\
+\hline
+REQ-F06 & Compare periods and teams & The dashboard shall allow comparison between days, shifts or teams to identify recurring performance issues. \\
+\hline
+REQ-F07 & Manage stoppage causes & Authorized users shall be able to add, modify, disable or delete stoppage causes. \\
+\hline
+REQ-F08 & Generate reports and exports & The dashboard shall allow the export of production data and indicators for reporting and further analysis. \\
+\hline
+\end{tabular}
+\label{tab:chapter1-1}
+\end{table}
+
+\subsubsection{\fontsize{13}{16}\selectfont Non-functional Requirements}
+
+\begin{table}[H]
+\centering
+\caption{Non-functional requirements and industrial constraints}
+\begin{tabular}{|l|l|p{5.5cm}|}
+\hline
+\textbf{ID} & \textbf{Requirement} & \textbf{Description} \\
+\hline
+REQ-NF01 & Maintainability & The future dashboard shall be organized so that business logic, interface logic and data access can be maintained clearly. \\
+\hline
+REQ-NF02 & Scalability & The system shall support future extension of indicators, users and data volume. \\
+\hline
+REQ-NF03 & Reliability & Data acquisition, storage and visualization shall be stable enough for production monitoring. \\
+\hline
+REQ-NF04 & Performance & Dashboard pages and filters shall respond quickly enough for daily production follow-up. \\
+\hline
+REQ-C01 & Preserve PLC control & The dashboard shall not disturb the validated control logic executed by the Delta PLC. \\
+\hline
+REQ-C02 & Respect existing data sources & The system shall be designed according to the existing industrial data context: Delta PLC, Node-RED flows and MySQL data. \\
+\hline
+REQ-C03 & Minimize operator burden & The dashboard shall not add unnecessary steps to the operator workflow. \\
+\hline
+\end{tabular}
+\label{tab:chapter1-2}
+\end{table}
 
 \section{\fontsize{15}{18}\selectfont Modeling languages: SysMl}
 

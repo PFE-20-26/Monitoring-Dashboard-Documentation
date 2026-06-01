@@ -1,0 +1,26 @@
+sequenceDiagram
+    actor Admin
+    participant UI as Interface: Current page
+    participant C as Controller if data not loaded
+    participant DB as SQL table: selected dataset
+    participant XLS as ExcelJS / Browser download
+
+    Admin->>UI: Click Export Excel
+    UI->>UI: Check selected data to export
+
+    alt Data is already loaded in the interface
+        UI->>UI: Prepare rows from current page data
+    else Full dataset must be fetched first
+        UI->>C: Request complete export rows
+        C->>DB: Read selected dataset<br/>stops/causes/metrage/vitesse
+        DB-->>C: Rows
+        C-->>UI: Complete rows
+    end
+
+    UI->>XLS: Build workbook and worksheet
+    XLS-->>UI: Generated .xlsx file
+    UI-->>Admin: Browser downloads Excel file
+
+    alt No exportable data or generation error
+        UI-->>Admin: Show export error message
+    end

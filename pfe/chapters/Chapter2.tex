@@ -1,0 +1,844 @@
+\chapter{Architecture and Design}
+
+\section*{Introduction}
+
+This chapter will give a glimpse on the conceptual phase of our project.
+
+\vspace{-8pt}
+\enlargethispage{3cm}
+\section{Dashboard}
+
+\vspace{-5pt}
+
+The dashboard provides a comprehensive monitoring interface for analytics operations. The Figure~\ref{fig:chapter2-1} illustrates the main functional interactions between the admin user and the system.
+
+\vspace{-8pt}
+
+\begin{figure}[H]
+\centering
+\reportimagewide{images/usecase .png}
+\caption{Use Case Diagram of the Dashboard}
+\label{fig:chapter2-1}
+\end{figure}
+
+\subsection{Use case "Consult overview"}
+
+\subsubsection{Sequence diagram}
+
+\begin{figure}[H]
+\centering
+\reportimagewide{images/OverView.png}
+\caption{Sequence Diagram: Consult Overview}
+\label{fig:chapter2-consult-overview}
+\end{figure}
+\vspace{5cm}
+\subsubsection{Description}
+
+{\small
+\setlength{\LTleft}{0pt plus 1fill}
+\setlength{\LTright}{0pt plus 1fill}
+\begin{longtable}{|p{0.25\textwidth}|p{0.67\textwidth}|}
+\caption{Text description of diagram use case "Consult overview"}\label{tab:consult-overview}\\
+\hline
+\rowcolor{tableheader}\tablehead{Use case name} & \tablehead{Consult overview} \\ \hline
+\endfirsthead
+\caption[]{Text description of diagram use case "Consult overview" (continued)}\\
+\hline
+\rowcolor{tableheader}\tablehead{Use case name} & \tablehead{Consult overview} \\ \hline
+\endhead
+\hline
+\multicolumn{2}{r}{\small Continued on next page}\\
+\endfoot
+\endlastfoot
+Actors & Admin \\
+\hline
+Objective & Allow the administrator to consult the main production monitoring dashboard and quickly understand the current situation for a selected day or period. \\
+\hline
+Preconditions &
+\begin{itemize}
+\item The administrator can access the dashboard web interface.
+\item The backend server is running and can reach the MySQL database.
+\item Stop and cause data exist or the system can return an empty result set.
+\item The selected date, period, and team values are valid.
+\end{itemize} \\
+\hline
+Postconditions &
+\begin{itemize}
+\item Dashboard data is displayed for the selected filters.
+\item KPI cards, downtime-by-cause chart, and trend charts are refreshed.
+\item No production data is modified.
+\end{itemize} \\
+\hline
+Nominal Scenario &
+\begin{enumerate}
+\item The administrator opens the monitoring dashboard.
+\item The system displays the default day/period and team filters.
+\item The administrator selects a single day or a period and chooses a team.
+\item The system loads daily stop analytics, downtime analytics, and the causes list.
+\item The system calculates the visible KPIs and prepares chart data.
+\item The dashboard displays the overview cards and charts.
+\item The administrator may refresh or clear the filters to consult another period.
+\end{enumerate} \\
+\hline
+Alternative Scenario &
+\begin{itemize}
+\item A1: If a date is missing, the system keeps the dashboard in an empty selection state until valid filters are entered.
+\item A2: If no data exists for the period, the dashboard shows an empty-data message and neutral KPI values.
+\item A3: If the request fails, the system displays an error message and clears the affected data area.
+\end{itemize} \\
+\hline
+\end{longtable}
+}
+
+\subsection{Use case "View stops summary"}
+
+\subsubsection{Sequence diagram}
+
+\begin{figure}[H]
+\centering
+\reportimagewide{images/StopsSummary.png}
+\caption{Sequence Diagram: View Stops Summary}
+\label{fig:chapter2-view-stops-summary}
+\end{figure}
+
+\subsubsection{Description}
+
+{\small
+\setlength{\LTleft}{0pt plus 1fill}
+\setlength{\LTright}{0pt plus 1fill}
+\begin{longtable}{|p{0.25\textwidth}|p{0.67\textwidth}|}
+\caption{Text description of diagram use case "View stops summary"}\label{tab:view-stops-summary}\\
+\hline
+\rowcolor{tableheader}\tablehead{Use case name} & \tablehead{View stops summary} \\ \hline
+\endfirsthead
+\caption[]{Text description of diagram use case "View stops summary" (continued)}\\
+\hline
+\rowcolor{tableheader}\tablehead{Use case name} & \tablehead{View stops summary} \\ \hline
+\endhead
+\hline
+\multicolumn{2}{r}{\small Continued on next page}\\
+\endfoot
+\endlastfoot
+Actors & Admin \\ \hline
+Objective & Allow the administrator to consult a daily summary of stops, downtime, working time, TRS, and stop count over a selected period. \\ \hline
+Preconditions &
+\begin{itemize}
+\item The administrator is on the Arrêts \& Analytique page.
+\item The selected start date, end date, and team are valid.
+\item Stop records are available or the system can return an empty list.
+\end{itemize} \\ \hline
+Postconditions &
+\begin{itemize}
+\item The daily stops summary table is displayed.
+\item Rows are paginated in the interface.
+\item Selecting a row can open the stop details use case.
+\item No database records are changed.
+\end{itemize} \\ \hline
+Nominal Scenario &
+\begin{enumerate}
+\item The administrator opens the stops analytics page.
+\item The administrator selects a start date, end date, and team.
+\item The system requests the daily stops summary from the backend.
+\item The backend aggregates stops by production day and calculates downtime and working time.
+\item The front end calculates the displayed TRS percentage.
+\item The system displays the summary table with pagination.
+\end{enumerate} \\ \hline
+Alternative Scenario &
+\begin{itemize}
+\item A1: If from is greater than to, the backend rejects the request and the interface shows an error.
+\item A2: If no data exists, the system displays ``Aucune donnée trouvée.''
+\item A3: If the request fails, the summary table is cleared and an error message is shown.
+\end{itemize} \\ \hline
+\end{longtable}
+}
+
+\subsection{Use case "View stops details"}
+
+\subsubsection{Sequence diagram}
+
+\begin{figure}[H]
+\centering
+\reportimagewide{images/ViewDetail.png}
+\caption{Sequence Diagram: View Stops Details}
+\label{fig:chapter2-view-stops-details}
+\end{figure}
+\vspace{3cm}
+\subsubsection{Description}
+
+{\small
+\setlength{\LTleft}{0pt plus 1fill}
+\setlength{\LTright}{0pt plus 1fill}
+\begin{longtable}{|p{0.25\textwidth}|p{0.67\textwidth}|}
+\caption{Text description of diagram use case "View stops details"}\label{tab:view-stops-details}\\
+\hline
+\rowcolor{tableheader}\tablehead{Use case name} & \tablehead{View stops details} \\ \hline
+\endfirsthead
+\caption[]{Text description of diagram use case "View stops details" (continued)}\\
+\hline
+\rowcolor{tableheader}\tablehead{Use case name} & \tablehead{View stops details} \\ \hline
+\endhead
+\hline
+\multicolumn{2}{r}{\small Continued on next page}\\
+\endfoot
+\endlastfoot
+Actors & Admin \\ \hline
+Objective & Allow the administrator to inspect the detailed stop events for a selected production day and team. \\ \hline
+Preconditions &
+\begin{itemize}
+\item The stops summary table has been loaded.
+\item The administrator selects a specific production day.
+\item Stop events exist for the selected filters or the system can return an empty page.
+\end{itemize} \\ \hline
+Postconditions &
+\begin{itemize}
+\item The stop details table is displayed with start time, end time, duration, cause, TRS impact, and percentage contribution.
+\item The administrator can navigate detail pages and refresh the selected day.
+\item No database records are modified.
+\end{itemize} \\ \hline
+Nominal Scenario &
+\begin{enumerate}
+\item The administrator clicks a day in the stops summary table.
+\item The system stores the selected day and resets detail pagination to page 1.
+\item The system requests the detailed stop list for that day and team.
+\item The backend returns a paginated list with use case name, duration, team, TRS impact, and percentage contribution.
+\item The system displays the detailed table.
+\item The administrator changes pages if more stops are available.
+\end{enumerate} \\ \hline
+Alternative Scenario &
+\begin{itemize}
+\item A1: If no day is selected, the system displays a placeholder asking the administrator to select a row.
+\item A2: If a stop is still ongoing, the end time is empty and the duration is shown as ``En cours''.
+\item A3: If no stops exist for the selected day, the system displays ``Aucun arrêt trouvé.''
+\item A4: If the response has an invalid structure, an error message is displayed.
+\end{itemize} \\ \hline
+\end{longtable}
+}
+
+\subsection{Use case "View cause"}
+
+\subsubsection{Sequence diagram}
+
+\vspace{-3pt}
+\begin{figure}[H]
+\centering
+\reportimage[height=0.32\textheight]{images/ViewCause.png}
+\caption{Sequence Diagram: View Cause}
+\label{fig:chapter2-view-cause}
+\end{figure}
+
+\subsubsection{Description}
+
+{\small
+\setlength{\LTleft}{0pt plus 1fill}
+\setlength{\LTright}{0pt plus 1fill}
+\begin{longtable}{|p{0.25\textwidth}|p{0.67\textwidth}|}
+\caption{Text description of diagram use case "View cause"}\label{tab:view-cause}\\
+\hline
+\rowcolor{tableheader}\tablehead{Use case name} & \tablehead{View cause} \\ \hline
+\endfirsthead
+\caption[]{Text description of diagram use case "View cause" (continued)}\\
+\hline
+\rowcolor{tableheader}\tablehead{Use case name} & \tablehead{View cause} \\ \hline
+\endhead
+\hline
+\multicolumn{2}{r}{\small Continued on next page}\\
+\endfoot
+\endlastfoot
+Actors & Admin \\
+\hline
+Objective & Allow the administrator to consult cause information, including name, description, TRS impact, and active status. \\
+\hline
+Preconditions &
+\begin{itemize}\setlength{\itemsep}{-2pt}
+\item The administrator has opened the causes management page.
+\item Cause records exist or the system can return an empty list.
+\item Optional filters are valid.
+\end{itemize} \\ \hline
+Postconditions &
+\begin{itemize}\setlength{\itemsep}{-2pt}
+\item Cause information is displayed in the causes table.
+\item No cause record is changed by viewing the list.
+\end{itemize} \\ \hline
+Nominal Scenario &
+\begin{enumerate}\setlength{\itemsep}{-2pt}
+\item The administrator opens the causes page.
+\item The system requests causes from the backend, active only by default.
+\item The administrator may enter a search term or include inactive causes.
+\item The backend returns the filtered list and total count.
+\item The interface displays each cause with its description, TRS impact, and active status.
+\end{enumerate} \\ \hline
+Alternative Scenario &
+\begin{itemize}\setlength{\itemsep}{-2pt}
+\item A1: If the list is empty, the system displays ``Aucune cause trouvée.''
+\item A2: If the search term does not match any cause, the table remains empty.
+\item A3: If the request fails, the system displays an error and the list is not updated.
+\end{itemize} \\ \hline
+\end{longtable}
+}
+
+\subsection{Use case "Create cause"}
+
+\subsubsection{Sequence diagram}
+
+\begin{figure}[H]
+\centering
+\reportimagewide{images/CreateCause.png}
+\caption{Sequence Diagram: Create Cause}
+\label{fig:chapter2-create-cause}
+\end{figure}
+
+\subsubsection{Description}
+
+{\small
+\setlength{\LTleft}{0pt plus 1fill}
+\setlength{\LTright}{0pt plus 1fill}
+\begin{longtable}{|p{0.25\textwidth}|p{0.67\textwidth}|}
+\caption{Text description of diagram use case "Create cause"}\label{tab:create-cause}\\
+\hline
+\rowcolor{tableheader}\tablehead{Use case name} & \tablehead{Create cause} \\ \hline
+\endfirsthead
+\caption[]{Text description of diagram use case "Create cause" (continued)}\\
+\hline
+\rowcolor{tableheader}\tablehead{Use case name} & \tablehead{Create cause} \\ \hline
+\endhead
+\hline
+\multicolumn{2}{r}{\small Continued on next page}\\
+\endfoot
+\endlastfoot
+Actors & Admin \\
+\hline
+Objective & Allow the administrator to add a new stop cause with its description, TRS impact flag, and active status. \\
+\hline
+Preconditions &
+\begin{itemize}
+\item The administrator is on the causes management page.
+\item The new cause name is known.
+\item The administrator chooses whether the cause affects TRS and whether it is active.
+\end{itemize} \\ \hline
+Postconditions &
+\begin{itemize}
+\item A new cause is saved in the causes table.
+\item The causes list is refreshed and includes the new cause according to current filters.
+\end{itemize} \\ \hline
+Nominal Scenario &
+\begin{enumerate}
+\item The administrator clicks ``Nouvelle Cause''.
+\item The system opens the create-cause modal form.
+\item The administrator enters the name and optional description.
+\item The administrator selects the TRS impact and active status.
+\item The administrator submits the form.
+\item The front end validates basic field requirements.
+\item The backend validates the DTO and saves the cause.
+\item The modal closes and the list is refreshed.
+\end{enumerate} \\ \hline
+Alternative Scenario &
+\begin{itemize}
+\item A1: If the name is empty, the system displays ``Le nom est obligatoire.''
+\item A2: If the name or description exceeds the maximum length, the system displays a validation error.
+\item A3: If the backend rejects the request or the database fails, the cause is not created and an error is displayed.
+\end{itemize} \\ \hline
+\end{longtable}
+}
+
+\subsection{Use case "Delete cause"}
+
+\subsubsection{Sequence diagram}
+
+\begin{figure}[H]
+\centering
+\reportimagewide{images/Delete Cause.png}
+\caption{Sequence Diagram: Delete Cause}
+\label{fig:chapter2-delete-cause}
+\end{figure}
+
+\subsubsection{Description}
+
+{\small
+\setlength{\LTleft}{0pt plus 1fill}
+\setlength{\LTright}{0pt plus 1fill}
+\begin{longtable}{|p{0.25\textwidth}|p{0.67\textwidth}|}
+\caption{Text description of diagram use case "Delete cause"}\label{tab:delete-cause}\\
+\hline
+\rowcolor{tableheader}\tablehead{Use case name} & \tablehead{Delete cause} \\ \hline
+\endfirsthead
+\caption[]{Text description of diagram use case "Delete cause" (continued)}\\
+\hline
+\rowcolor{tableheader}\tablehead{Use case name} & \tablehead{Delete cause} \\ \hline
+\endhead
+\hline
+\multicolumn{2}{r}{\small Continued on next page}\\
+\endfoot
+\endlastfoot
+Actors & Admin \\
+\hline
+Objective & Allow the administrator to remove a cause from active use. In the provided code this is implemented as deactivation, not physical deletion. \\
+\hline
+Preconditions &
+\begin{itemize}
+\item The administrator is on the causes management page.
+\item The cause exists in the system.
+\item The cause is visible in the current list or can be shown by including inactive causes.
+\end{itemize} \\ \hline
+Postconditions &
+\begin{itemize}
+\item The selected cause becomes inactive when deactivated.
+\item The cause is hidden from the default active list but can still be viewed when inactive causes are included.
+\item Historical stop records can continue referencing the cause.
+\end{itemize} \\ \hline
+Nominal Scenario &
+\begin{enumerate}
+\item The administrator locates the cause in the causes table.
+\item The administrator clicks ``Désactiver''.
+\item The system sends an update request with isActive set to false.
+\item The backend finds the cause and updates its active status.
+\item The front end reloads the causes list.
+\item The deactivated cause is removed from the active-only view.
+\end{enumerate} \\ \hline
+Alternative Scenario &
+\begin{itemize}
+\item A1: If the cause does not exist, the backend returns a not-found error.
+\item A2: If the update fails, the cause remains unchanged and an error message is displayed.
+\item A3: If the administrator needs to restore the cause, they include inactive causes and click ``Activer''.
+\end{itemize} \\ \hline
+\end{longtable}
+}
+
+\subsection{Use case "View Yardage statistics"}
+
+\subsubsection{Sequence diagram}
+
+\begin{figure}[H]
+\centering
+\reportimagewide{images/ViewYardage.png}
+\caption{Sequence Diagram: View Yardage Statistics}
+\label{fig:chapter2-view-yardage-statistics}
+\end{figure}
+
+\subsubsection{Description}
+
+{\small
+\setlength{\LTleft}{0pt plus 1fill}
+\setlength{\LTright}{0pt plus 1fill}
+\begin{longtable}{|p{0.25\textwidth}|p{0.67\textwidth}|}
+\caption{Text description of diagram use case "View Yardage statistics"}\label{tab:view-yardage-statistics}\\
+\hline
+\rowcolor{tableheader}\tablehead{Use case name} & \tablehead{View Yardage statistics} \\ \hline
+\endfirsthead
+\caption[]{Text description of diagram use case "View Yardage statistics" (continued)}\\
+\hline
+\rowcolor{tableheader}\tablehead{Use case name} & \tablehead{View Yardage statistics} \\ \hline
+\endhead
+\hline
+\multicolumn{2}{r}{\small Continued on next page}\\
+\endfoot
+\endlastfoot
+Actors & Admin \\
+\hline
+Objective & Allow the administrator to view produced yardage/metrage by day and the total production quantity over a selected period. \\
+\hline
+Preconditions &
+\begin{itemize}
+\item The administrator is on the Métrage page.
+\item The selected start and end dates are valid.
+\item Metrage records exist or the system can return an empty result.
+\end{itemize} \\ \hline
+Postconditions &
+\begin{itemize}
+\item The daily yardage line chart and period total are displayed.
+\item The administrator can export the daily yardage data to Excel.
+\item Viewing statistics does not modify production records.
+\end{itemize} \\ \hline
+Nominal Scenario &
+\begin{enumerate}
+\item The administrator opens the Métrage page.
+\item The system displays the default period, usually the last seven days.
+\item The administrator adjusts the start and end dates if needed.
+\item The system requests the daily metrage series and the period total in parallel.
+\item The backend groups metrage entries by recorded date and calculates the total meters.
+\item The front end displays the line chart and the total period value.
+\end{enumerate} \\ \hline
+Alternative Scenario &
+\begin{itemize}
+\item A1: If from is greater than to, the backend rejects the request and an error is displayed.
+\item A2: If no metrage data exists, the chart shows an empty-data message.
+\item A3: If the request fails, the interface displays a loading or error state and the chart is not updated.
+\end{itemize} \\ \hline
+\end{longtable}
+}
+
+\subsection{Use case "View speed statistics"}
+
+\subsubsection{Sequence diagram}
+
+\begin{figure}[H]
+\centering
+\reportimagewide{images/ViewVitesse.png}
+\caption{Sequence Diagram: View Speed Statistics}
+\label{fig:chapter2-view-speed-statistics}
+\end{figure}
+
+\subsubsection{Description}
+
+{\small
+\setlength{\LTleft}{0pt plus 1fill}
+\setlength{\LTright}{0pt plus 1fill}
+\begin{longtable}{|p{0.25\textwidth}|p{0.67\textwidth}|}
+\caption{Text description of diagram use case "View speed statistics"}\label{tab:view-speed-statistics}\\
+\hline
+\rowcolor{tableheader}\tablehead{Use case name} & \tablehead{View speed statistics} \\ \hline
+\endfirsthead
+\caption[]{Text description of diagram use case "View speed statistics" (continued)}\\
+\hline
+\rowcolor{tableheader}\tablehead{Use case name} & \tablehead{View speed statistics} \\ \hline
+\endhead
+\hline
+\multicolumn{2}{r}{\small Continued on next page}\\
+\endfoot
+\endlastfoot
+Actors & Admin \\
+\hline
+Objective & Allow the administrator to view production speed statistics, including daily average speed, daily maximum speed, and period summary values. \\
+\hline
+Preconditions &
+\begin{itemize}
+\item The administrator is on the Vitesse page.
+\item The selected start and end dates are valid.
+\item Speed samples exist or the system can return an empty result.
+\end{itemize} \\ \hline
+Postconditions &
+\begin{itemize}
+\item The daily average and maximum speed chart is displayed.
+\item The period average and maximum values are displayed.
+\item No existing speed record is modified by viewing the statistics.
+\end{itemize} \\ \hline
+Nominal Scenario &
+\begin{enumerate}
+\item The administrator opens the Vitesse page.
+\item The system displays the default period, usually the last seven days.
+\item The administrator adjusts the period if needed.
+\item The system requests daily speed data and the period summary.
+\item The backend groups speed entries by recorded date and calculates average, maximum, and sample count.
+\item The front end displays the two-line chart and the summary cards.
+\end{enumerate} \\ \hline
+Alternative Scenario &
+\begin{itemize}
+\item A1: If the selected date range is invalid, the backend rejects the request.
+\item A2: If no speed samples exist, the chart displays an empty-data message.
+\item A3: If the request fails, the interface displays an error and does not update the chart.
+\end{itemize} \\ \hline
+\end{longtable}
+}
+
+\subsection{Use case "Export data to Excel"}
+
+\subsubsection{Sequence diagram}
+
+\begin{figure}[H]
+\centering
+\reportimagewide{images/ExportExcel.png}
+\caption{Sequence Diagram: Export Data to Excel}
+\label{fig:chapter2-export-data-to-excel}
+\end{figure}
+
+\subsubsection{Description}
+
+{\small
+\setlength{\LTleft}{0pt plus 1fill}
+\setlength{\LTright}{0pt plus 1fill}
+\begin{longtable}{|p{0.25\textwidth}|p{0.67\textwidth}|}
+\caption{Text description of diagram use case "Export data to Excel"}\label{tab:export-data-to-excel}\\
+\hline
+\rowcolor{tableheader}\tablehead{Use case name} & \tablehead{Export data to Excel} \\ \hline
+\endfirsthead
+\caption[]{Text description of diagram use case "Export data to Excel" (continued)}\\
+\hline
+\rowcolor{tableheader}\tablehead{Use case name} & \tablehead{Export data to Excel} \\ \hline
+\endhead
+\hline
+\multicolumn{2}{r}{\small Continued on next page}\\
+\endfoot
+\endlastfoot
+Actors & Admin \\
+\hline
+Objective & Allow the administrator to export dashboard data, stops data, causes, metrage, or speed statistics into a formatted Excel file. \\
+\hline
+Preconditions &
+\begin{itemize}
+\item The administrator is on a page that provides an export button.
+\item Exportable data is already loaded or can be fetched by the export action.
+\item The browser allows file downloads.
+\end{itemize} \\ \hline
+Postconditions &
+\begin{itemize}
+\item An .xlsx file is generated and downloaded in the browser.
+\item The exported sheet includes headers, optional title, formatting, and conditional styles where configured.
+\item No server data is modified.
+\end{itemize} \\ \hline
+Nominal Scenario &
+\begin{enumerate}
+\item The administrator clicks an Export Excel button.
+\item The component uses the current data or fetches all required rows for a detailed export.
+\item The component loads ExcelJS in the browser.
+\item The system creates a workbook, worksheet, title row, headers, and formatted data rows.
+\item The system applies column widths and conditional styles.
+\item The browser downloads the Excel file.
+\end{enumerate} \\ \hline
+Alternative Scenario &
+\begin{itemize}
+\item A1: If there is no data to export, the system alerts ``Aucune donnée à exporter''.
+\item A2: If fetching all rows fails, the export is cancelled and an error alert is shown.
+\item A3: If the browser download is blocked, the file may not be saved even though the workbook was generated.
+\end{itemize} \\ \hline
+\end{longtable}
+}
+
+\section{CAD Correction and Technical Revision}
+
+The machine is already installed in the workshop; therefore, the work is a CAD and documentation correction, not a new design. A mate error is treated here as a digital assembly inconsistency: failed reference, redundant constraint, over-defined relation, or wrong positioning.
+
+The revision priorities are limited to the elements that affect technical reading, drawing extraction, and traceability. They are summarized in Table~\ref{tab:scope-revision}.
+
+\begin{table}[H]
+\centering
+\small
+\caption{Scope of the technical revision}
+\label{tab:chapter2-2}
+\label{tab:scope-revision}
+\rowcolors{2}{tablelight}{white}
+\begin{tabularx}{\textwidth}{|P{0.25\textwidth}|P{0.34\textwidth}|Y|}
+\hline
+\rowcolor{tableheader}
+\tablehead{Revision item} & \tablehead{Technical action} & \tablehead{Expected result} \\
+\hline
+CAD assembly mates & Correct failed, missing, redundant, or conflicting mates. & Stable rebuild with no detected mate errors. \\
+\hline
+Assembly organization & Keep the main machine groups in a coherent mechanical hierarchy. & Clear reading of unwinding, inspection, and rewinding functions. \\
+\hline
+Industrial title block & Standardize the sheet identification fields. & Traceable drawings with scale, revision, date, and validation data. \\
+\hline
+Technical drawing package & Prepare the useful views for the assembly, sub-assemblies, and parts. & Readable documentation for presentation, checking, and later updates. \\
+\hline
+\end{tabularx}
+\end{table}
+
+\section{Existing Machine and Functional Reference}
+
+The CAD model must keep the same fabric path as the real machine: input roll, unwinding zone, inspection zone, rewinding zone, and output roll. This functional reference gives a clear basis for grouping parts and drawing sheets.
+
+The three main zones are kept in the documentation because they match the real mechanical operation of the machine. This avoids mixing all components in one unclear representation.
+
+\subsection{Complete assembly view}
+
+The complete assembly view is used as the global CAD reference of the corrected model. It shows the complete fabric inspection machine after the mate correction, with the unwinding block, the central inspection block, and the rewinding block kept in their real functional order.
+
+\section{CAD Assembly Correction}
+
+\subsection{Mate review method}
+
+The mate review targeted constraints that could affect rebuild stability or technical reading. Only mates that define the mechanical function were kept; duplicated or contradictory mates were removed.
+
+For rotating elements, the correction focused on coherent axes. For fixed supports and frames, it focused on stable contact references and logical fixation planes.
+
+\begin{table}[H]
+\centering
+\small
+\caption{CAD mate correction strategy}
+\label{tab:chapter2-3}
+\rowcolors{2}{tablelight}{white}
+\begin{tabularx}{\textwidth}{|P{0.25\textwidth}|P{0.34\textwidth}|Y|}
+\hline
+\rowcolor{tableheader}
+\tablehead{Observed CAD condition} & \tablehead{Correction approach} & \tablehead{Technical purpose} \\
+\hline
+Failed or missing reference & Reassign the mate to a valid face, axis, plane, or reference geometry. & Restore stable positioning after rebuild. \\
+\hline
+Over-defined constraint & Remove duplicated or contradictory relations. & Avoid mate conflict and simplify the assembly tree. \\
+\hline
+Misaligned rotating element & Rebuild the concentric or coaxial relation on the correct mechanical axis. & Keep shafts, cylinders, bars, and bearings coherent. \\
+\hline
+Floating component & Add only the minimum functional constraints. & Prevent unintended movement without over-constraining the model. \\
+\hline
+Incorrect sub-assembly position & Reposition the group using stable references from the main structure. & Preserve the real machine architecture. \\
+\hline
+\end{tabularx}
+\end{table}
+
+\subsection{Final assembly validation}
+
+After correction, the assembly was rebuilt and checked. The validation was not limited to visual appearance; it also required a clean mate status, coherent axes, correct sub-assembly positions, and readiness for drawing extraction.
+
+\begin{table}[H]
+\centering
+\small
+\caption{Final CAD assembly validation criteria}
+\label{tab:chapter2-4}
+\rowcolors{2}{tablelight}{white}
+\begin{tabularx}{\textwidth}{|P{0.25\textwidth}|P{0.34\textwidth}|Y|}
+\hline
+\rowcolor{tableheader}
+\tablehead{Validation criterion} & \tablehead{Requirement} & \tablehead{Expected result} \\
+\hline
+Mate status & No detected failed, dangling, or conflicting mates. & Clean assembly tree and reliable rebuild. \\
+\hline
+Component positioning & Main parts placed according to the real machine structure. & Correct visual interpretation of the layout. \\
+\hline
+Rotating axes & Cylinders, shafts, bearings, and bars aligned with coherent axes. & Consistent representation of rotating elements. \\
+\hline
+Sub-assembly hierarchy & Functional groups remain identifiable. & Clear reading of unwinding, inspection, and rewinding zones. \\
+\hline
+Drawing extraction readiness & Views generated from stable references. & Reliable basis for the technical drawing package. \\
+\hline
+\end{tabularx}
+\end{table}
+
+\section{Industrial Title Block Standardization}
+
+The title block was standardized so that each sheet can be identified without returning to the complete report. It gives the drawing its basic traceability: project, part or assembly name, drawing number, scale, revision, date, drafter, checker, and sheet number.
+
+\begin{table}[H]
+\centering
+\small
+\caption{Main fields of the revised industrial title block}
+\label{tab:chapter2-5}
+\rowcolors{2}{tablelight}{white}
+\begin{tabularx}{\textwidth}{|P{0.25\textwidth}|P{0.34\textwidth}|Y|}
+\hline
+\rowcolor{tableheader}
+\tablehead{Title-block field} & \tablehead{Role} & \tablehead{Reason for inclusion} \\
+\hline
+Project or machine name & Identifies the global system. & Links the sheet to the fabric inspection machine. \\
+\hline
+Part or assembly name & Identifies the represented element. & Avoids confusion between similar components. \\
+\hline
+Drawing number & Gives a unique sheet reference. & Supports classification and retrieval. \\
+\hline
+Scale and sheet format & Defines representation conditions. & Makes the sheet easier to read and check. \\
+\hline
+Revision, date, drafter, checker & Records the current version and validation status. & Improves traceability and responsibility tracking. \\
+\hline
+\end{tabularx}
+\end{table}
+
+\section{Technical Drawing Package}
+
+\subsection{Drawing package organization}
+
+The drawing package is organized by level: complete assembly, functional sub-assemblies, and individual parts. This avoids overloaded sheets and gives each drawing a precise technical purpose.
+
+\begin{table}[H]
+\centering
+\small
+\caption{Organization of the technical drawing package}
+\label{tab:chapter2-6}
+\rowcolors{2}{tablelight}{white}
+\begin{tabularx}{\textwidth}{|P{0.25\textwidth}|P{0.34\textwidth}|Y|}
+\hline
+\rowcolor{tableheader}
+\tablehead{Drawing level} & \tablehead{Main content} & \tablehead{Technical objective} \\
+\hline
+Complete assembly drawing & Overall machine view, main zones, and principal components. & Present the corrected machine as a complete system. \\
+\hline
+Sub-assembly drawings & Separate views for unwinding, inspection, and rewinding groups. & Clarify the role and location of each functional zone. \\
+\hline
+Individual part drawings & Orthographic, section, detail, or isometric views as needed. & Identify each part and its useful geometry. \\
+\hline
+Title-block information & Drawing number, name, scale, revision, date, and validation fields. & Ensure traceability and professional presentation. \\
+\hline
+\end{tabularx}
+\end{table}
+
+The CAD views for the chapter are named according to their mechanical function: complete assembly, unwinding unit, inspection unit, and rewinding unit. This naming keeps the drawing package readable because each view is linked to one clear documentation level instead of being treated as an isolated render.
+
+\subsection{Required views for the parts}
+
+The selected views must explain the geometry without unnecessary visual overload. Simple parts can be described with orthographic and isometric views; complex parts need sections or details when hidden geometry and interfaces are not clear.
+
+\begin{table}[H]
+\centering
+\small
+\caption{Recommended view selection for the drawing sheets}
+\label{tab:chapter2-7}
+\rowcolors{2}{tablelight}{white}
+\begin{tabularx}{\textwidth}{|P{0.25\textwidth}|P{0.34\textwidth}|Y|}
+\hline
+\rowcolor{tableheader}
+\tablehead{Component type} & \tablehead{Recommended views} & \tablehead{Purpose of the views} \\
+\hline
+Complete assembly & General 3D view, front view, side view, and overall layout. & Show the complete machine and the main zones. \\
+\hline
+Functional sub-assembly & Isometric view, principal orthographic views, and local details if required. & Clarify composition and mechanical role. \\
+\hline
+Shafts, cylinders, and bars & Longitudinal view, end view, and interface detail if needed. & Show axes, diameters, ends, and mounting interfaces. \\
+\hline
+Supports, brackets, and plates & Front, top, side, and section views where necessary. & Make holes, thicknesses, fixing areas, and contact faces readable. \\
+\hline
+Moving or adjustable elements & Main view, position reference view, and connection detail. & Show mounting logic and adjustment interface. \\
+\hline
+\end{tabularx}
+\end{table}
+
+\section{Mechanical Reading After Correction}
+
+The corrected documentation should allow the reader to follow the fabric path and locate the main mechanical groups quickly. Each zone must therefore show only the elements needed to understand its function.
+
+\begin{table}[H]
+\centering
+\small
+\caption{Mechanical reading after CAD correction}
+\label{tab:chapter2-8}
+\rowcolors{2}{tablelight}{white}
+\begin{tabularx}{\textwidth}{|P{0.25\textwidth}|P{0.34\textwidth}|Y|}
+\hline
+\rowcolor{tableheader}
+\tablehead{Machine zone} & \tablehead{Elements to represent clearly} & \tablehead{Documentation objective} \\
+\hline
+Unwinding zone & Input roll, expandable bar, bearings, drive elements, supports, and first guides. & Explain how the fabric is released and introduced into the machine. \\
+\hline
+Inspection zone & Guide cylinders, de-wrinkling device, inspection table, lighting support, and controls. & Show how the fabric is presented for visual inspection. \\
+\hline
+Rewinding zone & Output roll, expandable bar, drive elements, guide cylinders, actuators, and adjustment elements. & Explain how the inspected fabric is recovered into the final roll. \\
+\hline
+\end{tabularx}
+\end{table}
+
+\subsection{CAD views of the functional blocks}
+
+The following CAD views serve as sub-assembly references for understanding the functional blocks.
+
+\subsubsection{Unwinding Unit -- Input Roll and Drive Support}
+
+The unwinding unit represents the inlet side of the machine. It supports the fabric roll, keeps the roll axis aligned, and links the roll to the drive and bearing supports. The isolated view makes the input roll, support frame, coupling area, and first guiding direction easier to identify.
+
+\begin{figure}[H]
+\centering
+\reportimage[height=0.45\textheight]{images/unwinding_unit_input_roll_drive_support.png}
+\caption{Unwinding Unit -- Input Roll and Drive Support}
+\label{fig:chapter2-4}
+\end{figure}
+
+\subsubsection{Inspection Unit -- Central Viewing and Guiding Section}
+
+The inspection unit is the central working area of the machine. It contains the main guiding rollers, the inspection opening, the support structure, and the elements that keep the fabric visible and correctly guided during checking.
+
+\begin{figure}[H]
+\centering
+\reportimage[height=0.45\textheight]{images/inspection_unit_central_viewing_guiding_section.png}
+\caption{Inspection Unit -- Central Viewing and Guiding Section}
+\label{fig:chapter2-5}
+\end{figure}
+
+\subsubsection{Rewinding Unit -- Output Roll and Take-up Drive}
+
+The rewinding unit represents the output side of the machine. It receives the inspected fabric and winds it onto the final roll. The view highlights the take-up roll, drive support, bearing area, and connection with the previous guiding path.
+
+\begin{figure}[H]
+\centering
+\reportimage[height=0.45\textheight]{images/rewinding_unit_output_roll_take_up_drive.png}
+\caption{Rewinding Unit -- Output Roll and Take-up Drive}
+\label{fig:chapter2-6}
+\end{figure}
+
+\section*{Conclusion}
+\addcontentsline{toc}{section}{Conclusion}
+
+The revision produced a cleaner CAD assembly, a coherent functional organization, and a standardized drawing package. The mate structure was checked for reliable rebuild and drawing extraction. The documentation improvements ensure traceability and readability.

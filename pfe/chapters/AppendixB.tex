@@ -1,0 +1,50 @@
+\chapter{Optimized Table Schema with Stored Generated Columns}
+\label{app:optimized_schema_b}
+
+\section{Complete Schema Definition}
+
+\begin{minted}[linenos,bgcolor=codebg,fontsize=\small,frame=lines,framesep=8pt,rulecolor=codeframe,framerule=1.5pt]{sql}
+CREATE TABLE stops (
+    id          INT UNSIGNED NOT NULL AUTO_INCREMENT,
+    Jour        DATE NOT NULL,
+    Debut       TIME NOT NULL,
+    Fin         TIME,
+    cause_id    INT UNSIGNED NOT NULL,
+
+    -- Stored generated columns: computed ONCE at INSERT.
+    -- stored on disk, never recomputed at query time.
+
+    Duree INT GENERATED ALWAYS AS (
+        CASE
+            WHEN Fin IS NULL THEN NULL
+            WHEN Fin >= Debut THEN TIME_TO_SEC(Fin) - TIME_TO_SEC(Debut)
+            ELSE (TIME_TO_SEC(Fin) + 86400) - TIME_TO_SEC(Debut)
+        END
+    ) STORED,
+
+    prod_day DATE GENERATED ALWAYS AS (
+        IF(Debut < '06:00:00', DATE_SUB(Jour, INTERVAL 1 DAY), Jour)
+    ) STORED,
+
+    equipe TINYINT GENERATED ALWAYS AS (
+        CASE
+            WHEN Debut >= '06:00:00' AND Debut < '14:00:00' THEN 1
+            WHEN Debut >= '14:00:00' AND Debut < '22:00:00' THEN 2
+            ELSE 3
+        END
+    ) STORED,
+
+    -- Pre-sorted clustered primary key: GROUP BY prod_day, equipe finds data already sorted — zero sort cost.
+    PRIMARY KEY (prod_day, equipe, id),
+
+    -- Required by MySQL for AUTO_INCREMENT when not the first PK column.
+    INDEX idx_id (id),
+
+    -- MySQL answers the query entirely from this index.
+    INDEX idx_covering (prod_day, equipe, cause_id, Duree),
+
+    INDEX idx_cause_id (cause_id),
+
+    FOREIGN KEY (cause_id) REFERENCES causes (id)
+);
+\end{minted}

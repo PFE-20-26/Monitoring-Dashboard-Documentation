@@ -1,0 +1,45 @@
+\begin{MintedVerbatim}[commandchars=\\\{\}]
+\PYG{k}{CREATE}\PYG{+w}{ }\PYG{k}{TABLE}\PYG{+w}{ }\PYG{n}{stops}\PYG{+w}{ }\PYG{p}{(}
+\PYG{+w}{    }\PYG{n}{id}\PYG{+w}{          }\PYG{n+nb}{INT}\PYG{+w}{ }\PYG{n}{UNSIGNED}\PYG{+w}{ }\PYG{k}{NOT}\PYG{+w}{ }\PYG{k}{NULL}\PYG{+w}{ }\PYG{n}{AUTO\PYGZus{}INCREMENT}\PYG{p}{,}
+\PYG{+w}{    }\PYG{n}{Jour}\PYG{+w}{        }\PYG{n+nb}{DATE}\PYG{+w}{ }\PYG{k}{NOT}\PYG{+w}{ }\PYG{k}{NULL}\PYG{p}{,}
+\PYG{+w}{    }\PYG{n}{Debut}\PYG{+w}{       }\PYG{k}{TIME}\PYG{+w}{ }\PYG{k}{NOT}\PYG{+w}{ }\PYG{k}{NULL}\PYG{p}{,}
+\PYG{+w}{    }\PYG{n}{Fin}\PYG{+w}{         }\PYG{k}{TIME}\PYG{p}{,}
+\PYG{+w}{    }\PYG{n}{cause\PYGZus{}id}\PYG{+w}{    }\PYG{n+nb}{INT}\PYG{+w}{ }\PYG{n}{UNSIGNED}\PYG{+w}{ }\PYG{k}{NOT}\PYG{+w}{ }\PYG{k}{NULL}\PYG{p}{,}
+
+\PYG{+w}{    }\PYG{c+c1}{\PYGZhy{}\PYGZhy{} Stored generated columns: computed ONCE at INSERT.}
+\PYG{+w}{    }\PYG{c+c1}{\PYGZhy{}\PYGZhy{} stored on disk, never recomputed at query time.}
+
+\PYG{+w}{    }\PYG{n}{Duree}\PYG{+w}{ }\PYG{n+nb}{INT}\PYG{+w}{ }\PYG{k}{GENERATED}\PYG{+w}{ }\PYG{n}{ALWAYS}\PYG{+w}{ }\PYG{k}{AS}\PYG{+w}{ }\PYG{p}{(}
+\PYG{+w}{        }\PYG{k}{CASE}
+\PYG{+w}{            }\PYG{k}{WHEN}\PYG{+w}{ }\PYG{n}{Fin}\PYG{+w}{ }\PYG{k}{IS}\PYG{+w}{ }\PYG{k}{NULL}\PYG{+w}{ }\PYG{k}{THEN}\PYG{+w}{ }\PYG{k}{NULL}
+\PYG{+w}{            }\PYG{k}{WHEN}\PYG{+w}{ }\PYG{n}{Fin}\PYG{+w}{ }\PYG{o}{\PYGZgt{}=}\PYG{+w}{ }\PYG{n}{Debut}\PYG{+w}{ }\PYG{k}{THEN}\PYG{+w}{ }\PYG{n}{TIME\PYGZus{}TO\PYGZus{}SEC}\PYG{p}{(}\PYG{n}{Fin}\PYG{p}{)}\PYG{+w}{ }\PYG{o}{\PYGZhy{}}\PYG{+w}{ }\PYG{n}{TIME\PYGZus{}TO\PYGZus{}SEC}\PYG{p}{(}\PYG{n}{Debut}\PYG{p}{)}
+\PYG{+w}{            }\PYG{k}{ELSE}\PYG{+w}{ }\PYG{p}{(}\PYG{n}{TIME\PYGZus{}TO\PYGZus{}SEC}\PYG{p}{(}\PYG{n}{Fin}\PYG{p}{)}\PYG{+w}{ }\PYG{o}{+}\PYG{+w}{ }\PYG{l+m+mi}{86400}\PYG{p}{)}\PYG{+w}{ }\PYG{o}{\PYGZhy{}}\PYG{+w}{ }\PYG{n}{TIME\PYGZus{}TO\PYGZus{}SEC}\PYG{p}{(}\PYG{n}{Debut}\PYG{p}{)}
+\PYG{+w}{        }\PYG{k}{END}
+\PYG{+w}{    }\PYG{p}{)}\PYG{+w}{ }\PYG{n}{STORED}\PYG{p}{,}
+
+\PYG{+w}{    }\PYG{n}{prod\PYGZus{}day}\PYG{+w}{ }\PYG{n+nb}{DATE}\PYG{+w}{ }\PYG{k}{GENERATED}\PYG{+w}{ }\PYG{n}{ALWAYS}\PYG{+w}{ }\PYG{k}{AS}\PYG{+w}{ }\PYG{p}{(}
+\PYG{+w}{        }\PYG{k}{IF}\PYG{p}{(}\PYG{n}{Debut}\PYG{+w}{ }\PYG{o}{\PYGZlt{}}\PYG{+w}{ }\PYG{l+s+s1}{\PYGZsq{}06:00:00\PYGZsq{}}\PYG{p}{,}\PYG{+w}{ }\PYG{n}{DATE\PYGZus{}SUB}\PYG{p}{(}\PYG{n}{Jour}\PYG{p}{,}\PYG{+w}{ }\PYG{n+nb}{INTERVAL}\PYG{+w}{ }\PYG{l+m+mi}{1}\PYG{+w}{ }\PYG{k}{DAY}\PYG{p}{),}\PYG{+w}{ }\PYG{n}{Jour}\PYG{p}{)}
+\PYG{+w}{    }\PYG{p}{)}\PYG{+w}{ }\PYG{n}{STORED}\PYG{p}{,}
+
+\PYG{+w}{    }\PYG{n}{equipe}\PYG{+w}{ }\PYG{n}{TINYINT}\PYG{+w}{ }\PYG{k}{GENERATED}\PYG{+w}{ }\PYG{n}{ALWAYS}\PYG{+w}{ }\PYG{k}{AS}\PYG{+w}{ }\PYG{p}{(}
+\PYG{+w}{        }\PYG{k}{CASE}
+\PYG{+w}{            }\PYG{k}{WHEN}\PYG{+w}{ }\PYG{n}{Debut}\PYG{+w}{ }\PYG{o}{\PYGZgt{}=}\PYG{+w}{ }\PYG{l+s+s1}{\PYGZsq{}06:00:00\PYGZsq{}}\PYG{+w}{ }\PYG{k}{AND}\PYG{+w}{ }\PYG{n}{Debut}\PYG{+w}{ }\PYG{o}{\PYGZlt{}}\PYG{+w}{ }\PYG{l+s+s1}{\PYGZsq{}14:00:00\PYGZsq{}}\PYG{+w}{ }\PYG{k}{THEN}\PYG{+w}{ }\PYG{l+m+mi}{1}
+\PYG{+w}{            }\PYG{k}{WHEN}\PYG{+w}{ }\PYG{n}{Debut}\PYG{+w}{ }\PYG{o}{\PYGZgt{}=}\PYG{+w}{ }\PYG{l+s+s1}{\PYGZsq{}14:00:00\PYGZsq{}}\PYG{+w}{ }\PYG{k}{AND}\PYG{+w}{ }\PYG{n}{Debut}\PYG{+w}{ }\PYG{o}{\PYGZlt{}}\PYG{+w}{ }\PYG{l+s+s1}{\PYGZsq{}22:00:00\PYGZsq{}}\PYG{+w}{ }\PYG{k}{THEN}\PYG{+w}{ }\PYG{l+m+mi}{2}
+\PYG{+w}{            }\PYG{k}{ELSE}\PYG{+w}{ }\PYG{l+m+mi}{3}
+\PYG{+w}{        }\PYG{k}{END}
+\PYG{+w}{    }\PYG{p}{)}\PYG{+w}{ }\PYG{n}{STORED}\PYG{p}{,}
+
+\PYG{+w}{    }\PYG{c+c1}{\PYGZhy{}\PYGZhy{} Pre\PYGZhy{}sorted clustered primary key: GROUP BY prod\PYGZus{}day, equipe finds data already sorted — zero sort cost.}
+\PYG{+w}{    }\PYG{k}{PRIMARY}\PYG{+w}{ }\PYG{k}{KEY}\PYG{+w}{ }\PYG{p}{(}\PYG{n}{prod\PYGZus{}day}\PYG{p}{,}\PYG{+w}{ }\PYG{n}{equipe}\PYG{p}{,}\PYG{+w}{ }\PYG{n}{id}\PYG{p}{),}
+
+\PYG{+w}{    }\PYG{c+c1}{\PYGZhy{}\PYGZhy{} Required by MySQL for AUTO\PYGZus{}INCREMENT when not the first PK column.}
+\PYG{+w}{    }\PYG{k}{INDEX}\PYG{+w}{ }\PYG{n}{idx\PYGZus{}id}\PYG{+w}{ }\PYG{p}{(}\PYG{n}{id}\PYG{p}{),}
+
+\PYG{+w}{    }\PYG{c+c1}{\PYGZhy{}\PYGZhy{} MySQL answers the query entirely from this index.}
+\PYG{+w}{    }\PYG{k}{INDEX}\PYG{+w}{ }\PYG{n}{idx\PYGZus{}covering}\PYG{+w}{ }\PYG{p}{(}\PYG{n}{prod\PYGZus{}day}\PYG{p}{,}\PYG{+w}{ }\PYG{n}{equipe}\PYG{p}{,}\PYG{+w}{ }\PYG{n}{cause\PYGZus{}id}\PYG{p}{,}\PYG{+w}{ }\PYG{n}{Duree}\PYG{p}{),}
+
+\PYG{+w}{    }\PYG{k}{INDEX}\PYG{+w}{ }\PYG{n}{idx\PYGZus{}cause\PYGZus{}id}\PYG{+w}{ }\PYG{p}{(}\PYG{n}{cause\PYGZus{}id}\PYG{p}{),}
+
+\PYG{+w}{    }\PYG{k}{FOREIGN}\PYG{+w}{ }\PYG{k}{KEY}\PYG{+w}{ }\PYG{p}{(}\PYG{n}{cause\PYGZus{}id}\PYG{p}{)}\PYG{+w}{ }\PYG{k}{REFERENCES}\PYG{+w}{ }\PYG{n}{causes}\PYG{+w}{ }\PYG{p}{(}\PYG{n}{id}\PYG{p}{)}
+\PYG{p}{);}
+\end{MintedVerbatim}

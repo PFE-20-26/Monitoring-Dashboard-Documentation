@@ -1,0 +1,34 @@
+\chapter{EXPLAIN ANALYZE Traces}
+
+\section{Query B on stopsB1 (LIMIT 50)}
+\label{app:explain-b1}
+
+\begin{minted}[linenos,bgcolor=codebg,fontsize=\small,frame=lines,framesep=8pt,rulecolor=codeframe,framerule=1.5pt]{text}
+-> Limit: 50 row(s)  (cost=805 rows=50)
+   (actual time=0.299..0.37 rows=50 loops=1)
+   -> Table scan on s  (cost=805 rows=8000)
+      (actual time=0.283..0.337 rows=8000 loops=1)
+      -> Select #2 (subquery in projection; dependent)
+          -> Limit: 1 row(s)  (cost=0.35 rows=1)
+             (actual time=0.0297..0.0299 rows=1 loops=50)
+             -> Single-row index lookup on c using PRIMARY
+                (id=s.cause_id)
+                (actual time=0.00726..0.00734 rows=1 loops=50)
+      -> Select #3 (subquery in projection; dependent)
+          -> Limit: 1 row(s)  (cost=0.35 rows=1)
+             (actual time=0.0287..0.0287 rows=1 loops=50)
+             -> Single-row index lookup on c using PRIMARY
+                (id=s.cause_id)
+                (actual time=0.00688..0.00688 rows=1 loops=50)
+      -> Select #4 (subquery in projection; dependent)
+          -> Aggregate: sum(CASE WHEN sx.Fin IS NULL ...)
+             (actual time=18.2..18.2 rows=1 loops=98)
+             -> Filter: (date_format(if((sx.Debut < '06:00:00'),
+                          (sx.Jour - interval 1 day),sx.Jour),
+                          '%Y-%m-%d')
+                        = date_format(...))
+                (cost=805 rows=8000)
+                (actual time=0.373..18.1 rows=66 loops=98)
+             -> Table scan on sx  (cost=805 rows=8000)
+                (actual time=0.322..5.33 rows=8000 loops=98)
+\end{minted}

@@ -1,0 +1,25 @@
+sequenceDiagram
+    actor Admin
+    participant UI as Interface: Metrage page
+    participant MC as Metrage Controller
+    participant MT as SQL table: metrage
+
+    Admin->>UI: Open yardage/metrage page
+    Admin->>UI: Select date range
+
+    par Load daily yardage
+        UI->>MC: Request daily metrage series
+        MC->>MT: Group meters by recorded date
+        MT-->>MC: Daily meter totals
+        MC-->>UI: Daily series
+    and Load period total
+        UI->>MC: Request total metrage
+        MC->>MT: Sum meters for period
+        MT-->>MC: Period total
+        MC-->>UI: Total meters
+    end
+
+    UI-->>Admin: Display line chart and total value
+    alt Invalid range, no data or request error
+        UI-->>Admin: Show empty state or error message
+    end

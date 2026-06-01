@@ -1,0 +1,28 @@
+sequenceDiagram
+    actor Admin
+    participant UI as Interface: Causes table
+    participant CC as Causes Controller
+    participant CA as SQL table: causes
+
+    Admin->>UI: Click Delete/Deactivate on a cause
+    UI->>CC: Request cause deactivation
+    CC->>CA: Update cause set is_active = false
+    CA-->>CC: Update result
+    CC-->>UI: Deactivation success
+    UI->>CC: Refresh causes list
+    CC->>CA: Read visible causes
+    CA-->>CC: Cause rows
+    CC-->>UI: Refreshed list
+    UI-->>Admin: Cause no longer appears in active list
+
+    alt Cause not found or update error
+        CC-->>UI: Error response
+        UI-->>Admin: Show error and keep list unchanged
+    else Reactivate needed later
+        Admin->>UI: Include inactive causes and click Activate
+        UI->>CC: Request cause activation
+        CC->>CA: Update cause set is_active = true
+        CA-->>CC: Update result
+        CC-->>UI: Activation success
+        UI-->>Admin: Cause appears as active again
+    end

@@ -1,22 +1,32 @@
 \noaddvspace 
 \addvspace {10\p@ }
-\contentsline {table}{\numberline {1}{\ignorespaces Technical file of TESCA}}{5}{table.caption.6}%
+\contentsline {table}{\numberline {1}{\ignorespaces Technical file of TESCA}}{5}{table.caption.2}%
+\contentsline {table}{\numberline {2}{\ignorespaces Functional requirements of the dashboard to be developed}}{9}{table.caption.7}%
+\contentsline {table}{\numberline {3}{\ignorespaces Non-functional requirements and industrial constraints}}{10}{table.caption.8}%
 \addvspace {10\p@ }
+\contentsline {table}{\numberline {4}{\ignorespaces Use Case Descriptions}}{13}{table.caption.10}%
+\contentsline {table}{\numberline {5}{\ignorespaces Scope of the technical revision}}{15}{table.caption.13}%
+\contentsline {table}{\numberline {6}{\ignorespaces CAD mate correction strategy}}{15}{table.caption.14}%
+\contentsline {table}{\numberline {7}{\ignorespaces Final CAD assembly validation criteria}}{15}{table.caption.15}%
+\contentsline {table}{\numberline {8}{\ignorespaces Main fields of the revised industrial title block}}{16}{table.caption.16}%
+\contentsline {table}{\numberline {9}{\ignorespaces Organization of the technical drawing package}}{16}{table.caption.17}%
+\contentsline {table}{\numberline {10}{\ignorespaces Recommended view selection for the drawing sheets}}{16}{table.caption.18}%
+\contentsline {table}{\numberline {11}{\ignorespaces Mechanical reading after CAD correction}}{17}{table.caption.19}%
 \addvspace {10\p@ }
+\contentsline {table}{\numberline {12}{\ignorespaces Core data model and workload constraints}}{23}{table.caption.26}%
+\contentsline {table}{\numberline {13}{\ignorespaces Query A growth pattern}}{24}{table.caption.27}%
+\contentsline {table}{\numberline {14}{\ignorespaces Index-only experiments on the original query shape}}{25}{table.caption.28}%
+\contentsline {table}{\numberline {15}{\ignorespaces Impact of replacing the correlated denominator with pre-aggregation}}{25}{table.caption.29}%
+\contentsline {table}{\numberline {16}{\ignorespaces Generated columns introduced in the optimised schema}}{26}{table.caption.30}%
+\contentsline {table}{\numberline {17}{\ignorespaces Optimised index design}}{26}{table.caption.31}%
+\contentsline {table}{\numberline {18}{\ignorespaces One-million-row benchmark summary}}{27}{table.caption.32}%
 \addvspace {10\p@ }
-\contentsline {table}{\numberline {2}{\ignorespaces Core stops table structure}}{12}{table.caption.8}%
-\contentsline {table}{\numberline {3}{\ignorespaces Query A measurements}}{14}{table.caption.9}%
-\contentsline {table}{\numberline {4}{\ignorespaces SHOW PROFILE results for Query A}}{15}{table.caption.10}%
-\contentsline {table}{\numberline {5}{\ignorespaces Index configuration summary for all three experimental tables}}{15}{table.caption.11}%
-\contentsline {table}{\numberline {6}{\ignorespaces stopsB1 benchmark results with simple indexes}}{16}{table.caption.12}%
-\contentsline {table}{\numberline {7}{\ignorespaces stopsB2 benchmark results with functional indexes}}{17}{table.caption.13}%
-\contentsline {table}{\numberline {8}{\ignorespaces stopsB3 benchmark results with covering indexes}}{19}{table.caption.14}%
-\contentsline {table}{\numberline {9}{\ignorespaces Index strategy comparison: Query B on stops table}}{20}{table.caption.15}%
-\contentsline {table}{\numberline {10}{\ignorespaces Query C performance compared to Query B3}}{22}{table.caption.16}%
-\contentsline {table}{\numberline {11}{\ignorespaces EXPLAIN ANALYZE profile for Query C at 1M rows}}{23}{table.caption.17}%
-\contentsline {table}{\numberline {12}{\ignorespaces Query D benchmark results on production dataset}}{24}{table.caption.18}%
-\contentsline {table}{\numberline {13}{\ignorespaces Query C vs Query D --- what actually happens at 1M rows}}{25}{table.caption.19}%
-\contentsline {table}{\numberline {14}{\ignorespaces Index inventory and purpose}}{26}{table.caption.20}%
-\contentsline {table}{\numberline {15}{\ignorespaces EXPLAIN ANALYZE profile for Query E at 1M rows}}{28}{table.caption.21}%
-\addvspace {10\p@ }
-\addvspace {10\p@ }
+\contentsline {table}{\numberline {19}{\ignorespaces Responsibilities of the main components used for Visiteuse 2}}{31}{table.caption.36}%
+\contentsline {table}{\numberline {20}{\ignorespaces Timer and synchronization parameters used in the implementation}}{33}{table.caption.39}%
+\contentsline {table}{\numberline {21}{\ignorespaces Main variables used in the Visiteuse 2 ladder program}}{34}{table.caption.40}%
+\contentsline {table}{\numberline {22}{\ignorespaces Timestamp register format used by Node-RED}}{35}{table.caption.41}%
+\contentsline {table}{\numberline {23}{\ignorespaces Correspondence between cause bits and the value stored in \texttt {D30}}}{35}{table.caption.42}%
+\contentsline {table}{\numberline {24}{\ignorespaces Main communication parameters for the Veichi VC3 PLC}}{36}{table.caption.43}%
+\contentsline {table}{\numberline {25}{\ignorespaces Useful registers extracted by Node-RED}}{36}{table.caption.44}%
+\contentsline {table}{\numberline {26}{\ignorespaces Main REST endpoints used by the web HMI}}{40}{table.caption.54}%
+\contentsline {table}{\numberline {27}{\ignorespaces Complementary roles of the two HMI layers}}{40}{table.caption.55}%

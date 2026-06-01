@@ -1,4 +1,322 @@
-\chapter{Implementation}
+\chapter{Realisation}
 
-\section*{TBD}
-% Content coming soon
+\section*{Introduction}
+
+This chapter will give you a glimpse of what our dashboard has as well as our journey in optimising the database.
+
+\section{Dashboard Realisation}
+
+\subsection{Overview Dashboard - Single-Day Mode}
+
+The overview dashboard is the main entry point of the application. In single-day mode, the Admin selects one production date and one team. The dashboard then displays the most important production indicators for that day, including the number of stops, total downtime, average TRS, and the number of analyzed days.
+
+The page also provides graphical analysis through several charts. The downtime-by-cause chart allows the Admin to identify the causes that represent the highest production losses. Additional charts present the evolution of the number of stops, the comparison between downtime and working time, and the TRS evolution. This view gives the Admin a quick and synthetic understanding of the production situation for a specific day.
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.95\textwidth, keepaspectratio]{images/vue densemble .png}
+\caption{Overview Dashboard - Single-Day Mode Interface}
+\label{fig:chapter3-1}
+\end{figure}
+
+\subsection{Overview Dashboard - Period Mode}
+
+The period mode allows the Admin to analyze production performance over a selected date range. Instead of focusing on one day only, this view aggregates indicators across several days. The Admin can compare the evolution of the number of stops, total downtime, working time, and TRS during the selected period.
+
+This page is useful for identifying long-term trends and recurring production issues. By visualizing stops and TRS over time, the Admin can evaluate whether production performance is improving, stable, or decreasing.
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.95\textwidth, keepaspectratio]{images/vue group .png}
+\caption{Overview Dashboard - Period Mode Interface}
+\label{fig:chapter3-2}
+\end{figure}
+
+\subsection{Stops and Analytics Page}
+
+The stops and analytics page provides a detailed analysis of machine stops. The Admin can select a visualization period and a production team. The page is divided into three main parts: a daily summary table, a detailed stops table, and a downtime chart.
+
+The daily summary table displays the total stop time, total working time, TRS value, and number of stops for each production day. When the Admin selects a specific day, the detailed table shows each stop event with its start time, end time, duration, cause, TRS impact, and percentage contribution. This allows the Admin to move from a global daily view to a detailed operational analysis.
+
+The bar chart groups total downtime by cause. This makes it easier to identify which causes generate the highest production losses. The page also includes pagination and Excel export features, which improve data consultation and reporting.
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.95\textwidth, keepaspectratio]{images/causes.png}
+\caption{Stops and Analytics Module}
+\label{fig:chapter3-3}
+\end{figure}
+
+\section{Operational Context and Performance Metric}
+
+The production database contains four principal tables: \texttt{stops}, \texttt{causes}, \texttt{vitesse}, and \texttt{metrage}. The bottleneck analysed in this chapter comes from the \texttt{stops} and \texttt{causes} tables because they drive the downtime dashboard. Each row in \texttt{stops} records one machine-stop event with a stop date, start time, end time, and cause identifier.
+
+\begin{table}[H]
+\centering
+\small
+\caption{Core data model and workload constraints}
+\label{tab:chapter3-1}
+\setlength{\extrarowheight}{2pt}
+\begin{tabular}{@{}>{\raggedright\arraybackslash}p{3.2cm}>{\raggedright\arraybackslash}p{10.8cm}@{}}
+    \toprule
+    \rowcolor[HTML]{1A5490}
+    \textcolor{white}{\textbf{Element}} & \textcolor{white}{\textbf{Description}} \\
+    \midrule
+    \rowcolor[HTML]{E8F4F8}
+    Shift structure & Team 1 works 06:00--14:00, Team 2 works 14:00--22:00, and Team 3 works 22:00--06:00. \\
+    \rowcolor[HTML]{FFFFFF}
+    Production day & Stops before 06:00 belong to the previous production day, not to the current calendar day. \\
+    \rowcolor[HTML]{E8F4F8}
+    Workload & Approximately 800--1,500 stops are inserted per day by machine controllers; records are append-only. \\
+    \rowcolor[HTML]{FFFFFF}
+    Dashboard target & Supervisors query date-range views throughout the shift, so the practical target is interactive response time on production-scale data. \\
+    \rowcolor[HTML]{E8F4F8}
+    Main tables & \texttt{stops(id, Jour, Debut, Fin, cause\_id)} and \texttt{causes(id, name, affect\_trs)}. \\
+    \bottomrule
+\end{tabular}
+\end{table}
+
+The key computed field is the percentage of daily downtime represented by each stop within the same production day and team:
+
+\begin{equation}
+\mathrm{PCT} = \frac{\mathrm{stop\ duration\ in\ seconds}}{\mathrm{total\ downtime\ for\ the\ same\ production\ day\ and\ team}} \times 100.
+\end{equation}
+
+This denominator is the central performance challenge. A naive query recomputes the total downtime for every returned row; the optimised design computes each total once and reuses it.
+
+\section{Baseline Diagnosis: Query A}
+
+The original query calculated duration, cause information, production-day assignment, and PCT directly in the \texttt{SELECT} clause. Its most expensive component was a correlated subquery that scanned \texttt{stops} again for each outer row in order to compute the PCT denominator. It also wrapped date columns in expressions such as \texttt{DATE\_FORMAT(IF(...))}, which made the predicates non-sargable and prevented index use.
+
+\begin{table}[H]
+\centering
+\small
+\caption{Query A growth pattern}
+\label{tab:chapter3-2}
+\setlength{\extrarowheight}{2pt}
+\begin{tabular}{@{}>{\raggedright\arraybackslash}p{2.3cm}>{\raggedright\arraybackslash}p{2.7cm}>{\raggedright\arraybackslash}p{8.1cm}@{}}
+    \toprule
+    \rowcolor[HTML]{1A5490}
+    \textcolor{white}{\textbf{Rows}} & \textcolor{white}{\textbf{Runtime}} & \textcolor{white}{\textbf{Interpretation}} \\
+    \midrule
+    \rowcolor[HTML]{E8F4F8}
+    100 & 0.291 s & Appears acceptable during early testing. \\
+    \rowcolor[HTML]{FFFFFF}
+    1,000 & 28.347 s & First clear warning sign. \\
+    \rowcolor[HTML]{E8F4F8}
+    2,000 & 114.156 s & Runtime grows by approximately four when the data doubles. \\
+    \rowcolor[HTML]{FFFFFF}
+    10,000 & 3,041.678 s & Already unusable for an operational dashboard. \\
+    \rowcolor[HTML]{E8F4F8}
+    14,000 & 5,512.934 s & Testing was stopped at this point. \\
+    \rowcolor[HTML]{FFFFFF}
+    1,000,000 & $\approx$326 days & Projection from the measured quadratic trend. \\
+    \bottomrule
+\end{tabular}
+\end{table}
+
+The measured behaviour follows:
+
+\begin{equation}
+T_A(n) \approx k \cdot n^2,
+\end{equation}
+
+where \(n\) is the number of stop rows. Profiling confirmed the diagnosis: almost all execution time was spent inside the correlated denominator subquery, while table opening, logging, memory cleanup, and other phases were negligible. This made the optimisation target unambiguous: the PCT denominator had to be removed from the per-row execution path.
+
+\section{Optimisation Path}
+
+The optimisation work was deliberately staged. First, index-only fixes were tested to determine whether the existing query could be rescued. Next, the query was rewritten to eliminate the quadratic loop. Finally, the schema was redesigned so that the rewritten query could run with efficient ordered index scans.
+
+\subsection{Index-Only Experiments}
+
+Three variants of the same data were benchmarked with the original query shape. The results show the limit of indexing when the algorithm remains quadratic.
+
+\begin{table}[H]
+\centering
+\small
+\caption{Index-only experiments on the original query shape}
+\label{tab:chapter3-3}
+\setlength{\extrarowheight}{2pt}
+\begin{tabular}{@{}>{\raggedright\arraybackslash}p{2.2cm}>{\raggedright\arraybackslash}p{3.2cm}>{\raggedright\arraybackslash}p{3cm}>{\raggedright\arraybackslash}p{5cm}@{}}
+    \toprule
+    \rowcolor[HTML]{1A5490}
+    \textcolor{white}{\textbf{Variant}} & \textcolor{white}{\textbf{Strategy}} & \textcolor{white}{\textbf{10K-row runtime}} & \textcolor{white}{\textbf{Conclusion}} \\
+    \midrule
+    \rowcolor[HTML]{E8F4F8}
+    B1 & Simple indexes on \texttt{Jour}, \texttt{Debut}, and \texttt{cause\_id} & 437.9 s & Ignored for the main filter because the production-day expression is non-sargable. \\
+    \rowcolor[HTML]{FFFFFF}
+    B2 & Functional index on the production-day expression & 451.7 s & The optimizer did not match the functional index reliably; overhead increased. \\
+    \rowcolor[HTML]{E8F4F8}
+    B3 & Covering index on query columns & 265.4 s & Faster scan source, but each outer row still triggers a full inner scan. \\
+    \bottomrule
+\end{tabular}
+\end{table}
+
+The index experiments establish a useful boundary: indexes can reduce constant factors, but they cannot change the complexity class. Because the correlated subquery still runs once per outer row, the query remains \(O(n^2)\). At this stage the best improvement was approximately 37--40\%, far below what production required.
+
+\subsection{Algorithmic Rewrite: Query C}
+
+Query C replaced the correlated denominator subquery with a derived table that pre-aggregates total downtime once per production day. The outer query then joins each stop row to the relevant precomputed total. This changes the execution pattern from repeated full scans to one aggregation pass plus one join pass.
+
+\begin{table}[H]
+\centering
+\small
+\caption{Impact of replacing the correlated denominator with pre-aggregation}
+\label{tab:chapter3-4}
+\setlength{\extrarowheight}{2pt}
+\begin{tabular}{@{}>{\raggedright\arraybackslash}p{2.2cm}>{\raggedright\arraybackslash}p{3.1cm}>{\raggedright\arraybackslash}p{3.1cm}>{\raggedright\arraybackslash}p{4.5cm}@{}}
+    \toprule
+    \rowcolor[HTML]{1A5490}
+    \textcolor{white}{\textbf{Rows}} & \textcolor{white}{\textbf{B3 covering index}} & \textcolor{white}{\textbf{Query C}} & \textcolor{white}{\textbf{Result}} \\
+    \midrule
+    \rowcolor[HTML]{E8F4F8}
+    1,000 & 4.679 s & 0.094 s & 49.8$\times$ faster. \\
+    \rowcolor[HTML]{FFFFFF}
+    5,000 & 100.702 s & 0.287 s & 350.9$\times$ faster. \\
+    \rowcolor[HTML]{E8F4F8}
+    10,000 & 265.4 s & 0.373 s & 711.5$\times$ faster. \\
+    \rowcolor[HTML]{FFFFFF}
+    1,000,000 & $\approx$31 days & 46.642 s & Quadratic collapse removed. \\
+    \bottomrule
+\end{tabular}
+\end{table}
+
+Query C made the problem tractable, but it was still too slow for an operational dashboard at one million rows. \texttt{EXPLAIN ANALYZE} showed three remaining costs: repeated cause lookups, temporary-table materialisation for the aggregation, and repeated evaluation of production-day and duration expressions.
+
+\subsection{Window Function Test: Query D}
+
+A window-function version was tested to determine whether the denominator could be computed in a single pass using \texttt{SUM(Duree) OVER(PARTITION BY prod\_day, equipe)}. It reduced the one-million-row runtime from 46.642 s to 25.955 s. However, the gain was limited because MySQL still had to sort and buffer rows by window partition. The lesson was that a query-level rewrite alone could not eliminate the remaining sort cost; the data had to be stored in an order that matched the dashboard aggregation pattern.
+
+\section{Final Architecture: Query E}
+
+The final solution moves repeated computations from read time to write time and makes the dashboard query read from a compact ordered index. It uses stored generated columns for production day, team, and duration, then applies a covering index aligned with the dashboard's filter and grouping keys.
+
+\subsection{Stored Generated Columns}
+
+\begin{table}[H]
+\centering
+\small
+\caption{Generated columns introduced in the optimised schema}
+\label{tab:chapter3-5}
+\setlength{\extrarowheight}{2pt}
+\begin{tabular}{@{}>{\raggedright\arraybackslash}p{2.7cm}>{\raggedright\arraybackslash}p{5cm}>{\raggedright\arraybackslash}p{6.1cm}@{}}
+    \toprule
+    \rowcolor[HTML]{1A5490}
+    \textcolor{white}{\textbf{Column}} & \textcolor{white}{\textbf{Computation}} & \textcolor{white}{\textbf{Benefit}} \\
+    \midrule
+    \rowcolor[HTML]{E8F4F8}
+    \texttt{prod\_day} & Previous date when \texttt{Debut < '06:00:00'}, otherwise \texttt{Jour}. & Replaces repeated \texttt{DATE\_FORMAT(IF(...))} and makes date filtering sargable. \\
+    \rowcolor[HTML]{FFFFFF}
+    \texttt{equipe} & Shift number derived from \texttt{Debut}. & Allows daily downtime to be grouped by the required production team. \\
+    \rowcolor[HTML]{E8F4F8}
+    \texttt{Duree} & Stop duration in seconds, including stops crossing midnight. & Avoids repeated \texttt{TIME\_TO\_SEC} and \texttt{CASE} expressions in every query. \\
+    \bottomrule
+\end{tabular}
+\end{table}
+
+This follows a write-once-read-many principle: the computational cost is paid once during insertion and reused by all dashboard reads.
+
+\subsection{Index Design}
+
+\begin{table}[H]
+\centering
+\small
+\caption{Optimised index design}
+\label{tab:chapter3-6}
+\setlength{\extrarowheight}{2pt}
+\begin{tabular}{@{}>{\raggedright\arraybackslash}p{5.4cm}>{\raggedright\arraybackslash}p{8.3cm}@{}}
+    \toprule
+    \rowcolor[HTML]{1A5490}
+    \textcolor{white}{\textbf{Index}} & \textcolor{white}{\textbf{Purpose}} \\
+    \midrule
+    \rowcolor[HTML]{E8F4F8}
+    \texttt{PRIMARY KEY (prod\_day, equipe, id)} & Clusters rows by the two dominant grouping keys while keeping each row unique through \texttt{id}. \\
+    \rowcolor[HTML]{FFFFFF}
+    \texttt{idx\_id (id)} & Keeps \texttt{id} indexed for auto-increment and direct row lookup. \\
+    \rowcolor[HTML]{E8F4F8}
+    \texttt{idx\_dashboard\_covering (prod\_day, equipe, cause\_id, Duree, Debut, Fin)} & Covers the dashboard query, supports the date filter, and lets the aggregation stream through ordered key ranges. \\
+    \rowcolor[HTML]{FFFFFF}
+    \texttt{idx\_cause\_id (cause\_id)} & Supports the join to \texttt{causes}. \\
+    \bottomrule
+\end{tabular}
+\end{table}
+
+The essential design principle is alignment: the first columns of the index match the date filter and the grouping keys. The aggregation therefore reads rows that are already ordered by \texttt{prod\_day} and \texttt{equipe}, avoiding the disk-heavy sort observed in Query D.
+
+\subsection{Optimised Query}
+
+The final query keeps the successful pre-aggregation strategy but applies it to generated columns and an ordered covering index. The same date range is applied to both the aggregation and the final result so no totals are computed outside the dashboard scope.
+
+\begin{minted}[fontsize=\footnotesize,breaklines,linenos]{sql}
+WITH day_team_totals AS (
+    SELECT
+        prod_day,
+        equipe,
+        SUM(Duree) AS day_total
+    FROM stops FORCE INDEX (idx_dashboard_covering)
+    WHERE prod_day BETWEEN @from AND @to
+    GROUP BY prod_day, equipe
+)
+SELECT
+    s.Debut,
+    s.Fin,
+    s.Duree,
+    s.prod_day,
+    s.equipe,
+    c.name AS cause,
+    c.affect_trs,
+    ROUND(s.Duree * 100.0 / NULLIF(dt.day_total, 0), 2) AS pct
+FROM stops AS s FORCE INDEX (idx_dashboard_covering)
+JOIN day_team_totals AS dt
+  ON dt.prod_day = s.prod_day
+ AND dt.equipe   = s.equipe
+JOIN causes AS c
+  ON c.id = s.cause_id
+WHERE s.prod_day BETWEEN @from AND @to;
+\end{minted}
+
+\textit{Listing 4.1: Final dashboard query using generated columns and pre-aggregated totals}
+
+\section{Results and Discussion}
+
+\begin{table}[H]
+\centering
+\small
+\caption{One-million-row benchmark summary}
+\label{tab:chapter3-7}
+\setlength{\extrarowheight}{2pt}
+\begin{tabular}{@{}>{\raggedright\arraybackslash}p{2cm}>{\raggedright\arraybackslash}p{4.5cm}>{\raggedright\arraybackslash}p{2.5cm}>{\raggedright\arraybackslash}p{5cm}@{}}
+    \toprule
+    \rowcolor[HTML]{1A5490}
+    \textcolor{white}{\textbf{Query}} & \textcolor{white}{\textbf{Main technique}} & \textcolor{white}{\textbf{Runtime}} & \textcolor{white}{\textbf{Main limitation or outcome}} \\
+    \midrule
+    \rowcolor[HTML]{E8F4F8}
+    A & Correlated denominator subquery & $\approx$326 days projected & Full scan repeated per row. \\
+    \rowcolor[HTML]{FFFFFF}
+    B3 & Covering index on original query & $\approx$31 days projected & Scan is cheaper, but loop count unchanged. \\
+    \rowcolor[HTML]{E8F4F8}
+    C & Pre-aggregated derived table & 46.642 s & Complexity fixed, but remaining expression and materialisation costs are high. \\
+    \rowcolor[HTML]{FFFFFF}
+    D & Window function & 25.955 s & One scan, but partition sorting spills to disk. \\
+    \rowcolor[HTML]{E8F4F8}
+    E & Generated columns + covering index + CTE & 2.200 s & Best measured result; reads ordered precomputed values. \\
+    \bottomrule
+\end{tabular}
+\end{table}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.95\textwidth]{images/query_performance_comparison.png}
+\caption{Figure 3.1: Execution-time trend across optimisation stages on a logarithmic scale}
+\label{fig:chapter3-4}
+\end{figure}
+
+The final profile is fundamentally different from the baseline. Query A performs a nested scan and therefore grows quadratically. Query E performs a small aggregation over ordered generated values and then joins the compact totals back to the filtered rows. At one million rows, Query E is 21.2$\times$ faster than Query C, 11.8$\times$ faster than Query D, and several million times faster than the projected Query A runtime.
+
+The main lesson is architectural. Indexes are valuable when the query already exposes searchable keys, but they cannot repair a per-row full-scan algorithm. The decisive gains came from changing where the work is done: production day, team, and duration are computed once at insert time, while daily team totals are computed once per dashboard query instead of once per returned row.
+
+\section{Conclusion}
+
+The optimisation journey reduced the dashboard query from a quadratic, non-sargable implementation to a linear, index-aligned design. The final schema and query preserve the business semantics of shifted production days, team-level downtime, stop duration, cause information, and PCT calculation, while making the database read precomputed values in the same order required by the aggregation.
+
+This result confirms four practical principles for SQL performance engineering: avoid correlated aggregate subqueries on large fact tables; make filter expressions sargable; use generated columns for stable derived attributes; and design indexes from the actual filter, grouping, and projection pattern. The complete SQL listings and supporting schema definitions are provided in the technical appendix so the main chapter remains focused on the reasoning and evidence.
